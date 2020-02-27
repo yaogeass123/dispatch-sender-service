@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body style="margin: 0;padding: 0;">
+<span th:text="${content}"></span>
+<table>
+  <tr>
+    <th>GROUP NAME</th>
+    <th>ip</th>
+    <th>MESSAGE</th>
+    <th>COUNT</th>
+  </tr>
+  <div th:each="map : ${map}" th:with="num = ${map.value.size()}">
+    <tr th:each="msg, status : ${map.value}">
+      <td th:text="${map.key}" th:rowspan = "${num}" th:if = "${status.first}"></td>
+      <td th:text="${msg.ips}"></td>
+      <td th:text="${msg.message}"></td>
+      <td th:text="${msg.count}"></td>
+    </tr>
+  </div>
+</table>
+</body>
+</html>
