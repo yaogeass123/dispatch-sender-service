@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianwoba.dispatch.sender.mapper.MessageSendMapper">
+  <resultMap id="BaseResultMap" type="com.dianwoba.dispatch.sender.entity.MessageSend">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="cluster_id" jdbcType="VARCHAR" property="clusterId" />
+    <result column="group_id" jdbcType="BIGINT" property="groupId" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
+    <result column="ips" jdbcType="VARCHAR" property="ips" />
+    <result column="exception_type" jdbcType="VARCHAR" property="exceptionType" />
+    <result column="digest" jdbcType="VARCHAR" property="digest" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="start_tm" jdbcType="TIMESTAMP" property="startTm" />
+    <result column="end_tm" jdbcType="TIMESTAMP" property="endTm" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+    <result column="at_who" jdbcType="VARCHAR" property="atWho" />
+    <result column="insert_tm" jdbcType="TIMESTAMP" property="insertTm" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="send_tm" jdbcType="TIMESTAMP" property="sendTm" />
+    <result column="robot_error_code" jdbcType="VARCHAR" property="robotErrorCode" />
+    <result column="robot_error_msg" jdbcType="VARCHAR" property="robotErrorMsg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+    end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+  </sql>
+  <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.MessageSendExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from `message_send`
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="rows != null">
+      <if test="offset != null">
+        limit ${offset}, ${rows}
+      </if>
+      <if test="offset == null">
+        limit ${rows}
+      </if>
+    </if>
+  </select>
+  <select id="selectByExampleSelective" parameterType="map" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      @project https://github.com/itfsw/mybatis-generator-plugin
+    -->
+    select
+    <if test="example.distinct">
+      distinct
+    </if>
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.value}
+        </foreach>
+      </when>
+      <otherwise>
+        id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+          end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+          
+      </otherwise>
+    </choose>
+    from `message_send`
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+    <if test="example.orderByClause != null">
+      order by ${example.orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from `message_send`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      @project https://github.com/itfsw/mybatis-generator-plugin
+    -->
+    select
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.value}
+        </foreach>
+      </when>
+      <otherwise>
+        id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+          end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+          
+      </otherwise>
+    </choose>
+    from `message_send`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `message_send`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.dianwoba.dispatch.sender.entity.MessageSendExample">
+    delete from `message_send`
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
+    insert into `message_send` (id, cluster_id, group_id, 
+      app_name, ips, exception_type, 
+      digest, msg, level, 
+      start_tm, end_tm, count, 
+      at_who, insert_tm, status, 
+      send_tm, robot_error_code, robot_error_msg
+      )
+    values (#{id,jdbcType=BIGINT}, #{clusterId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
+      #{appName,jdbcType=VARCHAR}, #{ips,jdbcType=VARCHAR}, #{exceptionType,jdbcType=VARCHAR}, 
+      #{digest,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT}, 
+      #{startTm,jdbcType=TIMESTAMP}, #{endTm,jdbcType=TIMESTAMP}, #{count,jdbcType=INTEGER}, 
+      #{atWho,jdbcType=VARCHAR}, #{insertTm,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
+      #{sendTm,jdbcType=TIMESTAMP}, #{robotErrorCode,jdbcType=VARCHAR}, #{robotErrorMsg,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
+    insert into `message_send`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="clusterId != null">
+        cluster_id,
+      </if>
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="appName != null">
+        app_name,
+      </if>
+      <if test="ips != null">
+        ips,
+      </if>
+      <if test="exceptionType != null">
+        exception_type,
+      </if>
+      <if test="digest != null">
+        digest,
+      </if>
+      <if test="msg != null">
+        msg,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="startTm != null">
+        start_tm,
+      </if>
+      <if test="endTm != null">
+        end_tm,
+      </if>
+      <if test="count != null">
+        count,
+      </if>
+      <if test="atWho != null">
+        at_who,
+      </if>
+      <if test="insertTm != null">
+        insert_tm,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="sendTm != null">
+        send_tm,
+      </if>
+      <if test="robotErrorCode != null">
+        robot_error_code,
+      </if>
+      <if test="robotErrorMsg != null">
+        robot_error_msg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="clusterId != null">
+        #{clusterId,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null">
+        #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="appName != null">
+        #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="ips != null">
+        #{ips,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptionType != null">
+        #{exceptionType,jdbcType=VARCHAR},
+      </if>
+      <if test="digest != null">
+        #{digest,jdbcType=VARCHAR},
+      </if>
+      <if test="msg != null">
+        #{msg,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=TINYINT},
+      </if>
+      <if test="startTm != null">
+        #{startTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTm != null">
+        #{endTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="count != null">
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="atWho != null">
+        #{atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTm != null">
+        #{insertTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="sendTm != null">
+        #{sendTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="robotErrorCode != null">
+        #{robotErrorCode,jdbcType=VARCHAR},
+      </if>
+      <if test="robotErrorMsg != null">
+        #{robotErrorMsg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.dianwoba.dispatch.sender.entity.MessageSendExample" resultType="java.lang.Long">
+    select count(*) from `message_send`
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update `message_send`
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.clusterId != null">
+        cluster_id = #{record.clusterId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.groupId != null">
+        group_id = #{record.groupId,jdbcType=BIGINT},
+      </if>
+      <if test="record.appName != null">
+        app_name = #{record.appName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ips != null">
+        ips = #{record.ips,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exceptionType != null">
+        exception_type = #{record.exceptionType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.digest != null">
+        digest = #{record.digest,jdbcType=VARCHAR},
+      </if>
+      <if test="record.msg != null">
+        msg = #{record.msg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level != null">
+        level = #{record.level,jdbcType=TINYINT},
+      </if>
+      <if test="record.startTm != null">
+        start_tm = #{record.startTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endTm != null">
+        end_tm = #{record.endTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.count != null">
+        count = #{record.count,jdbcType=INTEGER},
+      </if>
+      <if test="record.atWho != null">
+        at_who = #{record.atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="record.insertTm != null">
+        insert_tm = #{record.insertTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.sendTm != null">
+        send_tm = #{record.sendTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.robotErrorCode != null">
+        robot_error_code = #{record.robotErrorCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.robotErrorMsg != null">
+        robot_error_msg = #{record.robotErrorMsg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update `message_send`
+    set id = #{record.id,jdbcType=BIGINT},
+      cluster_id = #{record.clusterId,jdbcType=VARCHAR},
+      group_id = #{record.groupId,jdbcType=BIGINT},
+      app_name = #{record.appName,jdbcType=VARCHAR},
+      ips = #{record.ips,jdbcType=VARCHAR},
+      exception_type = #{record.exceptionType,jdbcType=VARCHAR},
+      digest = #{record.digest,jdbcType=VARCHAR},
+      msg = #{record.msg,jdbcType=VARCHAR},
+      level = #{record.level,jdbcType=TINYINT},
+      start_tm = #{record.startTm,jdbcType=TIMESTAMP},
+      end_tm = #{record.endTm,jdbcType=TIMESTAMP},
+      count = #{record.count,jdbcType=INTEGER},
+      at_who = #{record.atWho,jdbcType=VARCHAR},
+      insert_tm = #{record.insertTm,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      send_tm = #{record.sendTm,jdbcType=TIMESTAMP},
+      robot_error_code = #{record.robotErrorCode,jdbcType=VARCHAR},
+      robot_error_msg = #{record.robotErrorMsg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
+    update `message_send`
+    <set>
+      <if test="clusterId != null">
+        cluster_id = #{clusterId,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null">
+        group_id = #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="appName != null">
+        app_name = #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="ips != null">
+        ips = #{ips,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptionType != null">
+        exception_type = #{exceptionType,jdbcType=VARCHAR},
+      </if>
+      <if test="digest != null">
+        digest = #{digest,jdbcType=VARCHAR},
+      </if>
+      <if test="msg != null">
+        msg = #{msg,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=TINYINT},
+      </if>
+      <if test="startTm != null">
+        start_tm = #{startTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTm != null">
+        end_tm = #{endTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="count != null">
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="atWho != null">
+        at_who = #{atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTm != null">
+        insert_tm = #{insertTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="sendTm != null">
+        send_tm = #{sendTm,jdbcType=TIMESTAMP},
+      </if>
+      <if test="robotErrorCode != null">
+        robot_error_code = #{robotErrorCode,jdbcType=VARCHAR},
+      </if>
+      <if test="robotErrorMsg != null">
+        robot_error_msg = #{robotErrorMsg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
+    update `message_send`
+    set cluster_id = #{clusterId,jdbcType=VARCHAR},
+      group_id = #{groupId,jdbcType=BIGINT},
+      app_name = #{appName,jdbcType=VARCHAR},
+      ips = #{ips,jdbcType=VARCHAR},
+      exception_type = #{exceptionType,jdbcType=VARCHAR},
+      digest = #{digest,jdbcType=VARCHAR},
+      msg = #{msg,jdbcType=VARCHAR},
+      level = #{level,jdbcType=TINYINT},
+      start_tm = #{startTm,jdbcType=TIMESTAMP},
+      end_tm = #{endTm,jdbcType=TIMESTAMP},
+      count = #{count,jdbcType=INTEGER},
+      at_who = #{atWho,jdbcType=VARCHAR},
+      insert_tm = #{insertTm,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      send_tm = #{sendTm,jdbcType=TIMESTAMP},
+      robot_error_code = #{robotErrorCode,jdbcType=VARCHAR},
+      robot_error_msg = #{robotErrorMsg,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <insert id="batchInsert" parameterType="map">
+    <!--
+      WARNING - @mbg.generated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      @project https://github.com/itfsw/mybatis-generator-plugin
+    -->
+    insert into `message_send`
+    (id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+      end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.clusterId,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
+        #{item.appName,jdbcType=VARCHAR}, #{item.ips,jdbcType=VARCHAR}, #{item.exceptionType,jdbcType=VARCHAR}, 
+        #{item.digest,jdbcType=VARCHAR}, #{item.msg,jdbcType=VARCHAR}, #{item.level,jdbcType=TINYINT}, 
+        #{item.startTm,jdbcType=TIMESTAMP}, #{item.endTm,jdbcType=TIMESTAMP}, #{item.count,jdbcType=INTEGER}, 
+        #{item.atWho,jdbcType=VARCHAR}, #{item.insertTm,jdbcType=TIMESTAMP}, #{item.status,jdbcType=TINYINT}, 
+        #{item.sendTm,jdbcType=TIMESTAMP}, #{item.robotErrorCode,jdbcType=VARCHAR}, #{item.robotErrorMsg,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+  <insert id="batchInsertSelective" parameterType="map">
+    <!--
+      WARNING - @mbg.generated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      @project https://github.com/itfsw/mybatis-generator-plugin
+    -->
+    insert into `message_send` (
+    <foreach collection="selective" item="column" separator=",">
+      ${column.value}
+    </foreach>
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+      <foreach collection="selective" item="column" separator=",">
+        <if test="'id' == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
+        <if test="'cluster_id' == column.value">
+          #{item.clusterId,jdbcType=VARCHAR}
+        </if>
+        <if test="'group_id' == column.value">
+          #{item.groupId,jdbcType=BIGINT}
+        </if>
+        <if test="'app_name' == column.value">
+          #{item.appName,jdbcType=VARCHAR}
+        </if>
+        <if test="'ips' == column.value">
+          #{item.ips,jdbcType=VARCHAR}
+        </if>
+        <if test="'exception_type' == column.value">
+          #{item.exceptionType,jdbcType=VARCHAR}
+        </if>
+        <if test="'digest' == column.value">
+          #{item.digest,jdbcType=VARCHAR}
+        </if>
+        <if test="'msg' == column.value">
+          #{item.msg,jdbcType=VARCHAR}
+        </if>
+        <if test="'level' == column.value">
+          #{item.level,jdbcType=TINYINT}
+        </if>
+        <if test="'start_tm' == column.value">
+          #{item.startTm,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'end_tm' == column.value">
+          #{item.endTm,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'count' == column.value">
+          #{item.count,jdbcType=INTEGER}
+        </if>
+        <if test="'at_who' == column.value">
+          #{item.atWho,jdbcType=VARCHAR}
+        </if>
+        <if test="'insert_tm' == column.value">
+          #{item.insertTm,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'status' == column.value">
+          #{item.status,jdbcType=TINYINT}
+        </if>
+        <if test="'send_tm' == column.value">
+          #{item.sendTm,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'robot_error_code' == column.value">
+          #{item.robotErrorCode,jdbcType=VARCHAR}
+        </if>
+        <if test="'robot_error_msg' == column.value">
+          #{item.robotErrorMsg,jdbcType=VARCHAR}
+        </if>
+      </foreach>
+      )
+    </foreach>
+  </insert>
+</mapper>
