@@ -25,7 +25,7 @@ public class GroupConfigCache extends AbstractFullyClientCache<Long, DingGroupNa
     }
 
     @Override
-    public Cache buildCache(List<DingGroupName> list) {
+    public Cache<Long, DingGroupName> buildCache(List<DingGroupName> list) {
         Cache<Long, DingGroupName> cache = Caffeine.newBuilder().build();
         list.forEach( v -> cache.put(v.getId(), v));
         return cache;

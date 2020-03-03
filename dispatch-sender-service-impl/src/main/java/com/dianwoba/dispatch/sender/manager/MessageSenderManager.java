@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Polaris
@@ -46,11 +47,20 @@ public class MessageSenderManager {
         return hasSent.stream().map(MessageSend::getMsg).distinct().collect(Collectors.toList());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void batchSave(List<MessageSend> messageSend) {
-        messageSendMapper.batchInsertSelective(messageSend, Column.clusterId, Column.groupId,
-                Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
-                Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho,
-                Column.insertTm, Column.status);
+        int max = Constant.BATCH_INSERT_MAX_SIZE;
+        while (messageSend.size() > max) {
+            messageSendMapper.batchInsertSelective(messageSend.subList(0, max), Column.clusterId, Column.groupId,
+                    Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
+                    Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho, Column.insertTm, Column.status);
+            messageSend = messageSend.subList(max, messageSend.size());
+        }
+        if(messageSend.size() > 0) {
+            messageSendMapper.batchInsertSelective(messageSend, Column.clusterId, Column.groupId,
+                    Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
+                    Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho, Column.insertTm, Column.status);
+        }
     }
 
     /**

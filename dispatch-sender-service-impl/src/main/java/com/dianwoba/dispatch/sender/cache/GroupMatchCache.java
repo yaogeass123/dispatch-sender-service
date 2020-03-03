@@ -29,7 +29,7 @@ public class GroupMatchCache extends
     }
 
     @Override
-    public Cache buildCache(List<GroupMatchRules> list) {
+    public Cache<String, List<GroupMatchRules>> buildCache(List<GroupMatchRules> list) {
         Cache<String, List<GroupMatchRules>> cache = Caffeine.newBuilder().build();
         Map<String, List<GroupMatchRules>> map = list.stream().collect(Collectors.groupingBy(
                 rule -> String

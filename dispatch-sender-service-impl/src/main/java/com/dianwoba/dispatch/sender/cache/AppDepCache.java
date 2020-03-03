@@ -28,7 +28,7 @@ public class AppDepCache extends AbstractFullyClientCache<String, AppDepInfo, Ap
     }
 
     @Override
-    public Cache buildCache(List<AppDep> list) {
+    public Cache<String, AppDepInfo>  buildCache(List<AppDep> list) {
         Cache<String, AppDepInfo> cache = Caffeine.newBuilder().build();
         list.forEach(
                 appDep -> cache.put(appDep.getAppName(), ConvertUtils.convert2AppDepInfo(appDep)));

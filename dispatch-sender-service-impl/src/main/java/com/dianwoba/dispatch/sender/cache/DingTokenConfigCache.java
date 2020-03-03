@@ -30,7 +30,7 @@ public class DingTokenConfigCache extends
     }
 
     @Override
-    public Cache buildCache(List<DingTokenConfig> list) {
+    public Cache<String, List<DingTokenConfig>> buildCache(List<DingTokenConfig> list) {
         Cache<String, List<DingTokenConfig>> cache = Caffeine.newBuilder().build();
         Map<String, List<DingTokenConfig>> map = list.stream().collect(Collectors.groupingBy(
                 dingTokenConfig -> String.format(Constant.GROUP_TOKEN_PREFIX, dingTokenConfig.getGroupId())));

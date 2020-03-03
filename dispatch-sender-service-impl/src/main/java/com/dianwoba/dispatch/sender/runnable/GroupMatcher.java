@@ -72,7 +72,6 @@ public class GroupMatcher implements Runnable {
         }
         //6、messageLog数据库中相应入库数据置位成已处理状态
         List<Long> ids = messageLogs.stream().map(MessageLog::getId).collect(Collectors.toList());
-        // TODO: 2020/2/17 后期相应改成分页的 
         messageLogManager.batchUpdateStatus(ids);
     }
 
@@ -141,6 +140,8 @@ public class GroupMatcher implements Runnable {
     
     private String determineClusterId(AppDepInfo appDepInfo) {
         // TODO: 2020/2/17 后期再修改，先测试流程使用
+
+
         return appDepInfo.getDevelopersDepId();
     }
 

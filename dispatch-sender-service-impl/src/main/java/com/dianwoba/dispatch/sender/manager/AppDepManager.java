@@ -50,7 +50,7 @@ public class AppDepManager {
     @Transactional(rollbackFor = Exception.class)
     public void batchSave(List<AppDep> lists) {
         int max = Constant.BATCH_INSERT_MAX_SIZE;
-        while (lists.size() > Constant.BATCH_INSERT_MAX_SIZE) {
+        while (lists.size() > max) {
             appDepMapper.batchInsertSelective(lists.subList(0, max), Column.appName,
                     Column.ownersDepId, Column.ownersPhone, Column.developersDepId,
                     Column.developersPhone, Column.depPlatModifyTime, Column.createTime, Column.modifyTime);

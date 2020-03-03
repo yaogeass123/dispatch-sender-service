@@ -2,9 +2,16 @@ package com.dianwoba.dispatch.sender.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dianwoba.dispatch.sender.cache.DepInfoCache;
 import com.dianwoba.dispatch.sender.entity.AppDep;
+import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.manager.AppDepManager;
+import com.dianwoba.dispatch.sender.manager.DepInfoManager;
+import com.dianwoba.dispatch.sender.util.ConvertUtils;
+import com.dianwoba.dubbo.base.result.ResponseDTO;
+import com.dianwoba.genius.domain.dto.DepartDTO;
 import com.dianwoba.genius.domain.dto.StaffDTO;
+import com.dianwoba.genius.provider.DepartProvider;
 import com.dianwoba.genius.provider.StaffProvider;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
 import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
@@ -44,14 +51,24 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
     @Resource
     private StaffProvider staffProvider;
 
+    @Resource
+    private DepartProvider departProvider;
+
+    @Resource
+    private DepInfoManager depInfoManager;
+
+    @Resource
+    private DepInfoCache depInfoCache;
+
     @Override
     public void doExecute(ExecuteContext executeContext) {
-        //获取增量数据
+        //获取最新修改的时间
         long modifyTime = 0L;
         List<AppDep> appDep = appDepManager.queryLastModify();
         if (CollectionUtils.isNotEmpty(appDep)) {
             modifyTime = DateUtils.addHours(appDep.get(0).getDepPlatModifyTime(), -1).getTime();
         }
+        //获取该时间开始的增量数据
         List<DepPlatformAppDTO> appLists = getAppDepFromDepPlatform(modifyTime);
         if (CollectionUtils.isEmpty(appLists)) {
             return;
@@ -85,6 +102,34 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
         } else {
             appDepManager.batchSave(appLists.stream().map(t -> buildAppDep(null, t, staffMap))
                     .filter(Objects::nonNull).collect(Collectors.toList()));
+        }
+
+        //处理部门信息
+        List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
+                .collect(Collectors.toList());
+        List<DepInfo> depInfoList = Lists.newArrayList(depInfoCache.queryAllFromClientCache().values());
+        Map<String, List<DepInfo>> depInfoMap = depInfoList.stream().collect(Collectors.groupingBy(DepInfo::getName));
+        List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId).collect(Collectors.toList());
+        CollectionUtils.removeAll(depCode, depCodeList);
+        if (CollectionUtils.isNotEmpty(depCode)) {
+            depCode.forEach(dep -> {
+                try {
+                    ResponseDTO<DepartDTO> response = departProvider.findById(dep);
+                    if (response.isSuccess()) {
+                        DepartDTO departDTO = response.getData();
+                        List<DepInfo> savedDepInfoList = depInfoManager.queryByAppName(departDTO.getName());
+                        if(CollectionUtils.isEmpty(savedDepInfoList)) {
+                            depInfoManager.save(ConvertUtils.convert2DepInfo(departDTO));
+                        } else {
+                            List<Integer> ids = savedDepInfoList.stream().map(DepInfo::getId)
+                                    .collect(Collectors.toList());
+                            depInfoManager.saveAndUpdate(ConvertUtils.convert2DepInfo(departDTO), ids);
+                        }
+                    }
+                } catch (Exception e){
+                    LOGGER.error("查找部门信息时异常，", e);
+                }
+            });
         }
     }
 

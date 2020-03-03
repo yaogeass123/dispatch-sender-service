@@ -46,11 +46,19 @@ public class AppDepTest extends UnitTestBase {
 
     @Test
     public void test() {
-        synTest();
+//        synTest();
+        departTest();
 //        System.out.println(JSONObject.toJSONString(testStaff()));
 //        long time = DateUtils.addDays(new Date(), -7).getTime();
 //        System.out.println(new Date(time));
 //        System.out.println(JSONObject.toJSONString(getAppDepFromDepPlatform(0L)));
+    }
+
+    public void departTest(){
+//        System.out.println(JSONObject.toJSONString(departProvider.findById(446).getData()));
+        System.out.println(JSONObject.toJSONString(departProvider.findById(371).getData()));
+        System.out.println(JSONObject.toJSONString(departProvider.findById(458).getData()));
+        System.out.println(JSONObject.toJSONString(departProvider.findById(459).getData()));
     }
 
     public List<DepPlatformAppDTO> getAppDepFromDepPlatform(Long modifyTime) {

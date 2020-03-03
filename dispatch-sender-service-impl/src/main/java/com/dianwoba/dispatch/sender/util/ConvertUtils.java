@@ -6,8 +6,10 @@ import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
 import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.AppDep;
+import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
+import com.dianwoba.genius.domain.dto.DepartDTO;
 import com.dianwoba.wireless.monitor.domain.dto.common.DepPlatformAppDTO;
 import com.dianwoda.delibird.dingtalk.chatbot.SendResult;
 import java.util.Date;
@@ -108,5 +110,14 @@ public class ConvertUtils {
         info.setInsertTm(messageSend.getInsertTm());
         info.setStatus(messageSend.getStatus());
         return info;
+    }
+
+    public static DepInfo convert2DepInfo(DepartDTO departDTO) {
+        DepInfo depInfo = new DepInfo();
+        depInfo.setId(departDTO.getId());
+        depInfo.setName(departDTO.getName());
+        depInfo.setPath(departDTO.getPath());
+        depInfo.setParent(departDTO.getParent());
+        return depInfo;
     }
 }
