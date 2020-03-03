@@ -15,7 +15,7 @@ public class AppDepInfo implements Serializable {
 
     private static final long serialVersionUID = -4550876479892476765L;
 
-    private String appCode;
+    private String appName;
 
     private String ownersDepId;
 
@@ -24,7 +24,5 @@ public class AppDepInfo implements Serializable {
     private String developersDepId;
 
     private String developersPhone;
-
-    private String groupMail;
 
 }

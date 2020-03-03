@@ -73,10 +73,10 @@ public class SendTest extends UnitTestBase {
         if (CollectionUtils.isEmpty(unreportedMessage)) {
             return;
         }
-        Map<String, List<MessageSend>> groupByAppCode = unreportedMessage.stream().collect(
+        Map<String, List<MessageSend>> groupBy = unreportedMessage.stream().collect(
                 Collectors.groupingBy(MessageSend::getClusterId));
 
-        groupByAppCode.forEach((k,v) ->{
+        groupBy.forEach((k,v) ->{
             List<Long> ids = v.stream().map(MessageSend::getId).collect(Collectors.toList());
 //            messageSenderManager.batchUpdateIgnore(ids);
             System.out.println(buildContent(v));
@@ -91,7 +91,7 @@ public class SendTest extends UnitTestBase {
         Map<Long, List<MessageSend>> map = list.stream().collect(Collectors.groupingBy(MessageSend::getGroupId));
         Map<String, List<MailListContent>> listMap = Maps.newHashMap();
         map.forEach((k,v) ->{
-            String groupName = groupConfigManager.queryGroupName(k);
+            String groupName = groupConfigManager.findGroupNameByCache(k);
             List<MailListContent> mailList = Lists.newArrayList();
             v.forEach(x -> {
                 MailListContent content = new MailListContent();

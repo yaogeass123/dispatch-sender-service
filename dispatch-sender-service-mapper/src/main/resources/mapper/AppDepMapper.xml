@@ -3,12 +3,11 @@
 <mapper namespace="com.dianwoba.dispatch.sender.mapper.AppDepMapper">
   <resultMap id="BaseResultMap" type="com.dianwoba.dispatch.sender.entity.AppDep">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="app_code" jdbcType="VARCHAR" property="appCode" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
     <result column="owners_dep_id" jdbcType="VARCHAR" property="ownersDepId" />
     <result column="owners_phone" jdbcType="VARCHAR" property="ownersPhone" />
     <result column="developers_dep_id" jdbcType="VARCHAR" property="developersDepId" />
     <result column="developers_phone" jdbcType="VARCHAR" property="developersPhone" />
-    <result column="mail_group" jdbcType="VARCHAR" property="mailGroup" />
     <result column="dep_plat_modify_time" jdbcType="TIMESTAMP" property="depPlatModifyTime" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
@@ -72,8 +71,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, app_code, owners_dep_id, owners_phone, developers_dep_id, developers_phone, mail_group, 
-    dep_plat_modify_time, create_time, modify_time
+    id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, dep_plat_modify_time, 
+    create_time, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.AppDepExample" resultMap="BaseResultMap">
     select
@@ -114,8 +113,8 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_code, owners_dep_id, owners_phone, developers_dep_id, developers_phone, mail_group, 
-          dep_plat_modify_time, create_time, modify_time
+        id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, dep_plat_modify_time, 
+          create_time, modify_time
       </otherwise>
     </choose>
     from `app_dep`
@@ -146,8 +145,8 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_code, owners_dep_id, owners_phone, developers_dep_id, developers_phone, mail_group, 
-          dep_plat_modify_time, create_time, modify_time
+        id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, dep_plat_modify_time, 
+          create_time, modify_time
       </otherwise>
     </choose>
     from `app_dep`
@@ -164,14 +163,14 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
-    insert into `app_dep` (id, app_code, owners_dep_id, 
+    insert into `app_dep` (id, app_name, owners_dep_id, 
       owners_phone, developers_dep_id, developers_phone, 
-      mail_group, dep_plat_modify_time, create_time, 
-      modify_time)
-    values (#{id,jdbcType=BIGINT}, #{appCode,jdbcType=VARCHAR}, #{ownersDepId,jdbcType=VARCHAR}, 
+      dep_plat_modify_time, create_time, modify_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{appName,jdbcType=VARCHAR}, #{ownersDepId,jdbcType=VARCHAR}, 
       #{ownersPhone,jdbcType=VARCHAR}, #{developersDepId,jdbcType=VARCHAR}, #{developersPhone,jdbcType=VARCHAR}, 
-      #{mailGroup,jdbcType=VARCHAR}, #{depPlatModifyTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{modifyTime,jdbcType=TIMESTAMP})
+      #{depPlatModifyTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
     insert into `app_dep`
@@ -179,8 +178,8 @@
       <if test="id != null">
         id,
       </if>
-      <if test="appCode != null">
-        app_code,
+      <if test="appName != null">
+        app_name,
       </if>
       <if test="ownersDepId != null">
         owners_dep_id,
@@ -193,9 +192,6 @@
       </if>
       <if test="developersPhone != null">
         developers_phone,
-      </if>
-      <if test="mailGroup != null">
-        mail_group,
       </if>
       <if test="depPlatModifyTime != null">
         dep_plat_modify_time,
@@ -211,8 +207,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="appCode != null">
-        #{appCode,jdbcType=VARCHAR},
+      <if test="appName != null">
+        #{appName,jdbcType=VARCHAR},
       </if>
       <if test="ownersDepId != null">
         #{ownersDepId,jdbcType=VARCHAR},
@@ -225,9 +221,6 @@
       </if>
       <if test="developersPhone != null">
         #{developersPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="mailGroup != null">
-        #{mailGroup,jdbcType=VARCHAR},
       </if>
       <if test="depPlatModifyTime != null">
         #{depPlatModifyTime,jdbcType=TIMESTAMP},
@@ -252,8 +245,8 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.appCode != null">
-        app_code = #{record.appCode,jdbcType=VARCHAR},
+      <if test="record.appName != null">
+        app_name = #{record.appName,jdbcType=VARCHAR},
       </if>
       <if test="record.ownersDepId != null">
         owners_dep_id = #{record.ownersDepId,jdbcType=VARCHAR},
@@ -266,9 +259,6 @@
       </if>
       <if test="record.developersPhone != null">
         developers_phone = #{record.developersPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="record.mailGroup != null">
-        mail_group = #{record.mailGroup,jdbcType=VARCHAR},
       </if>
       <if test="record.depPlatModifyTime != null">
         dep_plat_modify_time = #{record.depPlatModifyTime,jdbcType=TIMESTAMP},
@@ -287,12 +277,11 @@
   <update id="updateByExample" parameterType="map">
     update `app_dep`
     set id = #{record.id,jdbcType=BIGINT},
-      app_code = #{record.appCode,jdbcType=VARCHAR},
+      app_name = #{record.appName,jdbcType=VARCHAR},
       owners_dep_id = #{record.ownersDepId,jdbcType=VARCHAR},
       owners_phone = #{record.ownersPhone,jdbcType=VARCHAR},
       developers_dep_id = #{record.developersDepId,jdbcType=VARCHAR},
       developers_phone = #{record.developersPhone,jdbcType=VARCHAR},
-      mail_group = #{record.mailGroup,jdbcType=VARCHAR},
       dep_plat_modify_time = #{record.depPlatModifyTime,jdbcType=TIMESTAMP},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       modify_time = #{record.modifyTime,jdbcType=TIMESTAMP}
@@ -303,8 +292,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
     update `app_dep`
     <set>
-      <if test="appCode != null">
-        app_code = #{appCode,jdbcType=VARCHAR},
+      <if test="appName != null">
+        app_name = #{appName,jdbcType=VARCHAR},
       </if>
       <if test="ownersDepId != null">
         owners_dep_id = #{ownersDepId,jdbcType=VARCHAR},
@@ -317,9 +306,6 @@
       </if>
       <if test="developersPhone != null">
         developers_phone = #{developersPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="mailGroup != null">
-        mail_group = #{mailGroup,jdbcType=VARCHAR},
       </if>
       <if test="depPlatModifyTime != null">
         dep_plat_modify_time = #{depPlatModifyTime,jdbcType=TIMESTAMP},
@@ -335,12 +321,11 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
     update `app_dep`
-    set app_code = #{appCode,jdbcType=VARCHAR},
+    set app_name = #{appName,jdbcType=VARCHAR},
       owners_dep_id = #{ownersDepId,jdbcType=VARCHAR},
       owners_phone = #{ownersPhone,jdbcType=VARCHAR},
       developers_dep_id = #{developersDepId,jdbcType=VARCHAR},
       developers_phone = #{developersPhone,jdbcType=VARCHAR},
-      mail_group = #{mailGroup,jdbcType=VARCHAR},
       dep_plat_modify_time = #{depPlatModifyTime,jdbcType=TIMESTAMP},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       modify_time = #{modifyTime,jdbcType=TIMESTAMP}
@@ -353,13 +338,13 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `app_dep`
-    (id, app_code, owners_dep_id, owners_phone, developers_dep_id, developers_phone, 
-      mail_group, dep_plat_modify_time, create_time, modify_time)
+    (id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, 
+      dep_plat_modify_time, create_time, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.appCode,jdbcType=VARCHAR}, #{item.ownersDepId,jdbcType=VARCHAR}, 
+      (#{item.id,jdbcType=BIGINT}, #{item.appName,jdbcType=VARCHAR}, #{item.ownersDepId,jdbcType=VARCHAR}, 
         #{item.ownersPhone,jdbcType=VARCHAR}, #{item.developersDepId,jdbcType=VARCHAR}, 
-        #{item.developersPhone,jdbcType=VARCHAR}, #{item.mailGroup,jdbcType=VARCHAR}, #{item.depPlatModifyTime,jdbcType=TIMESTAMP}, 
+        #{item.developersPhone,jdbcType=VARCHAR}, #{item.depPlatModifyTime,jdbcType=TIMESTAMP}, 
         #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
@@ -381,8 +366,8 @@
         <if test="'id' == column.value">
           #{item.id,jdbcType=BIGINT}
         </if>
-        <if test="'app_code' == column.value">
-          #{item.appCode,jdbcType=VARCHAR}
+        <if test="'app_name' == column.value">
+          #{item.appName,jdbcType=VARCHAR}
         </if>
         <if test="'owners_dep_id' == column.value">
           #{item.ownersDepId,jdbcType=VARCHAR}
@@ -395,9 +380,6 @@
         </if>
         <if test="'developers_phone' == column.value">
           #{item.developersPhone,jdbcType=VARCHAR}
-        </if>
-        <if test="'mail_group' == column.value">
-          #{item.mailGroup,jdbcType=VARCHAR}
         </if>
         <if test="'dep_plat_modify_time' == column.value">
           #{item.depPlatModifyTime,jdbcType=TIMESTAMP}

@@ -50,10 +50,10 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
         if (CollectionUtils.isEmpty(unreportedMessage)) {
             return;
         }
-        Map<String, List<MessageSend>> groupByAppCode = unreportedMessage.stream().collect(
+        Map<String, List<MessageSend>> groupByClusterId = unreportedMessage.stream().collect(
                 Collectors.groupingBy(MessageSend::getClusterId));
 
-        groupByAppCode.forEach((k,v) ->{
+        groupByClusterId.forEach((k,v) ->{
             List<Long> ids = v.stream().map(MessageSend::getId).collect(Collectors.toList());
             messageSenderManager.batchUpdateIgnore(ids);
             sendMail(buildContent(v),k);
@@ -76,13 +76,16 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
         Map<Long, List<MessageSend>> map = list.stream().collect(Collectors.groupingBy(MessageSend::getGroupId));
         Map<String, List<MailListContent>> listMap = Maps.newHashMap();
         map.forEach((k,v) ->{
-            String groupName = groupConfigManager.queryGroupName(k);
+            String groupName = groupConfigManager.findGroupNameByCache(k);
             List<MailListContent> mailList = Lists.newArrayList();
             v.forEach(x -> {
                 MailListContent content = new MailListContent();
                 content.setMessage(x.getMsg());
                 content.setIps(x.getIps());
                 content.setCount(x.getCount());
+                content.setInsert(x.getInsertTm());
+                content.setStart(x.getStartTm());
+                content.setEnd(x.getEndTm());
                 mailList.add(content);
             });
             listMap.put(groupName, mailList);
@@ -90,5 +93,6 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
         context.setVariable("map", listMap);
         return templateEngine.process("mailTemplate", context);
     }
+
 
 }

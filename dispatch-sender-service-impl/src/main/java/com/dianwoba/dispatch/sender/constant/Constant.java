@@ -41,5 +41,15 @@ public interface Constant {
 
     String MAIL_SUBJECT_SEND_ERROR = "钉钉消息发送失败告警";
 
-    String MAIL_SUBJECT_IGNORE = "顶顶消息忽略通知";
+    String MAIL_SUBJECT_IGNORE = "钉钉消息忽略通知";
+
+    String MAIL_SUBJECT_STATISTIC = "钉钉消息忽略与失败统计";
+
+    String MAIL_SUBJECT_NOT_EXIST  = "钉钉无配置机器人告警";
+
+    Byte TOKEN_ERROR = 1;
+
+    Byte TOKEN_NORMAL = 0;
+
+    Integer BATCH_INSERT_MAX_SIZE = 500;
 }

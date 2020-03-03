@@ -8,7 +8,6 @@ import com.dianwoba.dispatch.sender.entity.MessageSend.Column;
 import com.dianwoba.dispatch.sender.entity.MessageSendExample;
 import com.dianwoba.dispatch.sender.entity.MessageSendExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.MessageSendMapper;
-import com.dianwoba.dispatch.sender.runnable.MessageSender;
 import com.dianwoba.wireless.treasure.util.DateUtil;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,7 +32,7 @@ public class MessageSenderManager {
         //n秒内已发送过该消息,判断标注：app一致，群一致，digest一致，
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
-        criteria.andAppCodeEqualTo(messageSend.get(0).getAppCode());
+        criteria.andAppNameEqualTo(messageSend.get(0).getAppName());
         criteria.andGroupIdEqualTo(messageSend.get(0).getGroupId());
         criteria.andDigestEqualTo(messageSend.get(0).getDigest());
         criteria.andMsgIn(messageSend.stream().map(MessageSend::getMsg).distinct().collect(
@@ -49,7 +48,7 @@ public class MessageSenderManager {
 
     public void batchSave(List<MessageSend> messageSend) {
         messageSendMapper.batchInsertSelective(messageSend, Column.clusterId, Column.groupId,
-                Column.appCode, Column.ips, Column.exceptionType, Column.digest, Column.msg,
+                Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
                 Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho,
                 Column.insertTm, Column.status);
     }
@@ -74,7 +73,7 @@ public class MessageSenderManager {
         return lists;
     }
 
-    public List<MessageSend> queryUnSentMessage(long groupId) {
+    public List<MessageSend> queryUnSentMessage4Retry(long groupId) {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andGroupIdEqualTo(groupId);
@@ -88,7 +87,7 @@ public class MessageSenderManager {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
-        criteria.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.MINUTE, -3));
+        criteria.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.MINUTE, -minute));
         return messageSendMapper.selectByExample(example);
     }
 
@@ -122,5 +121,14 @@ public class MessageSenderManager {
         MessageSend record = new MessageSend();
         record.setStatus(StatusEn.IGNORE.getStatusCode());
         messageSendMapper.updateByExampleSelective(record, example);
+    }
+
+    public List<MessageSend> statisticMessage() {
+        MessageSendExample example = new MessageSendExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andStatusIn(Lists.newArrayList(StatusEn.IGNORE.getStatusCode(),
+                StatusEn.ERROR.getStatusCode()));
+//        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.HOUR, -24));
+        return messageSendMapper.selectByExample(example);
     }
 }

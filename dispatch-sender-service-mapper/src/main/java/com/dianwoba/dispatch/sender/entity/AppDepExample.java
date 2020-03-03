@@ -298,73 +298,73 @@ public class AppDepExample {
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeIsNull() {
-            addCriterion("app_code is null");
+        public Criteria andAppNameIsNull() {
+            addCriterion("app_name is null");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeIsNotNull() {
-            addCriterion("app_code is not null");
+        public Criteria andAppNameIsNotNull() {
+            addCriterion("app_name is not null");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeEqualTo(String value) {
-            addCriterion("app_code =", value, "appCode");
+        public Criteria andAppNameEqualTo(String value) {
+            addCriterion("app_name =", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeNotEqualTo(String value) {
-            addCriterion("app_code <>", value, "appCode");
+        public Criteria andAppNameNotEqualTo(String value) {
+            addCriterion("app_name <>", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeGreaterThan(String value) {
-            addCriterion("app_code >", value, "appCode");
+        public Criteria andAppNameGreaterThan(String value) {
+            addCriterion("app_name >", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeGreaterThanOrEqualTo(String value) {
-            addCriterion("app_code >=", value, "appCode");
+        public Criteria andAppNameGreaterThanOrEqualTo(String value) {
+            addCriterion("app_name >=", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeLessThan(String value) {
-            addCriterion("app_code <", value, "appCode");
+        public Criteria andAppNameLessThan(String value) {
+            addCriterion("app_name <", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeLessThanOrEqualTo(String value) {
-            addCriterion("app_code <=", value, "appCode");
+        public Criteria andAppNameLessThanOrEqualTo(String value) {
+            addCriterion("app_name <=", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeLike(String value) {
-            addCriterion("app_code like", value, "appCode");
+        public Criteria andAppNameLike(String value) {
+            addCriterion("app_name like", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeNotLike(String value) {
-            addCriterion("app_code not like", value, "appCode");
+        public Criteria andAppNameNotLike(String value) {
+            addCriterion("app_name not like", value, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeIn(List<String> values) {
-            addCriterion("app_code in", values, "appCode");
+        public Criteria andAppNameIn(List<String> values) {
+            addCriterion("app_name in", values, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeNotIn(List<String> values) {
-            addCriterion("app_code not in", values, "appCode");
+        public Criteria andAppNameNotIn(List<String> values) {
+            addCriterion("app_name not in", values, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeBetween(String value1, String value2) {
-            addCriterion("app_code between", value1, value2, "appCode");
+        public Criteria andAppNameBetween(String value1, String value2) {
+            addCriterion("app_name between", value1, value2, "appName");
             return (Criteria) this;
         }
 
-        public Criteria andAppCodeNotBetween(String value1, String value2) {
-            addCriterion("app_code not between", value1, value2, "appCode");
+        public Criteria andAppNameNotBetween(String value1, String value2) {
+            addCriterion("app_name not between", value1, value2, "appName");
             return (Criteria) this;
         }
 
@@ -645,76 +645,6 @@ public class AppDepExample {
 
         public Criteria andDevelopersPhoneNotBetween(String value1, String value2) {
             addCriterion("developers_phone not between", value1, value2, "developersPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupIsNull() {
-            addCriterion("mail_group is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupIsNotNull() {
-            addCriterion("mail_group is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupEqualTo(String value) {
-            addCriterion("mail_group =", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupNotEqualTo(String value) {
-            addCriterion("mail_group <>", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupGreaterThan(String value) {
-            addCriterion("mail_group >", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupGreaterThanOrEqualTo(String value) {
-            addCriterion("mail_group >=", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupLessThan(String value) {
-            addCriterion("mail_group <", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupLessThanOrEqualTo(String value) {
-            addCriterion("mail_group <=", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupLike(String value) {
-            addCriterion("mail_group like", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupNotLike(String value) {
-            addCriterion("mail_group not like", value, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupIn(List<String> values) {
-            addCriterion("mail_group in", values, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupNotIn(List<String> values) {
-            addCriterion("mail_group not in", values, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupBetween(String value1, String value2) {
-            addCriterion("mail_group between", value1, value2, "mailGroup");
-            return (Criteria) this;
-        }
-
-        public Criteria andMailGroupNotBetween(String value1, String value2) {
-            addCriterion("mail_group not between", value1, value2, "mailGroup");
             return (Criteria) this;
         }
 

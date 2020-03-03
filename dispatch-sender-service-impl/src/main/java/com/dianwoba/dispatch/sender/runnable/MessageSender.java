@@ -4,16 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.cache.AppDepCache;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
-import com.dianwoba.dispatch.sender.domain.AppDepInfo;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
+import com.dianwoba.dispatch.sender.manager.DingTokenConfigManager;
+import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
 import com.dianwoba.dispatch.sender.util.MailUtils;
 import com.dianwoba.dispatch.utils.HttpClientUtils;
-import com.dianwoba.wireless.fundamental.util.AppUtils;
 import com.dianwoba.wireless.fundamental.util.SpringUtils;
 import com.dianwoda.delibird.dingtalk.chatbot.SendResult;
 import com.dianwoda.delibird.dingtalk.chatbot.message.TextMessage;
@@ -22,6 +22,8 @@ import com.dianwoda.delibird.mail.dto.MailHead;
 import com.dianwoda.delibird.mail.dto.MailReceiver;
 import com.dianwoda.delibird.mail.dto.MailRequest;
 import com.dianwoda.delibird.provider.DeliMailProvider;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -31,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
@@ -66,14 +71,24 @@ public class MessageSender implements Runnable {
 
     private DeliMailProvider deliMailProvider;
 
+    private DingTokenConfigManager dingTokenConfigManager;
+
     private AppDepCache appDepCache;
+
+    private GroupConfigManager groupConfigManager;
+
+    private int second;
 
     public MessageSender(List<MessageSendInfo> list) {
         messageSendList = list;
         groupId = list.get(0).getGroupId();
         messageSenderManager = SpringUtils.getBean(MessageSenderManager.class);
-        DingTokenConfigCache dingTokenConfigCache = SpringUtils.getBean(DingTokenConfigCache.class);
         stringRedisTemplate = SpringUtils.getBean(StringRedisTemplate.class);
+        dingTokenConfigManager = SpringUtils.getBean(DingTokenConfigManager.class);
+        deliMailProvider = SpringUtils.getBean(DeliMailProvider.class);
+        appDepCache = SpringUtils.getBean(AppDepCache.class);
+        groupConfigManager = SpringUtils.getBean(GroupConfigManager.class);
+        DingTokenConfigCache dingTokenConfigCache = SpringUtils.getBean(DingTokenConfigCache.class);
         tokens = dingTokenConfigCache
                 .queryFromClientCache(String.format(Constant.GROUP_TOKEN_PREFIX, groupId));
         String nextTokenStr = stringRedisTemplate.opsForValue()
@@ -85,13 +100,19 @@ public class MessageSender implements Runnable {
         success = Lists.newArrayList();
         error = Lists.newArrayList();
         client = new HttpClientUtils();
-        deliMailProvider = SpringUtils.getBean(DeliMailProvider.class);
-        appDepCache = SpringUtils.getBean(AppDepCache.class);
+        second = Calendar.getInstance().get(Calendar.SECOND);
     }
 
     @Override
     public void run() {
         try {
+            if (tokens.size() == 0) {
+                String clusterId = messageSendList.get(0).getClusterId();
+                String content = "群编号: " + groupId + "\n" + "群名称：" + findGroupName() + "\n"
+                        + "无正确机器人配置，请及时处理";
+                sendMail(content, clusterId, Constant.MAIL_SUBJECT_NOT_EXIST);
+                return;
+            }
             //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
             List<MessageSendInfo> messages = dealHighLevelMessage();
             //2、消息排序
@@ -110,7 +131,7 @@ public class MessageSender implements Runnable {
             sentTimes += back - times;
             updateRedisAndSql();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("发送流程异常", e);
         }
     }
 
@@ -144,9 +165,11 @@ public class MessageSender implements Runnable {
     private int sendProcess(int times, List<MessageSendInfo> messages) {
         int index = 0;
         //times可能发生变化，当机器人配置错误时会修改相应的可发送次数
-        while (index == messages.size() || times == 0) {
+        int count = 0;
+        while (index == messages.size() || count < times) {
             String msg = msgAppend(messages.get(index));
-            SendResult res = sendMessage(messages.get(index), msg, nextToken);
+            DingTokenConfig token = tokens.get(nextToken);
+            SendResult res = sendMessage(messages.get(index), msg, token);
             if (res == null) {
                 LOGGER.warn("请求错误，msg等待重试，信息：{}", JSONObject.toJSONString(messages.get(index)));
                 index++;
@@ -155,48 +178,51 @@ public class MessageSender implements Runnable {
             if (res.isSuccess()) {
                 success.addAll(messages.get(index).getIds());
                 nextToken = findNext(nextToken);
-                times--;
+                count++;
                 index++;
             } else {
                 int errorCode = res.getErrorCode();
                 StringBuilder sb = new StringBuilder();
-                if (errorCode == Constant.DING_PARAM_ERROR
-                        || errorCode == Constant.DING_VALID_ERROR) {
-                    sb.append("群组编号: ").append(messages.get(index).getGroupId()).append("\n");
+                if (errorCode == Constant.DING_PARAM_ERROR || errorCode == Constant.DING_VALID_ERROR) {
+                    sb.append("群组编号: ").append(groupId).append("\n");
+                    sb.append("群名称：").append(findGroupName()).append("\n");
                     sb.append(tokens.get(nextToken).getId()).append("号机器人配置错误，请及时检查修改");
                     sb.append("\n").append("错误代码: ").append(errorCode).append("\n");
                     sb.append("详情：").append("\n").append(res.getErrorMsg()).append("\n");
                     //参数错误与配置错误。内容没问题，要对机器人进行处理
-                    // 1 2 3 4 5   remove(3) --> tokens[3] = 4;
-                    // TODO: 2020/2/25 思考机器人配置错误时的对应time等的处理
+                    // 1 2 3 4 5   remove(3) --> tokens[3] = 5;
+                    //count / tokens.size() 可以表示改机器人已发送几条消息
+                    count = count - count / tokens.size();
+                    dingTokenConfigManager.setTokenError(token.getId());
                     tokens.remove(nextToken);
+                    times = calSendAbleTimes();
                     if (tokens.size() == 0) {
                         //remove后没有机器人了
                         sb.append("此群已无可用机器人,请及时配置");
                         // TODO: 2020/2/25  特殊处理
                         break;
                     }
-                    sendMail(sb.toString(), messages.get(index).getClusterId());
                 } else {
                     //系统错误 内容不合法 邮件告警，并且STATUS置位ERROR，不再重试
-                    sb.append("钉钉消息发送失败, 群组编号: ").append(messages.get(index).getGroupId()).append("\n");
+                    sb.append("钉钉消息发送失败, 群编号: ").append(groupId).append("\n");
+                    sb.append("群名称：").append(findGroupName()).append("\n");
                     sb.append("消息内容: ").append("\n").append(msg);
                     sb.append("错误代码: ").append(errorCode).append("\n");
                     sb.append("错误详情：").append(res.getErrorMsg()).append("\n");
-                    sendMail(sb.toString(), messages.get(index).getClusterId());
                     index++;
                     ErrorInfo errorInfo = ConvertUtils
                             .convert2ErrorInfo(res, messages.get(index).getIds());
                     error.add(errorInfo);
                 }
+                sendMail(sb.toString(), messages.get(index).getClusterId(),
+                        Constant.MAIL_SUBJECT_SEND_ERROR);
             }
         }
-        return times;
+        return Math.max(times - count, 0);
     }
 
-    private SendResult sendMessage(MessageSendInfo messageSend, String msg, int next) {
+    private SendResult sendMessage(MessageSendInfo messageSend, String msg, DingTokenConfig token) {
         try {
-            DingTokenConfig token = tokens.get(next);
             TextMessage textMessage = new TextMessage(msg);
             if (Constant.ALL.equals(messageSend.getAtWho())) {
                 textMessage.setIsAtAll(true);
@@ -205,7 +231,9 @@ public class MessageSender implements Runnable {
             }
             String url = Constant.DING_URL_PRE + token.getToken();
             if (StringUtils.isNotEmpty(token.getSecret())) {
-                url = url + calSecret(token.getSecret());
+                Long timeStamp = System.currentTimeMillis();
+                String sign = calSecret(token.getSecret(), timeStamp);
+                url = url + "&timestamp=" + timeStamp.toString() + "&sign=" + sign;
             }
             SendResult sendResult = new SendResult();
             String result = client.post(url, textMessage.toJsonString());
@@ -227,16 +255,20 @@ public class MessageSender implements Runnable {
         return (next + 1) % tokens.size();
     }
 
-    private String calSecret(String secret) {
-        return "";
+    private String calSecret(String secret, Long timestamp) throws Exception {
+        String stringToSign = timestamp + "\n" + secret;
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
+        return URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
     }
 
     private List<MessageSendInfo> getUnSentMessage() {
-        List<MessageSend> unSentMessage = messageSenderManager.queryUnSentMessage(groupId);
+        List<MessageSend> unSentMessage = messageSenderManager.queryUnSentMessage4Retry(groupId);
         List<MessageSendInfo> infoList = unSentMessage.stream()
                 .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
         Map<String, List<MessageSendInfo>> unSent = infoList.stream().collect(Collectors.groupingBy(
-                t -> String.format(Constant.GROUP_COMMON_FORMAT, t.getAppCode(), t.getDigest(),
+                t -> String.format(Constant.GROUP_COMMON_FORMAT, t.getAppName(), t.getDigest(),
                         t.getMsg())));
         return gatherMessageMap(unSent);
     }
@@ -245,9 +277,8 @@ public class MessageSender implements Runnable {
         //拿出high等级消极进行聚合
         Map<String, List<MessageSendInfo>> highLevel = messageSendList.stream()
                 .filter(info -> info.getLevel().equals(Constant.HIGH)).collect(Collectors
-                        .groupingBy(t -> String
-                                .format(Constant.GROUP_COMMON_FORMAT, t.getAppCode(), t.getDigest(),
-                                        t.getMsg())));
+                        .groupingBy(t -> String.format(Constant.GROUP_COMMON_FORMAT,
+                                t.getAppName(), t.getDigest(), t.getMsg())));
         List<MessageSendInfo> gatherList = gatherMessageMap(highLevel);
         //加上其它的消息
         gatherList.addAll(messageSendList.stream()
@@ -315,10 +346,8 @@ public class MessageSender implements Runnable {
     private int calSendAbleTimes() {
         int tokenNum = tokens.size();
         //本批次
-        Calendar calendar = Calendar.getInstance();
-        int sec = calendar.get(Calendar.SECOND);
-        if (sec < Constant.FIFTY) {
-            return (sec / 10 + 1) * tokenNum * 3 - sentTimes;
+        if (second < Constant.FIFTY) {
+            return (second / 10 + 1) * tokenNum * 3 - sentTimes;
         }
         return 19 * tokenNum - sentTimes;
     }
@@ -328,7 +357,7 @@ public class MessageSender implements Runnable {
             return messageSendInfo.getMsg();
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("应用名:").append(messageSendInfo.getAppCode()).append("\n");
+        sb.append("应用名:").append(messageSendInfo.getAppName()).append("\n");
         sb.append("IP:").append(Arrays.toString(messageSendInfo.getIds().toArray())).append("\n");
         sb.append("时间:").append(messageSendInfo.getStatus()).append(" - ")
                 .append(messageSendInfo.getEndTm()).append("\n");
@@ -337,13 +366,17 @@ public class MessageSender implements Runnable {
         return sb.toString();
     }
 
-    private void sendMail(String content, String clusterId) {
+    private void sendMail(String content, String clusterId, String subject) {
         String mailAddress = MailUtils.getMailAddress(clusterId);
         MailHead mailHead = MailHead.create();
         MailRequest mailRequest = MailRequest.builder()
                 .receivers(MailReceiver.create(mailAddress.split(",")))
-                .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_SEND_ERROR)
-                .setContent(content)).head(mailHead).build();
+                .body(MailBody.create().setSubject(subject).setContent(content)).head(mailHead)
+                .build();
         deliMailProvider.send(mailRequest);
+    }
+
+    private String findGroupName(){
+       return groupConfigManager.findGroupNameByCache(groupId);
     }
 }

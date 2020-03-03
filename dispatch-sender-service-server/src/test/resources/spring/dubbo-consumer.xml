@@ -10,4 +10,9 @@
 		interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteRespService" registry="unitRegistry"/>
 	<dubbo:reference id="deliMailProvider" interface="com.dianwoda.delibird.provider.DeliMailProvider"
 		registry="commonRegistry" version="1.0.0"/>
+	<!-- genius -->
+	<dubbo:reference id="staffProvider" interface="com.dianwoba.genius.provider.StaffProvider"
+		registry="commonRegistry" timeout="500" check="false" retries="2"/>
+	<dubbo:reference id="departProvider" interface="com.dianwoba.genius.provider.DepartProvider"
+		registry="commonRegistry" timeout="500" check="false" retries="2"/>
 </beans>

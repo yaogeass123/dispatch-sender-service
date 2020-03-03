@@ -8,7 +8,7 @@ import java.util.Date;
 public class AppDep implements Serializable {
     private Long id;
 
-    private String appCode;
+    private String appName;
 
     private String ownersDepId;
 
@@ -17,8 +17,6 @@ public class AppDep implements Serializable {
     private String developersDepId;
 
     private String developersPhone;
-
-    private String mailGroup;
 
     private Date depPlatModifyTime;
 
@@ -36,12 +34,12 @@ public class AppDep implements Serializable {
         this.id = id;
     }
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode == null ? null : appCode.trim();
+    public void setAppName(String appName) {
+        this.appName = appName == null ? null : appName.trim();
     }
 
     public String getOwnersDepId() {
@@ -74,14 +72,6 @@ public class AppDep implements Serializable {
 
     public void setDevelopersPhone(String developersPhone) {
         this.developersPhone = developersPhone == null ? null : developersPhone.trim();
-    }
-
-    public String getMailGroup() {
-        return mailGroup;
-    }
-
-    public void setMailGroup(String mailGroup) {
-        this.mailGroup = mailGroup == null ? null : mailGroup.trim();
     }
 
     public Date getDepPlatModifyTime() {
@@ -117,12 +107,11 @@ public class AppDep implements Serializable {
      */
     public enum Column {
         id("id", "id", "BIGINT"),
-        appCode("app_code", "appCode", "VARCHAR"),
+        appName("app_name", "appName", "VARCHAR"),
         ownersDepId("owners_dep_id", "ownersDepId", "VARCHAR"),
         ownersPhone("owners_phone", "ownersPhone", "VARCHAR"),
         developersDepId("developers_dep_id", "developersDepId", "VARCHAR"),
         developersPhone("developers_phone", "developersPhone", "VARCHAR"),
-        mailGroup("mail_group", "mailGroup", "VARCHAR"),
         depPlatModifyTime("dep_plat_modify_time", "depPlatModifyTime", "TIMESTAMP"),
         createTime("create_time", "createTime", "TIMESTAMP"),
         modifyTime("modify_time", "modifyTime", "TIMESTAMP");

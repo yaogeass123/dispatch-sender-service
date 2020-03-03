@@ -39,7 +39,7 @@ public class GatherAndMatchHandler extends AbstractJobExecuteService {
         }
         //2. 分组聚合
         Map<String, List<MessageLog>> unhandledGroup = unhandledMessage.stream().collect(Collectors
-                .groupingBy(message -> String.format(Constant.GROUP_COMMON_FORMAT, message.getAppCode(),
+                .groupingBy(message -> String.format(Constant.GROUP_COMMON_FORMAT, message.getAppName(),
                         message.getExceptionType(), message.getDigest())));
         //3、分组进行匹配落库
         unhandledGroup.values()

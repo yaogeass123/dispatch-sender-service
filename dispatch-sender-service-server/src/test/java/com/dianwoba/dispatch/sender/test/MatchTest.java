@@ -33,7 +33,7 @@ public class MatchTest extends UnitTestBase {
         messageLog.setIp("1.1.1.1");
         messageLog.setLevel((byte) 2);
         messageLog.setExceptionType("OthersException");
-        messageLog.setAppCode("test");
+        messageLog.setAppName("test");
         messageLog.setDigest("12");
         messageLog.setTime(new Date());
         List<MessageLog> list = Lists.newArrayList(messageLog);

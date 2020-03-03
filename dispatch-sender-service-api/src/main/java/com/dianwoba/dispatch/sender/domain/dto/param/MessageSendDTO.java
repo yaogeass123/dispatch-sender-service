@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class MessageSendDTO implements Serializable {
 
-   private String appCode;
+   private String appName;
 
    private String ip;
 

@@ -8,7 +8,7 @@ import java.util.Date;
 public class MessageLog implements Serializable {
     private Long id;
 
-    private String appCode;
+    private String appName;
 
     private String ip;
 
@@ -38,12 +38,12 @@ public class MessageLog implements Serializable {
         this.id = id;
     }
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode == null ? null : appCode.trim();
+    public void setAppName(String appName) {
+        this.appName = appName == null ? null : appName.trim();
     }
 
     public String getIp() {
@@ -127,7 +127,7 @@ public class MessageLog implements Serializable {
      */
     public enum Column {
         id("id", "id", "BIGINT"),
-        appCode("app_code", "appCode", "VARCHAR"),
+        appName("app_name", "appName", "VARCHAR"),
         ip("ip", "ip", "VARCHAR"),
         exceptionType("exception_type", "exceptionType", "VARCHAR"),
         msg("msg", "msg", "VARCHAR"),

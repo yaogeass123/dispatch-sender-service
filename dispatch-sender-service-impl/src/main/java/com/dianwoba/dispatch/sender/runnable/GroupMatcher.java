@@ -1,5 +1,6 @@
 package com.dianwoba.dispatch.sender.runnable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.cache.AppDepCache;
 import com.dianwoba.dispatch.sender.cache.GroupMatchCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
@@ -50,7 +51,7 @@ public class GroupMatcher implements Runnable {
         //1、app-digest-msg暂时按照一摸一样聚合，后期考虑计算相似度
         Map<String, List<MessageLog>> lists = messageLogs.stream()
                 .collect(Collectors.groupingBy( log -> String.format(Constant.GROUP_COMMON_FORMAT,
-                        log.getAppCode(), log.getDigest(), log.getMsg())));
+                        log.getAppName(), log.getDigest(), log.getMsg())));
         //2、转换
         List<MessageSend> messageSend = Lists.newArrayList();
         lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
@@ -62,7 +63,7 @@ public class GroupMatcher implements Runnable {
         //5、去掉1min内已发送的消息（以群、app、digest和msg的维度，最终保证的是一摸一样的消息不重复发送）
         List<String> hasSent = messageSenderManager.hasSent(messageSend);
         if (CollectionUtils.isNotEmpty(hasSent)) {
-            System.out.println(hasSent);
+            LOGGER.info("已发送消息内容:{}", hasSent);
             messageSenderManager.batchSave(
                     messageSend.stream().filter(t -> !hasSent.contains(t.getMsg()))
                             .collect(Collectors.toList()));
@@ -76,17 +77,17 @@ public class GroupMatcher implements Runnable {
     }
 
     private void matchCluster(List<MessageSend> messageSends) {
-        String appCode = messageSends.get(0).getAppCode();
-        AppDepInfo appDepInfo = appDepCache.queryFromClientCache(appCode);
+        String appName = messageSends.get(0).getAppName();
+        AppDepInfo appDepInfo = appDepCache.queryFromClientCache(appName);
         String clusterId = determineClusterId(appDepInfo);
         messageSends.forEach( messageSend -> messageSend.setClusterId(clusterId));
     }
 
     private GroupMatchRules matchGroup(MessageSend messageSend) {
-        String appCode = messageSend.getAppCode();
+        String appName = messageSend.getAppName();
         String clusterId = messageSend.getClusterId();
         String exceptionType = messageSend.getExceptionType();
-        List<String> keys = buildKeys(clusterId, exceptionType, appCode);
+        List<String> keys = buildKeys(clusterId, exceptionType, appName);
         GroupMatchRules matchInfo = doMatch(messageSend, keys);
         if (matchInfo == null) {
             matchInfo = backMatch(messageSend);
@@ -94,9 +95,9 @@ public class GroupMatcher implements Runnable {
         return matchInfo;
     }
 
-    private List<String> buildKeys(String clusterId, String exceptionType, String appCode) {
+    private List<String> buildKeys(String clusterId, String exceptionType, String appName) {
         List<String> keys = Lists.newArrayList();
-        keys.add(String.format(Constant.GROUP_COMMON_FORMAT, clusterId, exceptionType, appCode));
+        keys.add(String.format(Constant.GROUP_COMMON_FORMAT, clusterId, exceptionType, appName));
         keys.add(String.format(Constant.GROUP_COMMON_FORMAT, clusterId, exceptionType,
                 Constant.BACK));
         return keys;

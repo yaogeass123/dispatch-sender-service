@@ -34,7 +34,7 @@ public class GroupMatchCache extends
         Map<String, List<GroupMatchRules>> map = list.stream().collect(Collectors.groupingBy(
                 rule -> String
                         .format(Constant.GROUP_COMMON_FORMAT, rule.getAppDep(), rule.getException(),
-                                rule.getAppCode())));
+                                rule.getAppName())));
         cache.putAll(map);
         return cache;
     }

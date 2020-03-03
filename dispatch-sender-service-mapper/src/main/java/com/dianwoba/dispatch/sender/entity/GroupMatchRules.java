@@ -12,7 +12,7 @@ public class GroupMatchRules implements Serializable {
 
     private String exception;
 
-    private String appCode;
+    private String appName;
 
     private String keyWords;
 
@@ -58,12 +58,12 @@ public class GroupMatchRules implements Serializable {
         this.exception = exception == null ? null : exception.trim();
     }
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode == null ? null : appCode.trim();
+    public void setAppName(String appName) {
+        this.appName = appName == null ? null : appName.trim();
     }
 
     public String getKeyWords() {
@@ -149,7 +149,7 @@ public class GroupMatchRules implements Serializable {
         id("id", "id", "BIGINT"),
         appDep("app_dep", "appDep", "VARCHAR"),
         exception("exception", "exception", "VARCHAR"),
-        appCode("app_code", "appCode", "VARCHAR"),
+        appName("app_name", "appName", "VARCHAR"),
         keyWords("key_words", "keyWords", "VARCHAR"),
         groupId("group_id", "groupId", "BIGINT"),
         level("level", "level", "TINYINT"),

@@ -8,6 +8,7 @@
     <result column="token" jdbcType="VARCHAR" property="token" />
     <result column="key_words" jdbcType="VARCHAR" property="keyWords" />
     <result column="secret" jdbcType="VARCHAR" property="secret" />
+    <result column="status" jdbcType="TINYINT" property="status" />
     <result column="is_active" jdbcType="BIT" property="isActive" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -73,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, cluster_id, group_id, token, key_words, secret, is_active, creator, create_time, 
+    id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, create_time, 
     modifier, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfigExample" resultMap="BaseResultMap">
@@ -115,7 +116,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, cluster_id, group_id, token, key_words, secret, is_active, creator, create_time, 
+        id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, create_time, 
           modifier, modify_time
       </otherwise>
     </choose>
@@ -147,7 +148,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, cluster_id, group_id, token, key_words, secret, is_active, creator, create_time, 
+        id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, create_time, 
           modifier, modify_time
       </otherwise>
     </choose>
@@ -167,12 +168,14 @@
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     insert into `ding_token_config` (id, cluster_id, group_id, 
       token, key_words, secret, 
-      is_active, creator, create_time, 
-      modifier, modify_time)
+      status, is_active, creator, 
+      create_time, modifier, modify_time
+      )
     values (#{id,jdbcType=BIGINT}, #{clusterId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{token,jdbcType=VARCHAR}, #{keyWords,jdbcType=VARCHAR}, #{secret,jdbcType=VARCHAR}, 
-      #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP})
+      #{status,jdbcType=TINYINT}, #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     insert into `ding_token_config`
@@ -194,6 +197,9 @@
       </if>
       <if test="secret != null">
         secret,
+      </if>
+      <if test="status != null">
+        status,
       </if>
       <if test="isActive != null">
         is_active,
@@ -229,6 +235,9 @@
       </if>
       <if test="secret != null">
         #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
       </if>
       <if test="isActive != null">
         #{isActive,jdbcType=BIT},
@@ -274,6 +283,9 @@
       <if test="record.secret != null">
         secret = #{record.secret,jdbcType=VARCHAR},
       </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
       <if test="record.isActive != null">
         is_active = #{record.isActive,jdbcType=BIT},
       </if>
@@ -302,6 +314,7 @@
       token = #{record.token,jdbcType=VARCHAR},
       key_words = #{record.keyWords,jdbcType=VARCHAR},
       secret = #{record.secret,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
       is_active = #{record.isActive,jdbcType=BIT},
       creator = #{record.creator,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -329,6 +342,9 @@
       <if test="secret != null">
         secret = #{secret,jdbcType=VARCHAR},
       </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
       <if test="isActive != null">
         is_active = #{isActive,jdbcType=BIT},
       </if>
@@ -354,6 +370,7 @@
       token = #{token,jdbcType=VARCHAR},
       key_words = #{keyWords,jdbcType=VARCHAR},
       secret = #{secret,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
       is_active = #{isActive,jdbcType=BIT},
       creator = #{creator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -368,14 +385,15 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `ding_token_config`
-    (id, cluster_id, group_id, token, key_words, secret, is_active, creator, create_time, 
-      modifier, modify_time)
+    (id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, 
+      create_time, modifier, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.clusterId,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
         #{item.token,jdbcType=VARCHAR}, #{item.keyWords,jdbcType=VARCHAR}, #{item.secret,jdbcType=VARCHAR}, 
-        #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
-        #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP})
+        #{item.status,jdbcType=TINYINT}, #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP}
+        )
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -410,6 +428,9 @@
         </if>
         <if test="'secret' == column.value">
           #{item.secret,jdbcType=VARCHAR}
+        </if>
+        <if test="'status' == column.value">
+          #{item.status,jdbcType=TINYINT}
         </if>
         <if test="'is_active' == column.value">
           #{item.isActive,jdbcType=BIT}

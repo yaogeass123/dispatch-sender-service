@@ -92,5 +92,9 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.dianwoba</groupId>
+            <artifactId>genius-common</artifactId>
+        </dependency>
     </dependencies>
 </project>

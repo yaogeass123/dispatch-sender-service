@@ -21,7 +21,7 @@ public class MessageSendInfo {
 
     private Long groupId;
 
-    private String appCode;
+    private String appName;
 
     private String ips;
 

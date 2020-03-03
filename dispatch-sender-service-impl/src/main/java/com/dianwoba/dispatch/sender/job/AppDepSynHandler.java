@@ -1,13 +1,13 @@
-package com.dianwoba.dispatch.sender.test;
+package com.dianwoba.dispatch.sender.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dianwoba.dispatch.sender.UnitTestBase;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.manager.AppDepManager;
 import com.dianwoba.genius.domain.dto.StaffDTO;
-import com.dianwoba.genius.provider.DepartProvider;
 import com.dianwoba.genius.provider.StaffProvider;
+import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
+import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
 import com.dianwoba.wireless.http.support.util.HttpUtils;
 import com.dianwoba.wireless.monitor.constant.Constant;
 import com.dianwoba.wireless.monitor.domain.dto.common.DepPlatformAppDTO;
@@ -26,14 +26,17 @@ import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-public class AppDepTest extends UnitTestBase {
+/**
+ * @author Polaris
+ */
+@Component
+public class AppDepSynHandler extends AbstractJobExecuteService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppDepTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppDepSynHandler.class);
 
     @Resource
     private AppDepManager appDepManager;
@@ -41,41 +44,8 @@ public class AppDepTest extends UnitTestBase {
     @Resource
     private StaffProvider staffProvider;
 
-    @Resource
-    private DepartProvider departProvider;
-
-    @Test
-    public void test() {
-        synTest();
-//        System.out.println(JSONObject.toJSONString(testStaff()));
-//        long time = DateUtils.addDays(new Date(), -7).getTime();
-//        System.out.println(new Date(time));
-//        System.out.println(JSONObject.toJSONString(getAppDepFromDepPlatform(0L)));
-    }
-
-    public List<DepPlatformAppDTO> getAppDepFromDepPlatform(Long modifyTime) {
-        try {
-            String link = Constant.PREFIX_LINK_DEPLOY_PLATFORM + modifyTime;
-            String resultValue = HttpUtils.get(link);
-            LOGGER.info("调发布平台接口，resultValue:{}", resultValue);
-            if (StringUtils.isNotEmpty(resultValue)) {
-                JSONObject json = JSON.parseObject(resultValue);
-                String data = json.getString("data");
-                if (StringUtils.isNotEmpty(data)) {
-                    return JSON.parseArray(data, DepPlatformAppDTO.class);
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("调发布平台接口异常", e);
-        }
-        return Lists.newArrayList();
-    }
-
-    public Map<String, StaffDTO> testStaff() {
-        return staffProvider.findByCodes(Lists.newArrayList("03595","04114"));
-    }
-
-    public void synTest() {
+    @Override
+    public void doExecute(ExecuteContext executeContext) {
         //获取增量数据
         long modifyTime = 0L;
         List<AppDep> appDep = appDepManager.queryLastModify();
@@ -116,6 +86,24 @@ public class AppDepTest extends UnitTestBase {
             appDepManager.batchSave(appLists.stream().map(t -> buildAppDep(null, t, staffMap))
                     .filter(Objects::nonNull).collect(Collectors.toList()));
         }
+    }
+
+    private List<DepPlatformAppDTO> getAppDepFromDepPlatform(Long modifyTime) {
+        try {
+            String link = Constant.PREFIX_LINK_DEPLOY_PLATFORM + modifyTime;
+            String resultValue = HttpUtils.get(link);
+            LOGGER.info("调发布平台接口，resultValue:{}", resultValue);
+            if (StringUtils.isNotEmpty(resultValue)) {
+                JSONObject json = JSON.parseObject(resultValue);
+                String data = json.getString("data");
+                if (StringUtils.isNotEmpty(data)) {
+                    return JSON.parseArray(data, DepPlatformAppDTO.class);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.error("调发布平台接口异常", e);
+        }
+        return Lists.newArrayList();
     }
 
     private Set<String> filterStaffCode(List<DepPlatformAppDTO> lists) {

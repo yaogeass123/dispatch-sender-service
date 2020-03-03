@@ -12,7 +12,7 @@ public class MessageSend implements Serializable {
 
     private Long groupId;
 
-    private String appCode;
+    private String appName;
 
     private String ips;
 
@@ -68,12 +68,12 @@ public class MessageSend implements Serializable {
         this.groupId = groupId;
     }
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode == null ? null : appCode.trim();
+    public void setAppName(String appName) {
+        this.appName = appName == null ? null : appName.trim();
     }
 
     public String getIps() {
@@ -199,7 +199,7 @@ public class MessageSend implements Serializable {
         id("id", "id", "BIGINT"),
         clusterId("cluster_id", "clusterId", "VARCHAR"),
         groupId("group_id", "groupId", "BIGINT"),
-        appCode("app_code", "appCode", "VARCHAR"),
+        appName("app_name", "appName", "VARCHAR"),
         ips("ips", "ips", "VARCHAR"),
         exceptionType("exception_type", "exceptionType", "VARCHAR"),
         digest("digest", "digest", "VARCHAR"),

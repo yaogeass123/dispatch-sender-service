@@ -8,22 +8,16 @@
 <table>
   <tr>
     <th>群名称</th>
-    <th>ip</th>
-    <th>消息内容</th>
-    <th>次数</th>
-    <th>插入时间</th>
-    <th>起始时间</th>
-    <th>结束时间</th>
+    <th>消息忽略次数</th>
+    <th>错误代码</th>
+    <th>错误次数</th>
   </tr>
   <div th:each="map : ${map}" th:with="num = ${map.value.size()}">
     <tr th:each="msg, status : ${map.value}">
       <td th:text="${map.key}" th:rowspan="${num}" th:if="${status.first}"></td>
-      <td th:text="${msg.ips}"></td>
-      <td th:text="${msg.message}"></td>
-      <td th:text="${msg.count}"></td>
-      <td th:text="${msg.insert}"></td>
-      <td th:text="${msg.start}"></td>
-      <td th:text="${msg.end}"></td>
+      <td th:text="${msg.ignore}" th:rowspan="${num}" th:if="${status.first}"></td>
+      <td th:text="${msg.errorCode}"></td>
+      <td th:text="${msg.errorTimes}"></td>
     </tr>
   </div>
 </table>

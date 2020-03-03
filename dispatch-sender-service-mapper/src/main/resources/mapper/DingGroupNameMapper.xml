@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dianwoba.dispatch.sender.mapper.GroupMatchRulesMapper">
-  <resultMap id="BaseResultMap" type="com.dianwoba.dispatch.sender.entity.GroupMatchRules">
+<mapper namespace="com.dianwoba.dispatch.sender.mapper.DingGroupNameMapper">
+  <resultMap id="BaseResultMap" type="com.dianwoba.dispatch.sender.entity.DingGroupName">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="app_dep" jdbcType="VARCHAR" property="appDep" />
-    <result column="exception" jdbcType="VARCHAR" property="exception" />
-    <result column="app_code" jdbcType="VARCHAR" property="appCode" />
-    <result column="key_words" jdbcType="VARCHAR" property="keyWords" />
-    <result column="group_id" jdbcType="BIGINT" property="groupId" />
-    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
     <result column="at_who" jdbcType="VARCHAR" property="atWho" />
+    <result column="at_all" jdbcType="BIT" property="atAll" />
     <result column="is_active" jdbcType="BIT" property="isActive" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -75,16 +71,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, app_dep, exception, app_code, key_words, group_id, level, at_who, is_active, 
-    creator, create_time, modifier, modify_time
+    id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
   </sql>
-  <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRulesExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupNameExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from `group_match_rules`
+    from `ding_group_name`
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -117,11 +112,11 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_dep, exception, app_code, key_words, group_id, level, at_who, is_active, 
-          creator, create_time, modifier, modify_time
+        id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
+          
       </otherwise>
     </choose>
-    from `group_match_rules`
+    from `ding_group_name`
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -132,7 +127,7 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from `group_match_rules`
+    from `ding_group_name`
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="BaseResultMap">
@@ -149,61 +144,45 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_dep, exception, app_code, key_words, group_id, level, at_who, is_active, 
-          creator, create_time, modifier, modify_time
+        id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
+          
       </otherwise>
     </choose>
-    from `group_match_rules`
+    from `ding_group_name`
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from `group_match_rules`
+    delete from `ding_group_name`
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRulesExample">
-    delete from `group_match_rules`
+  <delete id="deleteByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupNameExample">
+    delete from `ding_group_name`
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRules">
-    insert into `group_match_rules` (id, app_dep, exception, 
-      app_code, key_words, group_id, 
-      level, at_who, is_active, 
-      creator, create_time, modifier, 
-      modify_time)
-    values (#{id,jdbcType=BIGINT}, #{appDep,jdbcType=VARCHAR}, #{exception,jdbcType=VARCHAR}, 
-      #{appCode,jdbcType=VARCHAR}, #{keyWords,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
-      #{level,jdbcType=TINYINT}, #{atWho,jdbcType=VARCHAR}, #{isActive,jdbcType=BIT}, 
-      #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, 
-      #{modifyTime,jdbcType=TIMESTAMP})
+  <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupName">
+    insert into `ding_group_name` (id, group_name, at_who, 
+      at_all, is_active, creator, create_time, 
+      modifier, modify_time)
+    values (#{id,jdbcType=BIGINT}, #{groupName,jdbcType=VARCHAR}, #{atWho,jdbcType=VARCHAR}, 
+      #{atAll,jdbcType=BIT}, #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRules">
-    insert into `group_match_rules`
+  <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupName">
+    insert into `ding_group_name`
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
-      <if test="appDep != null">
-        app_dep,
-      </if>
-      <if test="exception != null">
-        exception,
-      </if>
-      <if test="appCode != null">
-        app_code,
-      </if>
-      <if test="keyWords != null">
-        key_words,
-      </if>
-      <if test="groupId != null">
-        group_id,
-      </if>
-      <if test="level != null">
-        level,
+      <if test="groupName != null">
+        group_name,
       </if>
       <if test="atWho != null">
         at_who,
+      </if>
+      <if test="atAll != null">
+        at_all,
       </if>
       <if test="isActive != null">
         is_active,
@@ -225,26 +204,14 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="appDep != null">
-        #{appDep,jdbcType=VARCHAR},
-      </if>
-      <if test="exception != null">
-        #{exception,jdbcType=VARCHAR},
-      </if>
-      <if test="appCode != null">
-        #{appCode,jdbcType=VARCHAR},
-      </if>
-      <if test="keyWords != null">
-        #{keyWords,jdbcType=VARCHAR},
-      </if>
-      <if test="groupId != null">
-        #{groupId,jdbcType=BIGINT},
-      </if>
-      <if test="level != null">
-        #{level,jdbcType=TINYINT},
+      <if test="groupName != null">
+        #{groupName,jdbcType=VARCHAR},
       </if>
       <if test="atWho != null">
         #{atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="atAll != null">
+        #{atAll,jdbcType=BIT},
       </if>
       <if test="isActive != null">
         #{isActive,jdbcType=BIT},
@@ -263,38 +230,26 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRulesExample" resultType="java.lang.Long">
-    select count(*) from `group_match_rules`
+  <select id="countByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupNameExample" resultType="java.lang.Long">
+    select count(*) from `ding_group_name`
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update `group_match_rules`
+    update `ding_group_name`
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.appDep != null">
-        app_dep = #{record.appDep,jdbcType=VARCHAR},
-      </if>
-      <if test="record.exception != null">
-        exception = #{record.exception,jdbcType=VARCHAR},
-      </if>
-      <if test="record.appCode != null">
-        app_code = #{record.appCode,jdbcType=VARCHAR},
-      </if>
-      <if test="record.keyWords != null">
-        key_words = #{record.keyWords,jdbcType=VARCHAR},
-      </if>
-      <if test="record.groupId != null">
-        group_id = #{record.groupId,jdbcType=BIGINT},
-      </if>
-      <if test="record.level != null">
-        level = #{record.level,jdbcType=TINYINT},
+      <if test="record.groupName != null">
+        group_name = #{record.groupName,jdbcType=VARCHAR},
       </if>
       <if test="record.atWho != null">
         at_who = #{record.atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="record.atAll != null">
+        at_all = #{record.atAll,jdbcType=BIT},
       </if>
       <if test="record.isActive != null">
         is_active = #{record.isActive,jdbcType=BIT},
@@ -317,15 +272,11 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update `group_match_rules`
+    update `ding_group_name`
     set id = #{record.id,jdbcType=BIGINT},
-      app_dep = #{record.appDep,jdbcType=VARCHAR},
-      exception = #{record.exception,jdbcType=VARCHAR},
-      app_code = #{record.appCode,jdbcType=VARCHAR},
-      key_words = #{record.keyWords,jdbcType=VARCHAR},
-      group_id = #{record.groupId,jdbcType=BIGINT},
-      level = #{record.level,jdbcType=TINYINT},
+      group_name = #{record.groupName,jdbcType=VARCHAR},
       at_who = #{record.atWho,jdbcType=VARCHAR},
+      at_all = #{record.atAll,jdbcType=BIT},
       is_active = #{record.isActive,jdbcType=BIT},
       creator = #{record.creator,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -335,29 +286,17 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRules">
-    update `group_match_rules`
+  <update id="updateByPrimaryKeySelective" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupName">
+    update `ding_group_name`
     <set>
-      <if test="appDep != null">
-        app_dep = #{appDep,jdbcType=VARCHAR},
-      </if>
-      <if test="exception != null">
-        exception = #{exception,jdbcType=VARCHAR},
-      </if>
-      <if test="appCode != null">
-        app_code = #{appCode,jdbcType=VARCHAR},
-      </if>
-      <if test="keyWords != null">
-        key_words = #{keyWords,jdbcType=VARCHAR},
-      </if>
-      <if test="groupId != null">
-        group_id = #{groupId,jdbcType=BIGINT},
-      </if>
-      <if test="level != null">
-        level = #{level,jdbcType=TINYINT},
+      <if test="groupName != null">
+        group_name = #{groupName,jdbcType=VARCHAR},
       </if>
       <if test="atWho != null">
         at_who = #{atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="atAll != null">
+        at_all = #{atAll,jdbcType=BIT},
       </if>
       <if test="isActive != null">
         is_active = #{isActive,jdbcType=BIT},
@@ -377,15 +316,11 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRules">
-    update `group_match_rules`
-    set app_dep = #{appDep,jdbcType=VARCHAR},
-      exception = #{exception,jdbcType=VARCHAR},
-      app_code = #{appCode,jdbcType=VARCHAR},
-      key_words = #{keyWords,jdbcType=VARCHAR},
-      group_id = #{groupId,jdbcType=BIGINT},
-      level = #{level,jdbcType=TINYINT},
+  <update id="updateByPrimaryKey" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupName">
+    update `ding_group_name`
+    set group_name = #{groupName,jdbcType=VARCHAR},
       at_who = #{atWho,jdbcType=VARCHAR},
+      at_all = #{atAll,jdbcType=BIT},
       is_active = #{isActive,jdbcType=BIT},
       creator = #{creator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -399,16 +334,15 @@
       This element is automatically generated by MyBatis Generator, do not modify.
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
-    insert into `group_match_rules`
-    (id, app_dep, exception, app_code, key_words, group_id, level, at_who, is_active, 
-      creator, create_time, modifier, modify_time)
+    insert into `ding_group_name`
+    (id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
+      )
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.appDep,jdbcType=VARCHAR}, #{item.exception,jdbcType=VARCHAR}, 
-        #{item.appCode,jdbcType=VARCHAR}, #{item.keyWords,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
-        #{item.level,jdbcType=TINYINT}, #{item.atWho,jdbcType=VARCHAR}, #{item.isActive,jdbcType=BIT}, 
-        #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, 
-        #{item.modifyTime,jdbcType=TIMESTAMP})
+      (#{item.id,jdbcType=BIGINT}, #{item.groupName,jdbcType=VARCHAR}, #{item.atWho,jdbcType=VARCHAR}, 
+        #{item.atAll,jdbcType=BIT}, #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP}
+        )
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -417,7 +351,7 @@
       This element is automatically generated by MyBatis Generator, do not modify.
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
-    insert into `group_match_rules` (
+    insert into `ding_group_name` (
     <foreach collection="selective" item="column" separator=",">
       ${column.value}
     </foreach>
@@ -429,26 +363,14 @@
         <if test="'id' == column.value">
           #{item.id,jdbcType=BIGINT}
         </if>
-        <if test="'app_dep' == column.value">
-          #{item.appDep,jdbcType=VARCHAR}
-        </if>
-        <if test="'exception' == column.value">
-          #{item.exception,jdbcType=VARCHAR}
-        </if>
-        <if test="'app_code' == column.value">
-          #{item.appCode,jdbcType=VARCHAR}
-        </if>
-        <if test="'key_words' == column.value">
-          #{item.keyWords,jdbcType=VARCHAR}
-        </if>
-        <if test="'group_id' == column.value">
-          #{item.groupId,jdbcType=BIGINT}
-        </if>
-        <if test="'level' == column.value">
-          #{item.level,jdbcType=TINYINT}
+        <if test="'group_name' == column.value">
+          #{item.groupName,jdbcType=VARCHAR}
         </if>
         <if test="'at_who' == column.value">
           #{item.atWho,jdbcType=VARCHAR}
+        </if>
+        <if test="'at_all' == column.value">
+          #{item.atAll,jdbcType=BIT}
         </if>
         <if test="'is_active' == column.value">
           #{item.isActive,jdbcType=BIT}

@@ -31,7 +31,7 @@ public class AppDepCache extends AbstractFullyClientCache<String, AppDepInfo, Ap
     public Cache buildCache(List<AppDep> list) {
         Cache<String, AppDepInfo> cache = Caffeine.newBuilder().build();
         list.forEach(
-                appDep -> cache.put(appDep.getAppCode(), ConvertUtils.convert2AppDepInfo(appDep)));
+                appDep -> cache.put(appDep.getAppName(), ConvertUtils.convert2AppDepInfo(appDep)));
         return cache;
     }
 

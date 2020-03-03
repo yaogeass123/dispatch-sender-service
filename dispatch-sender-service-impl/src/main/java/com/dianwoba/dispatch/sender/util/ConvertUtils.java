@@ -1,6 +1,5 @@
 package com.dianwoba.dispatch.sender.util;
 
-import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.AppDepInfo;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
@@ -9,6 +8,7 @@ import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
+import com.dianwoba.wireless.monitor.domain.dto.common.DepPlatformAppDTO;
 import com.dianwoda.delibird.dingtalk.chatbot.SendResult;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ConvertUtils {
 
     public static MessageLog convert2MessageLog(MessageSendDTO messageSendDTO) {
         MessageLog messageLog = new MessageLog();
-        messageLog.setAppCode(messageSendDTO.getAppCode());
+        messageLog.setAppName(messageSendDTO.getAppName());
         messageLog.setDigest(messageSendDTO.getDigest());
         messageLog.setMsg(messageSendDTO.getMsg());
         messageLog.setLevel(messageSendDTO.getLevel());
@@ -41,7 +41,7 @@ public class ConvertUtils {
     public static MessageSend convert2MessageSend(List<MessageLog> messageLogs) {
         MessageSend messageSend = new MessageSend();
         MessageLog messageLog = messageLogs.get(0);
-        messageSend.setAppCode(messageLog.getAppCode());
+        messageSend.setAppName(messageLog.getAppName());
         messageSend.setExceptionType(messageLog.getExceptionType());
         messageSend.setDigest(messageLog.getDigest());
         messageSend.setLevel(messageLog.getLevel());
@@ -74,12 +74,11 @@ public class ConvertUtils {
 
     public static AppDepInfo convert2AppDepInfo(AppDep appDep) {
         AppDepInfo info = new AppDepInfo();
-        info.setAppCode(appDep.getAppCode());
+        info.setAppName(appDep.getAppName());
         info.setDevelopersDepId(appDep.getDevelopersDepId());
         info.setDevelopersPhone(appDep.getDevelopersPhone());
         info.setOwnersDepId(appDep.getOwnersDepId());
         info.setOwnersPhone(appDep.getOwnersPhone());
-        info.setGroupMail(appDep.getMailGroup());
         return info;
     }
 
@@ -96,7 +95,7 @@ public class ConvertUtils {
         info.setIds(Lists.newArrayList(messageSend.getId()));
         info.setClusterId(messageSend.getClusterId());
         info.setGroupId(messageSend.getGroupId());
-        info.setAppCode(messageSend.getAppCode());
+        info.setAppName(messageSend.getAppName());
         info.setIps(messageSend.getIps());
         info.setExceptionType(messageSend.getExceptionType());
         info.setDigest(messageSend.getDigest());
