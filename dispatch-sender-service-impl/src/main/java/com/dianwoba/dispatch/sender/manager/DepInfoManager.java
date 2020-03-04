@@ -43,6 +43,10 @@ public class DepInfoManager {
         return depInfoMapper.selectByExample(example);
     }
 
+    public DepInfo queryById(int id) {
+        return depInfoMapper.selectByPrimaryKey(id);
+    }
+
     public void save(DepInfo depInfo) {
         depInfo.setCreateTime(new Date());
         depInfoMapper.insertSelective(depInfo);

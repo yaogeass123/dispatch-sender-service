@@ -3,8 +3,14 @@ package com.dianwoba.dispatch.sender.test;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.UnitTestBase;
+import com.dianwoba.dispatch.sender.cache.DepInfoCache;
 import com.dianwoba.dispatch.sender.entity.AppDep;
+import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.manager.AppDepManager;
+import com.dianwoba.dispatch.sender.manager.DepInfoManager;
+import com.dianwoba.dispatch.sender.util.ConvertUtils;
+import com.dianwoba.dubbo.base.result.ResponseDTO;
+import com.dianwoba.genius.domain.dto.DepartDTO;
 import com.dianwoba.genius.domain.dto.StaffDTO;
 import com.dianwoba.genius.provider.DepartProvider;
 import com.dianwoba.genius.provider.StaffProvider;
@@ -24,10 +30,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +50,27 @@ public class AppDepTest extends UnitTestBase {
     @Resource
     private DepartProvider departProvider;
 
+    @Resource
+    private DepInfoManager depInfoManager;
+
+    @Resource
+    private DepInfoCache depInfoCache;
+
     @Test
     public void test() {
-//        synTest();
-        departTest();
+        synTest();
+//        departTest();
 //        System.out.println(JSONObject.toJSONString(testStaff()));
 //        long time = DateUtils.addDays(new Date(), -7).getTime();
 //        System.out.println(new Date(time));
 //        System.out.println(JSONObject.toJSONString(getAppDepFromDepPlatform(0L)));
     }
 
-    public void departTest(){
+    public void departTest() {
 //        System.out.println(JSONObject.toJSONString(departProvider.findById(446).getData()));
-        System.out.println(JSONObject.toJSONString(departProvider.findById(371).getData()));
-        System.out.println(JSONObject.toJSONString(departProvider.findById(458).getData()));
-        System.out.println(JSONObject.toJSONString(departProvider.findById(459).getData()));
+        System.out.println(JSONObject.toJSONString(departProvider.findById(0).getData()));
+        System.out.println(JSONObject.toJSONString(departProvider.findById(130).getData()));
+        System.out.println(JSONObject.toJSONString(departProvider.findById(373).getData()));
     }
 
     public List<DepPlatformAppDTO> getAppDepFromDepPlatform(Long modifyTime) {
@@ -80,7 +92,7 @@ public class AppDepTest extends UnitTestBase {
     }
 
     public Map<String, StaffDTO> testStaff() {
-        return staffProvider.findByCodes(Lists.newArrayList("03595","04114"));
+        return staffProvider.findByCodes(Lists.newArrayList("03595", "04114"));
     }
 
     public void synTest() {
@@ -107,7 +119,7 @@ public class AppDepTest extends UnitTestBase {
         List<String> appNames = appLists.stream().map(DepPlatformAppDTO::getName)
                 .collect(Collectors.toList());
         List<AppDep> appDepExist = appDepManager.queryConfigExist(appNames);
-        if(CollectionUtils.isNotEmpty(appDepExist)) {
+        if (CollectionUtils.isNotEmpty(appDepExist)) {
             for (AppDep dep : appDepExist) {
                 DepPlatformAppDTO depPlatformAppDTO = appMap.get(dep.getAppName()).get(0);
                 AppDep update = buildAppDep(dep, depPlatformAppDTO, staffMap);
@@ -124,6 +136,60 @@ public class AppDepTest extends UnitTestBase {
             appDepManager.batchSave(appLists.stream().map(t -> buildAppDep(null, t, staffMap))
                     .filter(Objects::nonNull).collect(Collectors.toList()));
         }
+
+        //处理部门信息
+        List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
+                .collect(Collectors.toList());
+        if (depInfoCache.totalCount() > 0) {
+            //移除已有的
+            List<DepInfo> depInfoList = Lists
+                    .newArrayList(depInfoCache.queryAllFromClientCache().values());
+            List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId)
+                    .collect(Collectors.toList());
+            depCode = ListUtils.removeAll(depCode, depCodeList);
+        }
+        if (CollectionUtils.isNotEmpty(depCode)) {
+            gainAndUpdateDepartInfo(depCode);
+        }
+    }
+
+    private void gainAndUpdateDepartInfo(List<Integer> depCode) {
+        for (Integer dep : depCode) {
+            try {
+                DepartDTO departDTO = updateDepInfo(dep);
+                while (departDTO != null && departDTO.getId() != 0) {
+                    if (departDTO.getParent() != null && !depCode.contains(departDTO.getParent())) {
+                        if (depInfoManager.queryById(departDTO.getParent()) == null) {
+                            //父部门信息更新
+                            departDTO = updateDepInfo(departDTO.getParent());
+                            continue;
+                        }
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                LOGGER.error("查找部门信息时异常，", e);
+            }
+        }
+    }
+
+    private DepartDTO updateDepInfo(Integer id) {
+        ResponseDTO<DepartDTO> response = departProvider.findById(id);
+        if (response.isSuccess()) {
+            DepartDTO departDTO = response.getData();
+            if (departDTO != null) {
+                List<DepInfo> savedDepInfoList = depInfoManager.queryByAppName(departDTO.getName());
+                if (CollectionUtils.isEmpty(savedDepInfoList)) {
+                    depInfoManager.save(ConvertUtils.convert2DepInfo(departDTO));
+                } else {
+                    List<Integer> ids = savedDepInfoList.stream().map(DepInfo::getId)
+                            .collect(Collectors.toList());
+                    depInfoManager.saveAndUpdate(ConvertUtils.convert2DepInfo(departDTO), ids);
+                }
+            }
+            return departDTO;
+        }
+        return null;
     }
 
     private Set<String> filterStaffCode(List<DepPlatformAppDTO> lists) {
@@ -152,10 +218,11 @@ public class AppDepTest extends UnitTestBase {
         app.setAppName(depPlatformAppDTO.getName());
         app.setDepPlatModifyTime(depPlatformAppDTO.getModifyTime());
         if (StringUtils.isNotEmpty(depPlatformAppDTO.getDevelopersCode())) {
-            List<String> developers = Arrays.asList(depPlatformAppDTO.getDevelopersCode().split(","));
+            List<String> developers = Arrays
+                    .asList(depPlatformAppDTO.getDevelopersCode().split(","));
             List<StaffDTO> developerDTO = developers.stream().map(staffMap::get)
                     .filter(Objects::nonNull).collect(Collectors.toList());
-            if(CollectionUtils.isNotEmpty(developerDTO)) {
+            if (CollectionUtils.isNotEmpty(developerDTO)) {
                 List<String> developersDepId = developerDTO.stream().map(StaffDTO::getDepartId)
                         .distinct().filter(Objects::nonNull).map(String::valueOf)
                         .collect(Collectors.toList());

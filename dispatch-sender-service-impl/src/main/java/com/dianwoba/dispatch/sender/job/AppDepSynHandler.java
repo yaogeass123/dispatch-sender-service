@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -73,6 +75,9 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
         if (CollectionUtils.isEmpty(appLists)) {
             return;
         }
+        //按照更新时间排序
+        appLists.sort(Comparator.comparing(DepPlatformAppDTO::getModifyTime));
+
         //有了owner、dev的code、名字，下一步找员工信息
         Set<String> staffCode = filterStaffCode(appLists);
         Map<String, StaffDTO> staffMap = staffProvider.findByCodes(Lists.newArrayList(staffCode));
@@ -107,30 +112,54 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
         //处理部门信息
         List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
                 .collect(Collectors.toList());
-        List<DepInfo> depInfoList = Lists.newArrayList(depInfoCache.queryAllFromClientCache().values());
-        Map<String, List<DepInfo>> depInfoMap = depInfoList.stream().collect(Collectors.groupingBy(DepInfo::getName));
-        List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId).collect(Collectors.toList());
-        CollectionUtils.removeAll(depCode, depCodeList);
+        if (depInfoCache.totalCount() > 0) {
+            //移除已有的
+            List<DepInfo> depInfoList = Lists
+                    .newArrayList(depInfoCache.queryAllFromClientCache().values());
+            List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId)
+                    .collect(Collectors.toList());
+            depCode = ListUtils.removeAll(depCode, depCodeList);
+        }
         if (CollectionUtils.isNotEmpty(depCode)) {
-            depCode.forEach(dep -> {
-                try {
-                    ResponseDTO<DepartDTO> response = departProvider.findById(dep);
-                    if (response.isSuccess()) {
-                        DepartDTO departDTO = response.getData();
-                        List<DepInfo> savedDepInfoList = depInfoManager.queryByAppName(departDTO.getName());
-                        if(CollectionUtils.isEmpty(savedDepInfoList)) {
-                            depInfoManager.save(ConvertUtils.convert2DepInfo(departDTO));
-                        } else {
-                            List<Integer> ids = savedDepInfoList.stream().map(DepInfo::getId)
-                                    .collect(Collectors.toList());
-                            depInfoManager.saveAndUpdate(ConvertUtils.convert2DepInfo(departDTO), ids);
+            gainAndUpdateDepartInfo(depCode);
+        }
+    }
+
+    private void gainAndUpdateDepartInfo(List<Integer> depCode) {
+        for (Integer dep : depCode) {
+            try {
+                DepartDTO departDTO = updateDepInfo(dep);
+                while (departDTO != null) {
+                    if (departDTO.getParent() != null && !depCode.contains(departDTO.getParent())) {
+                        if (depInfoManager.queryById(departDTO.getParent()) == null) {
+                            //父部门信息更新
+                           departDTO = updateDepInfo(departDTO.getParent());
                         }
                     }
-                } catch (Exception e){
-                    LOGGER.error("查找部门信息时异常，", e);
                 }
-            });
+            } catch (Exception e) {
+                LOGGER.error("查找部门信息时异常，", e);
+            }
         }
+    }
+
+    private DepartDTO updateDepInfo(Integer id) {
+        ResponseDTO<DepartDTO> response = departProvider.findById(id);
+        if (response.isSuccess()) {
+            DepartDTO departDTO = response.getData();
+            if (departDTO != null) {
+                List<DepInfo> savedDepInfoList = depInfoManager.queryByAppName(departDTO.getName());
+                if (CollectionUtils.isEmpty(savedDepInfoList)) {
+                    depInfoManager.save(ConvertUtils.convert2DepInfo(departDTO));
+                } else {
+                    List<Integer> ids = savedDepInfoList.stream().map(DepInfo::getId)
+                            .collect(Collectors.toList());
+                    depInfoManager.saveAndUpdate(ConvertUtils.convert2DepInfo(departDTO), ids);
+                }
+            }
+            return departDTO;
+        }
+        return null;
     }
 
     private List<DepPlatformAppDTO> getAppDepFromDepPlatform(Long modifyTime) {

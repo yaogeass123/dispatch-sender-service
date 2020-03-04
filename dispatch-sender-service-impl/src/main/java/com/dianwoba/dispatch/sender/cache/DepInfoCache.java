@@ -28,7 +28,7 @@ public class DepInfoCache extends AbstractFullyClientCache<Integer, DepInfo, Dep
     public Cache<Integer, DepInfo> buildCache(List<DepInfo> list) {
         Cache<Integer, DepInfo> cache = Caffeine.newBuilder().build();
         list.forEach(t -> cache.put(t.getId(), t));
-        return null;
+        return cache;
     }
 
     @Override
