@@ -18,6 +18,10 @@ public class AppDep implements Serializable {
 
     private String developersPhone;
 
+    private Integer depId;
+
+    private Integer manualDepId;
+
     private Date depPlatModifyTime;
 
     private Date createTime;
@@ -74,6 +78,22 @@ public class AppDep implements Serializable {
         this.developersPhone = developersPhone == null ? null : developersPhone.trim();
     }
 
+    public Integer getDepId() {
+        return depId;
+    }
+
+    public void setDepId(Integer depId) {
+        this.depId = depId;
+    }
+
+    public Integer getManualDepId() {
+        return manualDepId;
+    }
+
+    public void setManualDepId(Integer manualDepId) {
+        this.manualDepId = manualDepId;
+    }
+
     public Date getDepPlatModifyTime() {
         return depPlatModifyTime;
     }
@@ -112,6 +132,8 @@ public class AppDep implements Serializable {
         ownersPhone("owners_phone", "ownersPhone", "VARCHAR"),
         developersDepId("developers_dep_id", "developersDepId", "VARCHAR"),
         developersPhone("developers_phone", "developersPhone", "VARCHAR"),
+        depId("dep_id", "depId", "INTEGER"),
+        manualDepId("manual_dep_id", "manualDepId", "INTEGER"),
         depPlatModifyTime("dep_plat_modify_time", "depPlatModifyTime", "TIMESTAMP"),
         createTime("create_time", "createTime", "TIMESTAMP"),
         modifyTime("modify_time", "modifyTime", "TIMESTAMP");

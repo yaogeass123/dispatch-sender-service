@@ -49,6 +49,7 @@ public class DepInfoManager {
 
     public void save(DepInfo depInfo) {
         depInfo.setCreateTime(new Date());
+        depInfo.setNewest(depInfo.getId());
         depInfoMapper.insertSelective(depInfo);
     }
 

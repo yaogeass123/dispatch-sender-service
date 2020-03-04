@@ -58,8 +58,9 @@ public class AppDepTest extends UnitTestBase {
 
     @Test
     public void test() {
-        synTest();
+//        synTest();
 //        departTest();
+        depIdTest();
 //        System.out.println(JSONObject.toJSONString(testStaff()));
 //        long time = DateUtils.addDays(new Date(), -7).getTime();
 //        System.out.println(new Date(time));
@@ -112,6 +113,22 @@ public class AppDepTest extends UnitTestBase {
         List<String> emptyStaff = staffMap.entrySet().stream().filter(e -> e.getValue() == null)
                 .map(Entry::getKey).collect(Collectors.toList());
         staffMap.keySet().removeAll(emptyStaff);
+        //处理部门信息 步骤提前，计算应用默认部门使用
+        List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
+                .collect(Collectors.toList());
+        if (depInfoCache.totalCount() > 0) {
+            //移除已有的
+            List<DepInfo> depInfoList = Lists
+                    .newArrayList(depInfoCache.queryAllFromClientCache().values());
+            List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId)
+                    .collect(Collectors.toList());
+            depCode = ListUtils.removeAll(depCode, depCodeList);
+        }
+        if (CollectionUtils.isNotEmpty(depCode)) {
+            gainAndUpdateDepartInfo(depCode);
+            depInfoCache.reload();
+        }
+
         //appLists转为map方便查询
         Map<String, List<DepPlatformAppDTO>> appMap = appLists.stream()
                 .collect(Collectors.groupingBy(DepPlatformAppDTO::getName));
@@ -135,21 +152,6 @@ public class AppDepTest extends UnitTestBase {
         } else {
             appDepManager.batchSave(appLists.stream().map(t -> buildAppDep(null, t, staffMap))
                     .filter(Objects::nonNull).collect(Collectors.toList()));
-        }
-
-        //处理部门信息
-        List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
-                .collect(Collectors.toList());
-        if (depInfoCache.totalCount() > 0) {
-            //移除已有的
-            List<DepInfo> depInfoList = Lists
-                    .newArrayList(depInfoCache.queryAllFromClientCache().values());
-            List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId)
-                    .collect(Collectors.toList());
-            depCode = ListUtils.removeAll(depCode, depCodeList);
-        }
-        if (CollectionUtils.isNotEmpty(depCode)) {
-            gainAndUpdateDepartInfo(depCode);
         }
     }
 
@@ -208,15 +210,6 @@ public class AppDepTest extends UnitTestBase {
     private AppDep buildAppDep(AppDep appDep, DepPlatformAppDTO depPlatformAppDTO,
             Map<String, StaffDTO> staffMap) {
         AppDep app = new AppDep();
-        if (appDep != null) {
-            app.setId(appDep.getId());
-            app.setCreateTime(appDep.getCreateTime());
-        } else {
-            app.setCreateTime(new Date());
-        }
-        app.setModifyTime(new Date());
-        app.setAppName(depPlatformAppDTO.getName());
-        app.setDepPlatModifyTime(depPlatformAppDTO.getModifyTime());
         if (StringUtils.isNotEmpty(depPlatformAppDTO.getDevelopersCode())) {
             List<String> developers = Arrays
                     .asList(depPlatformAppDTO.getDevelopersCode().split(","));
@@ -246,9 +239,84 @@ public class AppDepTest extends UnitTestBase {
                 app.setOwnersPhone(String.join(",", ownersPhone));
             }
         }
-        if (app.getDevelopersDepId() == null && app.getOwnersDepId() == null) {
+        if (StringUtils.isEmpty(app.getDevelopersDepId()) && StringUtils
+                .isEmpty(app.getOwnersDepId())) {
             return null;
         }
+        if (appDep != null) {
+            app.setId(appDep.getId());
+            app.setCreateTime(appDep.getCreateTime());
+        } else {
+            app.setCreateTime(new Date());
+        }
+        app.setModifyTime(new Date());
+        app.setAppName(depPlatformAppDTO.getName());
+        app.setDepPlatModifyTime(depPlatformAppDTO.getModifyTime());
+        app.setDepId(determineDepId(app.getDevelopersDepId(), app.getOwnersDepId()));
         return app;
+    }
+
+    private int determineDepId(String devDepIds, String ownDepIds) {
+        List<Integer> depIds;
+        if (StringUtils.isNotEmpty(devDepIds)) {
+            depIds = Lists.newArrayList(devDepIds.split(",")).stream().distinct()
+                    .map(Integer::parseInt).collect(Collectors.toList());
+        } else {
+            depIds = Lists.newArrayList(ownDepIds.split(",")).stream().distinct()
+                    .map(Integer::parseInt).collect(Collectors.toList());
+        }
+        return findDepId(depIds);
+    }
+
+    private int findDepId(List<Integer> depIds) {
+        if (depIds.size() == 1) {
+            int depId = depIds.get(0);
+            DepInfo depInfo = depInfoCache.queryFromClientCache(depId);
+            return depInfo.getNewest();
+        } else {
+            Map<Integer, List<DepInfo>> depInfoMap = depIds.stream()
+                    .map(depInfoCache::queryFromClientCache)
+                    .collect(Collectors.groupingBy(DepInfo::getNewest));
+            if (depInfoMap.keySet().size() == 1) {
+                //部门都相同
+                return Lists.newArrayList(depInfoMap.keySet()).get(0);
+            } else {
+                List<DepInfo> newestDepList = Lists.newArrayList(depInfoMap.keySet()).stream()
+                        .map(depInfoCache::queryFromClientCache).collect(Collectors.toList());
+                Map<Integer, List<DepInfo>> newestDepMap = newestDepList.stream()
+                        .collect(Collectors.groupingBy(DepInfo::getId));
+                newestDepList.forEach(dep -> {
+                    if (newestDepMap.containsKey(dep.getParent())) {
+                        newestDepMap.remove(dep.getId());
+                    }
+
+                });
+                if (newestDepMap.keySet().size() == 1) {
+                    return Lists.newArrayList(newestDepMap.keySet()).get(0);
+                }
+                List<List<String>> paths = newestDepMap.values().stream()
+                        .map(v -> v.get(0).getPath()).filter(StringUtils::isNotEmpty).distinct()
+                        .map(str -> Arrays.asList(str.substring(0, str.length() - 1).split(",")))
+                        .collect(Collectors.toList());
+                List<String> path = paths.get(0);
+                for (int i = 1; i < paths.size(); i ++) {
+                    int len = Math.min(path.size(), paths.get(i).size());
+                    int index = 0;
+                    while (index < len && path.get(index).equals(paths.get(i).get(index))) {
+                        index++;
+                    }
+                    path = path.subList(0, index);
+                }
+                if (CollectionUtils.isEmpty(path)) {
+                    return -1;
+                }
+                return Integer.parseInt(path.get(path.size() - 1));
+            }
+        }
+    }
+
+    private void depIdTest(){
+        depInfoCache.reload();
+        System.out.println(determineDepId("458,371","458,371"));
     }
 }

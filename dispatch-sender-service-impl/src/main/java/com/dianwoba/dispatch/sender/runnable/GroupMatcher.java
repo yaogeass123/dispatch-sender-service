@@ -139,9 +139,9 @@ public class GroupMatcher implements Runnable {
     }
     
     private String determineClusterId(AppDepInfo appDepInfo) {
-        // TODO: 2020/2/17 后期再修改，先测试流程使用
-
-
+        if (StringUtils.isNotEmpty(appDepInfo.getManualDepId())) {
+            return appDepInfo.getManualDepId();
+        }
         return appDepInfo.getDevelopersDepId();
     }
 

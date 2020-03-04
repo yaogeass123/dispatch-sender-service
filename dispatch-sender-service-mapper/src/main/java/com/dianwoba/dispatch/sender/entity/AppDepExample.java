@@ -648,6 +648,126 @@ public class AppDepExample {
             return (Criteria) this;
         }
 
+        public Criteria andDepIdIsNull() {
+            addCriterion("dep_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdIsNotNull() {
+            addCriterion("dep_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdEqualTo(Integer value) {
+            addCriterion("dep_id =", value, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdNotEqualTo(Integer value) {
+            addCriterion("dep_id <>", value, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdGreaterThan(Integer value) {
+            addCriterion("dep_id >", value, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("dep_id >=", value, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdLessThan(Integer value) {
+            addCriterion("dep_id <", value, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdLessThanOrEqualTo(Integer value) {
+            addCriterion("dep_id <=", value, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdIn(List<Integer> values) {
+            addCriterion("dep_id in", values, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdNotIn(List<Integer> values) {
+            addCriterion("dep_id not in", values, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdBetween(Integer value1, Integer value2) {
+            addCriterion("dep_id between", value1, value2, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDepIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("dep_id not between", value1, value2, "depId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdIsNull() {
+            addCriterion("manual_dep_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdIsNotNull() {
+            addCriterion("manual_dep_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdEqualTo(Integer value) {
+            addCriterion("manual_dep_id =", value, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdNotEqualTo(Integer value) {
+            addCriterion("manual_dep_id <>", value, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdGreaterThan(Integer value) {
+            addCriterion("manual_dep_id >", value, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("manual_dep_id >=", value, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdLessThan(Integer value) {
+            addCriterion("manual_dep_id <", value, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdLessThanOrEqualTo(Integer value) {
+            addCriterion("manual_dep_id <=", value, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdIn(List<Integer> values) {
+            addCriterion("manual_dep_id in", values, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdNotIn(List<Integer> values) {
+            addCriterion("manual_dep_id not in", values, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdBetween(Integer value1, Integer value2) {
+            addCriterion("manual_dep_id between", value1, value2, "manualDepId");
+            return (Criteria) this;
+        }
+
+        public Criteria andManualDepIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("manual_dep_id not between", value1, value2, "manualDepId");
+            return (Criteria) this;
+        }
+
         public Criteria andDepPlatModifyTimeIsNull() {
             addCriterion("dep_plat_modify_time is null");
             return (Criteria) this;

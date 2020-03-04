@@ -10,7 +10,6 @@ import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.genius.domain.dto.DepartDTO;
-import com.dianwoba.wireless.monitor.domain.dto.common.DepPlatformAppDTO;
 import com.dianwoda.delibird.dingtalk.chatbot.SendResult;
 import java.util.Date;
 import java.util.List;
@@ -81,6 +80,10 @@ public class ConvertUtils {
         info.setDevelopersPhone(appDep.getDevelopersPhone());
         info.setOwnersDepId(appDep.getOwnersDepId());
         info.setOwnersPhone(appDep.getOwnersPhone());
+        info.setDepId(String.valueOf(appDep.getDepId()));
+        if (appDep.getManualDepId() != null) {
+            info.setManualDepId(String.valueOf(appDep.getManualDepId()));
+        }
         return info;
     }
 
