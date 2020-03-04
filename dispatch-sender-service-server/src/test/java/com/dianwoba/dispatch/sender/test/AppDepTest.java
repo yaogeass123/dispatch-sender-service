@@ -285,12 +285,16 @@ public class AppDepTest extends UnitTestBase {
                         .map(depInfoCache::queryFromClientCache).collect(Collectors.toList());
                 Map<Integer, List<DepInfo>> newestDepMap = newestDepList.stream()
                         .collect(Collectors.groupingBy(DepInfo::getId));
-                newestDepList.forEach(dep -> {
-                    if (newestDepMap.containsKey(dep.getParent())) {
-                        newestDepMap.remove(dep.getId());
+                //如果有parent 删除 1是3的父部门，留下3，删除1
+                newestDepList.forEach(dep ->{
+                    newestDepMap.remove(dep.getParent());
+                    if (StringUtils.isNotEmpty(dep.getPath())) {
+                        List<String> path = Arrays.asList(dep.getPath().substring(0, dep.getPath().length() - 1)
+                                .split(","));
+                        newestDepMap.keySet().removeAll(
+                                path.stream().map(Integer::parseInt).collect(Collectors.toList()));
                     }
-
-                });
+                } );
                 if (newestDepMap.keySet().size() == 1) {
                     return Lists.newArrayList(newestDepMap.keySet()).get(0);
                 }
@@ -317,6 +321,6 @@ public class AppDepTest extends UnitTestBase {
 
     private void depIdTest(){
         depInfoCache.reload();
-        System.out.println(determineDepId("458,371","458,371"));
+        System.out.println(determineDepId("458,459","458,459"));
     }
 }
