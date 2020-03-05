@@ -113,13 +113,17 @@ public class MessageSender implements Runnable {
             LOGGER.info("times : {} ", times);
             //4、循环发送
             times = sendProcess(times, messages);
-            //5、尝试重试
+            //5、更新数据库
+            sentTimes += back - times;
+            updateSql();
+            //6、尝试重试
             if (times > 0) {
                 times = retry(times);
+                updateSql();
             }
-            //6、更新数据库与redis
+            //7、更新redis
             sentTimes += back - times;
-            updateRedisAndSql();
+            updateRedis();
         } catch (Exception e) {
             LOGGER.error("发送流程异常", e);
         }
@@ -135,17 +139,29 @@ public class MessageSender implements Runnable {
         return times;
     }
 
-
-    private void updateRedisAndSql() {
+    private void updateRedis() {
         stringRedisTemplate.opsForValue()
                 .set(String.format(Constant.GROUP_NEXT_TOKEN, groupId), String.valueOf(nextToken));
         stringRedisTemplate.opsForValue()
                 .set(String.format(Constant.REDIS_SEND_TIMES, groupId), String.valueOf(sentTimes));
+    }
+
+    private void updateSql() {
         if (CollectionUtils.isNotEmpty(success)) {
-            messageSenderManager.batchUpdateSuccess(success);
+            try {
+                messageSenderManager.batchUpdateSuccess(success);
+                success.clear();
+            } catch (Exception e) {
+                LOGGER.error("更新数据库出错, ", e);
+            }
         }
         if (CollectionUtils.isNotEmpty(error)) {
-            error.forEach(errorInfo -> messageSenderManager.batchUpdateError(errorInfo));
+            try {
+                error.forEach(errorInfo -> messageSenderManager.batchUpdateError(errorInfo));
+                error.clear();
+            } catch (Exception e) {
+                LOGGER.error("更新数据库出错, ", e);
+            }
         }
     }
 
