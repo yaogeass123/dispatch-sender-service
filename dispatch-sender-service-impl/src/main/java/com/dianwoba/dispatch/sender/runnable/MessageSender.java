@@ -277,8 +277,9 @@ public class MessageSender implements Runnable {
         //拿出high等级消极进行聚合
         Map<String, List<MessageSendInfo>> highLevel = messageSendList.stream()
                 .filter(info -> info.getLevel().equals(Constant.HIGH)).collect(Collectors
-                        .groupingBy(t -> String.format(Constant.GROUP_COMMON_FORMAT,
-                                t.getAppName(), t.getDigest(), t.getMsg())));
+                        .groupingBy(t -> String
+                                .format(Constant.GROUP_COMMON_FORMAT, t.getAppName(), t.getDigest(),
+                                        t.getMsg())));
         List<MessageSendInfo> gatherList = gatherMessageMap(highLevel);
         //加上其它的消息
         gatherList.addAll(messageSendList.stream()
@@ -304,11 +305,9 @@ public class MessageSender implements Runnable {
         //主键
         messageSend.setIds(list.stream().map(t -> t.getIds().get(0)).collect(Collectors.toList()));
         //ip
-        messageSend.setIps(gatherIp(
-                list.stream().map(MessageSendInfo::getIps).collect(Collectors.toList())));
+        messageSend.setIps(gatherIp(list.stream().map(MessageSendInfo::getIps).collect(Collectors.toList())));
         //count
-        messageSend.setCount(
-                list.stream().map(MessageSendInfo::getCount).reduce(Integer::sum).orElse(0));
+        messageSend.setCount(list.stream().map(MessageSendInfo::getCount).reduce(Integer::sum).orElse(0));
         //start end time
         messageSend.setStartTm(list.stream().map(MessageSendInfo::getStartTm).min(Date::compareTo)
                 .orElse(list.get(0).getStartTm()));

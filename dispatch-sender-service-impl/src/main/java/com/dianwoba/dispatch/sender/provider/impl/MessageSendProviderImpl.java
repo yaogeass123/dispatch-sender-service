@@ -5,7 +5,6 @@ import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.manager.MessageLogManager;
 import com.dianwoba.dispatch.sender.provider.MessageSendProvider;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
-import com.dianwoba.dispatch.sender.util.ValidUtils;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 

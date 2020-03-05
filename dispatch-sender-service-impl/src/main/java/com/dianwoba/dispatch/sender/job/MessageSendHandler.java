@@ -34,9 +34,9 @@ public class MessageSendHandler extends AbstractJobExecuteService {
         List<MessageSendInfo> infoList = messageSends.stream()
                 .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(infoList)) {
-            Map<Long, List<MessageSendInfo>> group = infoList.stream().collect(
-                    Collectors.groupingBy(MessageSendInfo::getGroupId));
-            group.values().forEach(v->messageSendThreadPool.submit(new MessageSender(v)));
+            Map<Long, List<MessageSendInfo>> group = infoList.stream()
+                    .collect(Collectors.groupingBy(MessageSendInfo::getGroupId));
+            group.values().forEach(v -> messageSendThreadPool.submit(new MessageSender(v)));
         }
 
     }

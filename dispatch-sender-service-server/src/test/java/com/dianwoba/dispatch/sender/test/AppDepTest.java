@@ -58,9 +58,9 @@ public class AppDepTest extends UnitTestBase {
 
     @Test
     public void test() {
-//        synTest();
+        synTest();
 //        departTest();
-        depIdTest();
+//        depIdTest();
 //        System.out.println(JSONObject.toJSONString(testStaff()));
 //        long time = DateUtils.addDays(new Date(), -7).getTime();
 //        System.out.println(new Date(time));

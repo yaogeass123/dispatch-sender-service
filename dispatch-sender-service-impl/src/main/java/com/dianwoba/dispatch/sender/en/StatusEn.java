@@ -1,8 +1,6 @@
 package com.dianwoba.dispatch.sender.en;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * @author Polatis
@@ -26,7 +24,7 @@ public enum StatusEn {
     private final String statusMsg;
 
     StatusEn(int statusCode, String statusMsg) {
-        this.statusCode = (byte)statusCode;
+        this.statusCode = (byte) statusCode;
         this.statusMsg = statusMsg;
     }
 

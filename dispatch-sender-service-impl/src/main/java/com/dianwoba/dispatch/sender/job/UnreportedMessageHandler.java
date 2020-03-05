@@ -50,32 +50,32 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
         if (CollectionUtils.isEmpty(unreportedMessage)) {
             return;
         }
-        Map<String, List<MessageSend>> groupByClusterId = unreportedMessage.stream().collect(
-                Collectors.groupingBy(MessageSend::getClusterId));
+        Map<String, List<MessageSend>> groupByClusterId = unreportedMessage.stream()
+                .collect(Collectors.groupingBy(MessageSend::getClusterId));
 
-        groupByClusterId.forEach((k,v) ->{
+        groupByClusterId.forEach((k, v) -> {
             List<Long> ids = v.stream().map(MessageSend::getId).collect(Collectors.toList());
             messageSenderManager.batchUpdateIgnore(ids);
-            sendMail(buildContent(v),k);
+            sendMail(buildContent(v), k);
         });
     }
 
     private void sendMail(String content, String clusterId) {
         String mailAddress = MailUtils.getMailAddress(clusterId);
         MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder()
-                .receivers(MailReceiver.create(mailAddress))
+        MailRequest mailRequest = MailRequest.builder().receivers(MailReceiver.create(mailAddress))
                 .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_IGNORE)
                         .setContent(content)).head(mailHead).build();
         deliMailProvider.send(mailRequest);
     }
 
-    private String buildContent(List<MessageSend> list){
+    private String buildContent(List<MessageSend> list) {
         Context context = new Context();
         context.setVariable("content", "Test");
-        Map<Long, List<MessageSend>> map = list.stream().collect(Collectors.groupingBy(MessageSend::getGroupId));
+        Map<Long, List<MessageSend>> map = list.stream()
+                .collect(Collectors.groupingBy(MessageSend::getGroupId));
         Map<String, List<MailListContent>> listMap = Maps.newHashMap();
-        map.forEach((k,v) ->{
+        map.forEach((k, v) -> {
             String groupName = groupConfigManager.findGroupNameByCache(k);
             List<MailListContent> mailList = Lists.newArrayList();
             v.forEach(x -> {

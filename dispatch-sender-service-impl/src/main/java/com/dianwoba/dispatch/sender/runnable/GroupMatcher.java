@@ -1,6 +1,5 @@
 package com.dianwoba.dispatch.sender.runnable;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.cache.AppDepCache;
 import com.dianwoba.dispatch.sender.cache.GroupMatchCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
@@ -49,9 +48,9 @@ public class GroupMatcher implements Runnable {
     @Override
     public void run() {
         //1、app-digest-msg暂时按照一摸一样聚合，后期考虑计算相似度
-        Map<String, List<MessageLog>> lists = messageLogs.stream()
-                .collect(Collectors.groupingBy( log -> String.format(Constant.GROUP_COMMON_FORMAT,
-                        log.getAppName(), log.getDigest(), log.getMsg())));
+        Map<String, List<MessageLog>> lists = messageLogs.stream().collect(Collectors.groupingBy(
+                log -> String.format(Constant.GROUP_COMMON_FORMAT, log.getAppName(), log.getDigest(),
+                                log.getMsg())));
         //2、转换
         List<MessageSend> messageSend = Lists.newArrayList();
         lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
@@ -64,9 +63,8 @@ public class GroupMatcher implements Runnable {
         List<String> hasSent = messageSenderManager.hasSent(messageSend);
         if (CollectionUtils.isNotEmpty(hasSent)) {
             LOGGER.info("已发送消息内容:{}", hasSent);
-            messageSenderManager.batchSave(
-                    messageSend.stream().filter(t -> !hasSent.contains(t.getMsg()))
-                            .collect(Collectors.toList()));
+            messageSenderManager.batchSave(messageSend.stream()
+                    .filter(t -> !hasSent.contains(t.getMsg())).collect(Collectors.toList()));
         } else {
             messageSenderManager.batchSave(messageSend);
         }
@@ -79,7 +77,7 @@ public class GroupMatcher implements Runnable {
         String appName = messageSends.get(0).getAppName();
         AppDepInfo appDepInfo = appDepCache.queryFromClientCache(appName);
         String clusterId = determineClusterId(appDepInfo);
-        messageSends.forEach( messageSend -> messageSend.setClusterId(clusterId));
+        messageSends.forEach(messageSend -> messageSend.setClusterId(clusterId));
     }
 
     private GroupMatchRules matchGroup(MessageSend messageSend) {
@@ -104,6 +102,10 @@ public class GroupMatcher implements Runnable {
 
     private GroupMatchRules doMatch(MessageSend messageSend, List<String> keys) {
         for (String key : keys) {
+            // 1-1-1 keyWord:1
+            // 1-1-1 keyWord:2
+            // 1-1-1 无keyWord
+            // 会命中这三条规则，按照有无关键字排序，当关键字命中时返回。
             List<GroupMatchRules> rules = groupMatchCache.queryFromClientCache(key);
             if (CollectionUtils.isEmpty(rules)) {
                 continue;
@@ -120,24 +122,22 @@ public class GroupMatcher implements Runnable {
             });
             //todo 思考一句话可能被多个关键词命中
             for (GroupMatchRules rule : rules) {
-                if (StringUtils.isEmpty(rule.getKeyWords()) ||
-                        messageSend.getMsg().contains(rule.getKeyWords())) {
+                if (StringUtils.isEmpty(rule.getKeyWords()) || messageSend.getMsg()
+                        .contains(rule.getKeyWords())) {
                     return rule;
                 }
             }
         }
-        // TODO: 2020/2/17 兜底
         return null;
     }
 
     private GroupMatchRules backMatch(MessageSend messageSend) {
-        String key = String
-                .format(Constant.GROUP_COMMON_FORMAT, messageSend.getClusterId(), Constant.BACK,
-                        Constant.BACK);
+        String key = String.format(Constant.GROUP_COMMON_FORMAT, messageSend.getClusterId(),
+                Constant.BACK, Constant.BACK);
         List<GroupMatchRules> rules = groupMatchCache.queryFromClientCache(key);
         return rules.get(0);
     }
-    
+
     private String determineClusterId(AppDepInfo appDepInfo) {
         if (StringUtils.isNotEmpty(appDepInfo.getManualDepId())) {
             return appDepInfo.getManualDepId();

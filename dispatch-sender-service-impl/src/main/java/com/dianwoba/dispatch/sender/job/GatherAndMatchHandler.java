@@ -34,13 +34,14 @@ public class GatherAndMatchHandler extends AbstractJobExecuteService {
 
         //1、读待处理数据
         List<MessageLog> unhandledMessage = messageLogManager.queryAllUnhandled();
-        if(CollectionUtils.isEmpty(unhandledMessage)) {
+        if (CollectionUtils.isEmpty(unhandledMessage)) {
             return;
         }
         //2. 分组聚合
         Map<String, List<MessageLog>> unhandledGroup = unhandledMessage.stream().collect(Collectors
-                .groupingBy(message -> String.format(Constant.GROUP_COMMON_FORMAT, message.getAppName(),
-                        message.getExceptionType(), message.getDigest())));
+                .groupingBy(message -> String
+                        .format(Constant.GROUP_COMMON_FORMAT, message.getAppName(),
+                                message.getExceptionType(), message.getDigest())));
         //3、分组进行匹配落库
         unhandledGroup.values()
                 .forEach(list -> gatherMatchThreadPool.submit(new GroupMatcher(list)));

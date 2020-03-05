@@ -45,7 +45,7 @@ public interface Constant {
 
     String MAIL_SUBJECT_STATISTIC = "钉钉消息忽略与失败统计";
 
-    String MAIL_SUBJECT_NOT_EXIST  = "钉钉无配置机器人告警";
+    String MAIL_SUBJECT_NOT_EXIST = "钉钉无配置机器人告警";
 
     Byte TOKEN_ERROR = 1;
 

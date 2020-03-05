@@ -1,6 +1,5 @@
 package com.dianwoba.dispatch.sender.manager;
 
-import com.dianwoba.dispatch.sender.entity.AppDepExample;
 import com.dianwoba.dispatch.sender.entity.GroupMatchRules;
 import com.dianwoba.dispatch.sender.entity.GroupMatchRulesExample;
 import com.dianwoba.dispatch.sender.entity.GroupMatchRulesExample.Criteria;

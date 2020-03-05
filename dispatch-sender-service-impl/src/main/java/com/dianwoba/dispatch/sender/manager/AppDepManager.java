@@ -33,14 +33,14 @@ public class AppDepManager {
         return appDepMapper.selectByExample(example);
     }
 
-    public List<AppDep> queryLastModify(){
+    public List<AppDep> queryLastModify() {
         AppDepExample example = new AppDepExample();
         example.setOrderByClause("dep_plat_modify_time desc");
         example.limit(1);
         return appDepMapper.selectByExample(example);
     }
 
-    public List<AppDep> queryConfigExist(List<String> appNames){
+    public List<AppDep> queryConfigExist(List<String> appNames) {
         AppDepExample example = new AppDepExample();
         Criteria criteria = example.createCriteria();
         criteria.andAppNameIn(appNames);

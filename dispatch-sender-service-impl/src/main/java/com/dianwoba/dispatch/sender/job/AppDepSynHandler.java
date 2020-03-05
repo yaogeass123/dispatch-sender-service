@@ -284,7 +284,7 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
                         newestDepMap.keySet().removeAll(
                                 path.stream().map(Integer::parseInt).collect(Collectors.toList()));
                     }
-                } );
+                });
                 if (newestDepMap.keySet().size() == 1) {
                     return Lists.newArrayList(newestDepMap.keySet()).get(0);
                 }
@@ -293,7 +293,7 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
                         .map(str -> Arrays.asList(str.substring(0, str.length() - 1).split(",")))
                         .collect(Collectors.toList());
                 List<String> path = paths.get(0);
-                for (int i = 1; i < paths.size() && path.size() > 0; i ++) {
+                for (int i = 1; i < paths.size() && path.size() > 0; i++) {
                     int len = Math.min(path.size(), paths.get(i).size());
                     int index = 0;
                     while (index < len && path.get(index).equals(paths.get(i).get(index))) {

@@ -96,8 +96,7 @@ public class StatisticHandler extends AbstractJobExecuteService {
     private void sendMail(String content, String clusterId) {
         String mailAddress = MailUtils.getMailAddress(clusterId);
         MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder()
-                .receivers(MailReceiver.create(mailAddress))
+        MailRequest mailRequest = MailRequest.builder().receivers(MailReceiver.create(mailAddress))
                 .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_STATISTIC)
                         .setContent(content)).head(mailHead).build();
         deliMailProvider.send(mailRequest);

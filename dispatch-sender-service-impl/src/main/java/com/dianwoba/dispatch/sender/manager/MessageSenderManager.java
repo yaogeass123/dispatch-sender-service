@@ -36,12 +36,12 @@ public class MessageSenderManager {
         criteria.andAppNameEqualTo(messageSend.get(0).getAppName());
         criteria.andGroupIdEqualTo(messageSend.get(0).getGroupId());
         criteria.andDigestEqualTo(messageSend.get(0).getDigest());
-        criteria.andMsgIn(messageSend.stream().map(MessageSend::getMsg).distinct().collect(
-                Collectors.toList()));
+        criteria.andMsgIn(messageSend.stream().map(MessageSend::getMsg).distinct()
+                .collect(Collectors.toList()));
         //一分钟内发过的数据
         criteria.andSendTmGreaterThan(DateUtil.add(new Date(), Calendar.SECOND, -60));
         List<MessageSend> hasSent = messageSendMapper.selectByExampleSelective(example);
-        if(CollectionUtils.isEmpty(hasSent)) {
+        if (CollectionUtils.isEmpty(hasSent)) {
             return null;
         }
         return hasSent.stream().map(MessageSend::getMsg).distinct().collect(Collectors.toList());
@@ -51,20 +51,23 @@ public class MessageSenderManager {
     public void batchSave(List<MessageSend> messageSend) {
         int max = Constant.BATCH_INSERT_MAX_SIZE;
         while (messageSend.size() > max) {
-            messageSendMapper.batchInsertSelective(messageSend.subList(0, max), Column.clusterId, Column.groupId,
-                    Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
-                    Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho, Column.insertTm, Column.status);
+            messageSendMapper.batchInsertSelective(messageSend.subList(0, max), Column.clusterId,
+                    Column.groupId, Column.appName, Column.ips, Column.exceptionType, Column.digest,
+                    Column.msg, Column.level, Column.startTm, Column.endTm, Column.count,
+                    Column.atWho, Column.insertTm, Column.status);
             messageSend = messageSend.subList(max, messageSend.size());
         }
-        if(messageSend.size() > 0) {
+        if (messageSend.size() > 0) {
             messageSendMapper.batchInsertSelective(messageSend, Column.clusterId, Column.groupId,
                     Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
-                    Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho, Column.insertTm, Column.status);
+                    Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho,
+                    Column.insertTm, Column.status);
         }
     }
 
     /**
      * 本轮此待发送消息 包括十秒内所有消息与十秒前High的消息
+     *
      * @return 消息
      */
     public List<MessageSend> queryMessageToBeSent() {
@@ -93,7 +96,7 @@ public class MessageSenderManager {
         return messageSendMapper.selectByExample(example);
     }
 
-    public List<MessageSend> queryUnsentMessageWithMinute(int minute){
+    public List<MessageSend> queryUnsentMessageWithMinute(int minute) {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
@@ -101,7 +104,7 @@ public class MessageSenderManager {
         return messageSendMapper.selectByExample(example);
     }
 
-    public void batchUpdateSuccess(List<Long> ids){
+    public void batchUpdateSuccess(List<Long> ids) {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andIdIn(ids);
@@ -111,7 +114,7 @@ public class MessageSenderManager {
         messageSendMapper.updateByExampleSelective(record, example);
     }
 
-    public void batchUpdateError(ErrorInfo info){
+    public void batchUpdateError(ErrorInfo info) {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andIdIn(info.getIds());
@@ -123,7 +126,7 @@ public class MessageSenderManager {
         messageSendMapper.updateByExampleSelective(record, example);
     }
 
-    public void batchUpdateIgnore(List<Long> ids){
+    public void batchUpdateIgnore(List<Long> ids) {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andIdIn(ids);

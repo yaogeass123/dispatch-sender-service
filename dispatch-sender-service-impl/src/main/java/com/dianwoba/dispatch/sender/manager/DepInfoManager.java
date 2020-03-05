@@ -1,7 +1,5 @@
 package com.dianwoba.dispatch.sender.manager;
 
-import com.dianwoba.dispatch.sender.entity.AppDep;
-import com.dianwoba.dispatch.sender.entity.AppDepExample;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.entity.DepInfoExample;
 import com.dianwoba.dispatch.sender.entity.DepInfoExample.Criteria;
@@ -10,7 +8,6 @@ import com.dianwoba.wireless.paging.PagingSearchable;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
