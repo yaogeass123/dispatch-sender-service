@@ -1,23 +1,13 @@
 package com.dianwoba.dispatch.sender.test;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.UnitTestBase;
-import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.MailListContent;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
-import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
-import com.dianwoba.dispatch.sender.runnable.GroupMatcher;
 import com.dianwoba.dispatch.sender.runnable.MessageSender;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
-import com.dianwoba.dispatch.sender.util.MailUtils;
-import com.dianwoda.delibird.common.dto.DeliResponse;
-import com.dianwoda.delibird.mail.dto.MailBody;
-import com.dianwoda.delibird.mail.dto.MailHead;
-import com.dianwoda.delibird.mail.dto.MailReceiver;
-import com.dianwoda.delibird.mail.dto.MailRequest;
 import com.dianwoda.delibird.provider.DeliMailProvider;
 import com.google.common.collect.Maps;
 import java.util.List;
@@ -49,18 +39,22 @@ public class SendTest extends UnitTestBase {
 
     @Test
     public void doTest(){
-        test();
+        sendTest();
+//        test();
     }
 
     public void sendTest(){
-
+        ExecutorService es = Executors.newFixedThreadPool(10);
         List<MessageSend> messageSends = messageSenderManager.queryMessageToBeSent();
         List<MessageSendInfo> infoList = messageSends.stream()
                 .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
-        ExecutorService es = Executors.newFixedThreadPool(1);
-        es.submit(new MessageSender(infoList));
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(infoList)) {
+            Map<Long, List<MessageSendInfo>> group = infoList.stream()
+                    .collect(Collectors.groupingBy(MessageSendInfo::getGroupId));
+            group.values().forEach(v -> es.submit(new MessageSender(v)));
+        }
         try {
-            Thread.sleep(100000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

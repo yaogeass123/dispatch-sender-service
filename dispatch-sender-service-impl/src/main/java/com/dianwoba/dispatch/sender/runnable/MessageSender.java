@@ -5,26 +5,21 @@ import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
+import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.DingTokenConfigManager;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
-import com.dianwoba.dispatch.sender.util.MailUtils;
 import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.dispatch.utils.HttpClientUtils;
 import com.dianwoba.wireless.fundamental.util.SpringUtils;
 import com.dianwoda.delibird.dingtalk.chatbot.SendResult;
 import com.dianwoda.delibird.dingtalk.chatbot.message.TextMessage;
-import com.dianwoda.delibird.mail.dto.MailBody;
-import com.dianwoda.delibird.mail.dto.MailHead;
-import com.dianwoda.delibird.mail.dto.MailReceiver;
-import com.dianwoda.delibird.mail.dto.MailRequest;
-import com.dianwoda.delibird.provider.DeliMailProvider;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -86,13 +81,10 @@ public class MessageSender implements Runnable {
         mailSendWrapper = SpringUtils.getBean(MailSendWrapper.class);
         groupConfigManager = SpringUtils.getBean(GroupConfigManager.class);
         DingTokenConfigCache dingTokenConfigCache = SpringUtils.getBean(DingTokenConfigCache.class);
-        tokens = dingTokenConfigCache
-                .queryFromClientCache(String.format(Constant.GROUP_TOKEN_PREFIX, groupId));
-        String nextTokenStr = stringRedisTemplate.opsForValue()
-                .get(String.format(Constant.GROUP_NEXT_TOKEN, groupId));
+        tokens = dingTokenConfigCache.queryFromClientCache(String.format(Constant.GROUP_TOKEN_PREFIX, groupId));
+        String nextTokenStr = stringRedisTemplate.opsForValue().get(String.format(Constant.GROUP_NEXT_TOKEN, groupId));
         nextToken = nextTokenStr == null ? 0 : Integer.parseInt(nextTokenStr);
-        String redisTimes = stringRedisTemplate.opsForValue()
-                .get(String.format(Constant.REDIS_SEND_TIMES, groupId));
+        String redisTimes = stringRedisTemplate.opsForValue().get(String.format(Constant.REDIS_SEND_TIMES, groupId));
         sentTimes = redisTimes == null ? 0 : Integer.parseInt(redisTimes);
         success = Lists.newArrayList();
         error = Lists.newArrayList();
@@ -103,7 +95,7 @@ public class MessageSender implements Runnable {
     @Override
     public void run() {
         try {
-            if (tokens.size() == 0) {
+            if (CollectionUtils.isEmpty(tokens)) {
                 String clusterId = messageSendList.get(0).getClusterId();
                 String content = "群编号: " + groupId + "\n" + "群名称：" + findGroupName() + "\n"
                         + "无正确机器人配置，请及时处理";
@@ -164,7 +156,7 @@ public class MessageSender implements Runnable {
         int index = 0;
         //times可能发生变化，当机器人配置错误时会修改相应的可发送次数
         int count = 0;
-        while (index == messages.size() || count < times) {
+        while (index < messages.size() && count < times) {
             String msg = msgAppend(messages.get(index));
             DingTokenConfig token = tokens.get(nextToken);
             SendResult res = sendMessage(messages.get(index), msg, token);
@@ -275,14 +267,14 @@ public class MessageSender implements Runnable {
     private List<MessageSendInfo> dealHighLevelMessage() {
         //拿出high等级消极进行聚合
         Map<String, List<MessageSendInfo>> highLevel = messageSendList.stream()
-                .filter(info -> info.getLevel().equals(Constant.HIGH)).collect(Collectors
+                .filter(info -> info.getLevel().equals(LevelEn.HIGH)).collect(Collectors
                         .groupingBy(t -> String
                                 .format(Constant.GROUP_COMMON_FORMAT, t.getAppName(), t.getDigest(),
                                         t.getMsg())));
         List<MessageSendInfo> gatherList = gatherMessageMap(highLevel);
         //加上其它的消息
         gatherList.addAll(messageSendList.stream()
-                .filter(messageSend -> !messageSend.getLevel().equals(Constant.HIGH))
+                .filter(messageSend -> !messageSend.getLevel().equals(LevelEn.HIGH))
                 .collect(Collectors.toList()));
         return gatherList;
     }
@@ -290,9 +282,11 @@ public class MessageSender implements Runnable {
     private List<MessageSendInfo> gatherMessageMap(Map<String, List<MessageSendInfo>> map) {
         List<MessageSendInfo> gatherList = Lists.newArrayList();
         map.forEach((k, v) -> {
+            LOGGER.info("v.size :{}", v.size());
             if (v.size() > 1) {
                 gatherList.add(gatherMessage(v));
             } else {
+                LOGGER.info("12312312312312 :{}", v.get(0).getCount());
                 gatherList.add(v.get(0));
             }
         });
@@ -302,13 +296,12 @@ public class MessageSender implements Runnable {
     private MessageSendInfo gatherMessage(List<MessageSendInfo> list) {
         MessageSendInfo messageSend = list.get(0);
         //主键
-        messageSend.setIds(list.stream().map(t -> t.getIds().get(0)).collect(Collectors.toList()));
+        messageSend.setIds(gatherId(list.stream().map(MessageSendInfo::getIds).collect(Collectors.toList())));
         //ip
-        messageSend.setIps(gatherIp(
-                list.stream().map(MessageSendInfo::getIps).collect(Collectors.toList())));
+        messageSend.setIps(gatherIp(list.stream().map(MessageSendInfo::getIps).collect(Collectors.toList())));
         //count
-        messageSend.setCount(
-                list.stream().map(MessageSendInfo::getCount).reduce(Integer::sum).orElse(0));
+        messageSend.setCount(gatherCount(
+                list.stream().map(MessageSendInfo::getCount).collect(Collectors.toList())));
         //start end time
         messageSend.setStartTm(list.stream().map(MessageSendInfo::getStartTm).min(Date::compareTo)
                 .orElse(list.get(0).getStartTm()));
@@ -317,24 +310,33 @@ public class MessageSender implements Runnable {
         //insert time
         messageSend.setInsertTm(list.stream().map(MessageSendInfo::getInsertTm).max(Date::compareTo)
                 .orElse(new Date()));
-        LOGGER.info("gather message result: {}", JSONObject.toJSONString(messageSend));
-        LOGGER.info("gather message result : {} ", JSONObject.toJSONString(messageSend));
         return messageSend;
+    }
+
+    private int gatherCount(List<Integer> counts) {
+        int count = 0;
+        for (int i : counts) {
+            count += i;
+        }
+        return count;
+    }
+
+    private List<Long> gatherId(List<List<Long>> ids) {
+        List<Long> idList = Lists.newArrayList();
+        ids.forEach(idList::addAll);
+        return idList.stream().distinct().collect(Collectors.toList());
     }
 
     private String gatherIp(List<String> ips) {
         Set<String> ipSet = new HashSet<>();
         ips.forEach(t -> Collections.addAll(ipSet, t.split(",")));
-        StringBuilder sb = new StringBuilder();
-        ipSet.forEach(s -> sb.append(s).append(","));
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
+        return String.join(",", ipSet);
     }
 
     private static int compare(MessageSendInfo a, MessageSendInfo b) {
-        if (a.getLevel() > b.getLevel()) {
+        if (a.getLevel().getLevelCode() > b.getLevel().getLevelCode()) {
             return -1;
-        } else if (a.getLevel() < b.getLevel()) {
+        } else if (a.getLevel().getLevelCode() < b.getLevel().getLevelCode()) {
             return 1;
         } else if (a.getEndTm().compareTo(b.getEndTm()) < 0) {
             return 1;
@@ -357,12 +359,15 @@ public class MessageSender implements Runnable {
             return messageSendInfo.getMsg();
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("应用名:").append(messageSendInfo.getAppName()).append("\n");
-        sb.append("IP:").append(Arrays.toString(messageSendInfo.getIds().toArray())).append("\n");
-        sb.append("时间:").append(messageSendInfo.getStatus()).append(" - ")
-                .append(messageSendInfo.getEndTm()).append("\n");
-        sb.append("数量:").append(messageSendInfo.getCount()).append("\n");
-        sb.append("内容:").append(messageSendInfo.getMsg()).append("\n");
+        sb.append("应用名: ").append(messageSendInfo.getAppName()).append("\n");
+        sb.append("IP: ").append(messageSendInfo.getIps()).append("\n");
+        SimpleDateFormat sdf = new SimpleDateFormat(Constant.DATE_FORMAT);
+        sb.append("时间: ").append(sdf.format(messageSendInfo.getStartTm())).append(" - ")
+                .append(sdf.format(messageSendInfo.getEndTm())).append("\n");
+        sb.append("数量: ").append(messageSendInfo.getCount()).append("\n");
+        sb.append("堆栈: ").append(messageSendInfo.getDigest()).append("\n");
+        sb.append("消息等级: ").append(messageSendInfo.getLevel().getLevelMsg()).append("\n");
+        sb.append("内容: ").append(messageSendInfo.getMsg()).append("\n");
         return sb.toString();
     }
 

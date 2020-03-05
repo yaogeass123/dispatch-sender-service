@@ -17,13 +17,9 @@ public interface Constant {
 
     String BACK = "back";
 
-    Byte LOW = 1;
-
-    Byte MEDIUM = 2;
-
-    Byte HIGH = 3;
-
     Integer FIFTY = 50;
+
+    String AT_ALL = "atAll";
 
     String SUCCESS = "success";
 
@@ -50,4 +46,7 @@ public interface Constant {
     Byte TOKEN_NORMAL = 0;
 
     Integer BATCH_INSERT_MAX_SIZE = 500;
+
+    String DATE_FORMAT = "HH:mm:ss";
+
 }

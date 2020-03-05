@@ -20,6 +20,7 @@ public class MessageLogManager {
     private MessageLogMapper messageLogMapper;
 
     public void save(MessageLog messageLog) {
+        messageLog.setHandled(false);
         messageLogMapper.insertSelective(messageLog);
     }
 

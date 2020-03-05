@@ -11,6 +11,8 @@ import com.dianwoda.delibird.mail.dto.MailRequest;
 import com.dianwoda.delibird.provider.DeliMailProvider;
 import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MailSendWrapper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailSendWrapper.class);
 
     @Value("${defaultMailAddress:yaochenguang@dianwoda.com}")
     private String defaultMailAddress;
@@ -56,12 +60,13 @@ public class MailSendWrapper {
     }
 
     public void sendMail(String content, String mailAddress, String subject) {
-        MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder()
-                .receivers(MailReceiver.create(mailAddress.split(",")))
-                .body(MailBody.create().setSubject(subject).setContent(content)).head(mailHead)
-                .build();
-        deliMailProvider.send(mailRequest);
+        LOGGER.info(content);
+//        MailHead mailHead = MailHead.create();
+//        MailRequest mailRequest = MailRequest.builder()
+//                .receivers(MailReceiver.create(mailAddress.split(",")))
+//                .body(MailBody.create().setSubject(subject).setContent(content)).head(mailHead)
+//                .build();
+//        deliMailProvider.send(mailRequest);
     }
 
 }

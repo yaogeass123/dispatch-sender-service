@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,10 +32,17 @@ public class GroupMatchCache extends
     @Override
     public Cache<String, List<GroupMatchRules>> buildCache(List<GroupMatchRules> list) {
         Cache<String, List<GroupMatchRules>> cache = Caffeine.newBuilder().build();
-        Map<String, List<GroupMatchRules>> map = list.stream().collect(Collectors.groupingBy(
-                rule -> String
-                        .format(Constant.GROUP_COMMON_FORMAT, rule.getAppDep(), rule.getException(),
-                                rule.getAppName())));
+        Map<String, List<GroupMatchRules>> map = list.stream().collect(Collectors.groupingBy(rule -> {
+                String exception = rule.getException();
+                String name = rule.getAppName();
+                if (StringUtils.isEmpty(exception)) {
+                    exception = Constant.BACK;
+                }
+                if (StringUtils.isEmpty(name)) {
+                    name = Constant.BACK;
+                }
+                return String.format(Constant.GROUP_COMMON_FORMAT, rule.getAppDep(), exception, name);
+            }));
         cache.putAll(map);
         return cache;
     }

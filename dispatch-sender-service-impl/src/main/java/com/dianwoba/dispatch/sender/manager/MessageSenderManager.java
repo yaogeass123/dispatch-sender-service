@@ -2,6 +2,7 @@ package com.dianwoba.dispatch.sender.manager;
 
 import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
+import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.entity.MessageSend.Column;
@@ -9,6 +10,7 @@ import com.dianwoba.dispatch.sender.entity.MessageSendExample;
 import com.dianwoba.dispatch.sender.entity.MessageSendExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.MessageSendMapper;
 import com.dianwoba.wireless.treasure.util.DateUtil;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -80,20 +82,22 @@ public class MessageSenderManager {
         MessageSendExample example2 = new MessageSendExample();
         Criteria criteria2 = example2.createCriteria();
         criteria2.andStatusEqualTo(StatusEn.INIT.getStatusCode());
-        criteria2.andLevelEqualTo(Constant.HIGH);
+        criteria2.andLevelEqualTo(LevelEn.HIGH.getLevelCode());
         criteria2.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
         lists.addAll(messageSendMapper.selectByExample(example2));
         return lists;
     }
 
     public List<MessageSend> queryUnSentMessage4Retry(long groupId) {
-        MessageSendExample example = new MessageSendExample();
-        Criteria criteria = example.createCriteria();
-        criteria.andGroupIdEqualTo(groupId);
-        criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
-        criteria.andLevelLessThan(Constant.HIGH);
-        criteria.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
-        return messageSendMapper.selectByExample(example);
+        //测试时使用 所以先注释掉，其它的时间信息也同样
+        return new ArrayList<>();
+//        MessageSendExample example = new MessageSendExample();
+//        Criteria criteria = example.createCriteria();
+//        criteria.andGroupIdEqualTo(groupId);
+//        criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
+//        criteria.andLevelLessThan(LevelEn.HIGH.getLevelCode());
+//        criteria.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
+//        return messageSendMapper.selectByExample(example);
     }
 
     public List<MessageSend> queryUnsentMessageWithMinute(int minute) {
@@ -110,6 +114,7 @@ public class MessageSenderManager {
         criteria.andIdIn(ids);
         criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
         MessageSend record = new MessageSend();
+        record.setSendTm(new Date());
         record.setStatus(StatusEn.SUCCESS.getStatusCode());
         messageSendMapper.updateByExampleSelective(record, example);
     }

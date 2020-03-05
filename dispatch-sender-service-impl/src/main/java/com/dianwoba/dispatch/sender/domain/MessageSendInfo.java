@@ -1,5 +1,6 @@
 package com.dianwoba.dispatch.sender.domain;
 
+import com.dianwoba.dispatch.sender.en.LevelEn;
 import java.util.Date;
 import java.util.List;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class MessageSendInfo {
 
     private String msg;
 
-    private Byte level;
+    private LevelEn level;
 
     private Date startTm;
 

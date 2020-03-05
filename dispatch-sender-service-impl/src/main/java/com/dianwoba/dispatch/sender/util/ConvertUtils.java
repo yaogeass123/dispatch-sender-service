@@ -1,9 +1,11 @@
 package com.dianwoba.dispatch.sender.util;
 
+import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.AppDepInfo;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
+import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
@@ -27,11 +29,11 @@ public class ConvertUtils {
         messageLog.setAppName(messageSendDTO.getAppName());
         messageLog.setDigest(messageSendDTO.getDigest());
         messageLog.setMsg(messageSendDTO.getMsg());
-        messageLog.setLevel(messageSendDTO.getLevel());
-        messageLog.setTime(new Date(messageSendDTO.getTime()));
+        messageLog.setLevel(messageSendDTO.getLevel().getLevelCode());
+        messageLog.setTime(messageSendDTO.getTime());
         messageLog.setIp(messageSendDTO.getIp());
         if (StringUtils.isEmpty(messageSendDTO.getExceptionType())) {
-            messageLog.setExceptionType("OthersException");
+            messageLog.setExceptionType(Constant.DING_MESSAGE);
         } else {
             messageLog.setExceptionType(messageSendDTO.getExceptionType());
         }
@@ -51,7 +53,7 @@ public class ConvertUtils {
         messageSend.setStatus(StatusEn.INIT.getStatusCode());
         messageSend.setInsertTm(new Date());
         if (messageLogs.size() > 1) {
-            List<String> ipList = messageLogs.stream().map(MessageLog::getIp)
+            List<String> ipList = messageLogs.stream().map(MessageLog::getIp).distinct()
                     .collect(Collectors.toList());
             if (ipList.size() > 1) {
                 StringBuilder ips = new StringBuilder();
@@ -107,7 +109,7 @@ public class ConvertUtils {
         info.setExceptionType(messageSend.getExceptionType());
         info.setDigest(messageSend.getDigest());
         info.setMsg(messageSend.getMsg());
-        info.setLevel(messageSend.getLevel());
+        info.setLevel(LevelEn.get(messageSend.getLevel()));
         info.setStartTm(messageSend.getStartTm());
         info.setEndTm(messageSend.getEndTm());
         info.setCount(messageSend.getCount());
