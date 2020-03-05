@@ -17,8 +17,6 @@ public interface Constant {
 
     String BACK = "back";
 
-    String ALL = "all";
-
     Byte LOW = 1;
 
     Byte MEDIUM = 2;

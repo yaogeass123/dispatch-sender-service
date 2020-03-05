@@ -7,6 +7,7 @@
     <result column="parent" jdbcType="INTEGER" property="parent" />
     <result column="path" jdbcType="VARCHAR" property="path" />
     <result column="newest" jdbcType="INTEGER" property="newest" />
+    <result column="mail" jdbcType="VARCHAR" property="mail" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
   </resultMap>
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, parent, path, newest, create_time, modify_time
+    id, name, parent, path, newest, mail, create_time, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.DepInfoExample" resultMap="BaseResultMap">
     select
@@ -110,7 +111,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, name, parent, path, newest, create_time, modify_time
+        id, name, parent, path, newest, mail, create_time, modify_time
       </otherwise>
     </choose>
     from `dep_info`
@@ -141,7 +142,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, name, parent, path, newest, create_time, modify_time
+        id, name, parent, path, newest, mail, create_time, modify_time
       </otherwise>
     </choose>
     from `dep_info`
@@ -159,11 +160,11 @@
   </delete>
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.DepInfo">
     insert into `dep_info` (id, name, parent, 
-      path, newest, create_time, 
-      modify_time)
+      path, newest, mail, 
+      create_time, modify_time)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{parent,jdbcType=INTEGER}, 
-      #{path,jdbcType=VARCHAR}, #{newest,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{modifyTime,jdbcType=TIMESTAMP})
+      #{path,jdbcType=VARCHAR}, #{newest,jdbcType=INTEGER}, #{mail,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.DepInfo">
     insert into `dep_info`
@@ -182,6 +183,9 @@
       </if>
       <if test="newest != null">
         newest,
+      </if>
+      <if test="mail != null">
+        mail,
       </if>
       <if test="createTime != null">
         create_time,
@@ -205,6 +209,9 @@
       </if>
       <if test="newest != null">
         #{newest,jdbcType=INTEGER},
+      </if>
+      <if test="mail != null">
+        #{mail,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -238,6 +245,9 @@
       <if test="record.newest != null">
         newest = #{record.newest,jdbcType=INTEGER},
       </if>
+      <if test="record.mail != null">
+        mail = #{record.mail,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
@@ -256,6 +266,7 @@
       parent = #{record.parent,jdbcType=INTEGER},
       path = #{record.path,jdbcType=VARCHAR},
       newest = #{record.newest,jdbcType=INTEGER},
+      mail = #{record.mail,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       modify_time = #{record.modifyTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
@@ -277,6 +288,9 @@
       <if test="newest != null">
         newest = #{newest,jdbcType=INTEGER},
       </if>
+      <if test="mail != null">
+        mail = #{mail,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -292,6 +306,7 @@
       parent = #{parent,jdbcType=INTEGER},
       path = #{path,jdbcType=VARCHAR},
       newest = #{newest,jdbcType=INTEGER},
+      mail = #{mail,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       modify_time = #{modifyTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
@@ -303,12 +318,12 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `dep_info`
-    (id, name, parent, path, newest, create_time, modify_time)
+    (id, name, parent, path, newest, mail, create_time, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=INTEGER}, #{item.name,jdbcType=VARCHAR}, #{item.parent,jdbcType=INTEGER}, 
-        #{item.path,jdbcType=VARCHAR}, #{item.newest,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
-        #{item.modifyTime,jdbcType=TIMESTAMP})
+        #{item.path,jdbcType=VARCHAR}, #{item.newest,jdbcType=INTEGER}, #{item.mail,jdbcType=VARCHAR}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -340,6 +355,9 @@
         </if>
         <if test="'newest' == column.value">
           #{item.newest,jdbcType=INTEGER}
+        </if>
+        <if test="'mail' == column.value">
+          #{item.mail,jdbcType=VARCHAR}
         </if>
         <if test="'create_time' == column.value">
           #{item.createTime,jdbcType=TIMESTAMP}

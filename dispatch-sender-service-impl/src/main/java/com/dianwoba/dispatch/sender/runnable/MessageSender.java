@@ -1,7 +1,6 @@
 package com.dianwoba.dispatch.sender.runnable;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dianwoba.dispatch.sender.cache.AppDepCache;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
@@ -13,6 +12,7 @@ import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
 import com.dianwoba.dispatch.sender.util.MailUtils;
+import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.dispatch.utils.HttpClientUtils;
 import com.dianwoba.wireless.fundamental.util.SpringUtils;
 import com.dianwoda.delibird.dingtalk.chatbot.SendResult;
@@ -69,11 +69,9 @@ public class MessageSender implements Runnable {
 
     private int sentTimes;
 
-    private DeliMailProvider deliMailProvider;
+    private MailSendWrapper mailSendWrapper;
 
     private DingTokenConfigManager dingTokenConfigManager;
-
-    private AppDepCache appDepCache;
 
     private GroupConfigManager groupConfigManager;
 
@@ -85,8 +83,7 @@ public class MessageSender implements Runnable {
         messageSenderManager = SpringUtils.getBean(MessageSenderManager.class);
         stringRedisTemplate = SpringUtils.getBean(StringRedisTemplate.class);
         dingTokenConfigManager = SpringUtils.getBean(DingTokenConfigManager.class);
-        deliMailProvider = SpringUtils.getBean(DeliMailProvider.class);
-        appDepCache = SpringUtils.getBean(AppDepCache.class);
+        mailSendWrapper = SpringUtils.getBean(MailSendWrapper.class);
         groupConfigManager = SpringUtils.getBean(GroupConfigManager.class);
         DingTokenConfigCache dingTokenConfigCache = SpringUtils.getBean(DingTokenConfigCache.class);
         tokens = dingTokenConfigCache
@@ -110,7 +107,8 @@ public class MessageSender implements Runnable {
                 String clusterId = messageSendList.get(0).getClusterId();
                 String content = "群编号: " + groupId + "\n" + "群名称：" + findGroupName() + "\n"
                         + "无正确机器人配置，请及时处理";
-                sendMail(content, clusterId, Constant.MAIL_SUBJECT_NOT_EXIST);
+                String mailAddress = mailSendWrapper.getMailAddress(clusterId);
+                mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_EXIST);
                 return;
             }
             //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
@@ -183,7 +181,8 @@ public class MessageSender implements Runnable {
             } else {
                 int errorCode = res.getErrorCode();
                 StringBuilder sb = new StringBuilder();
-                if (errorCode == Constant.DING_PARAM_ERROR || errorCode == Constant.DING_VALID_ERROR) {
+                if (errorCode == Constant.DING_PARAM_ERROR
+                        || errorCode == Constant.DING_VALID_ERROR) {
                     sb.append("群组编号: ").append(groupId).append("\n");
                     sb.append("群名称：").append(findGroupName()).append("\n");
                     sb.append(tokens.get(nextToken).getId()).append("号机器人配置错误，请及时检查修改");
@@ -214,17 +213,17 @@ public class MessageSender implements Runnable {
                             .convert2ErrorInfo(res, messages.get(index).getIds());
                     error.add(errorInfo);
                 }
-                sendMail(sb.toString(), messages.get(index).getClusterId(),
-                        Constant.MAIL_SUBJECT_SEND_ERROR);
+                String mailAddress = mailSendWrapper.getMailAddress(messages.get(index).getClusterId(),
+                        messages.get(index).getAppName());
+                mailSendWrapper.sendMail(sb.toString(), mailAddress, Constant.MAIL_SUBJECT_SEND_ERROR);
             }
-        }
-        return Math.max(times - count, 0);
+        } return Math.max(times - count, 0);
     }
 
     private SendResult sendMessage(MessageSendInfo messageSend, String msg, DingTokenConfig token) {
         try {
             TextMessage textMessage = new TextMessage(msg);
-            if (Constant.ALL.equals(messageSend.getAtWho())) {
+            if (messageSend.getAtAll()) {
                 textMessage.setIsAtAll(true);
             } else {
                 textMessage.setAtMobiles(Lists.newArrayList(messageSend.getAtWho().split(",")));
@@ -305,9 +304,11 @@ public class MessageSender implements Runnable {
         //主键
         messageSend.setIds(list.stream().map(t -> t.getIds().get(0)).collect(Collectors.toList()));
         //ip
-        messageSend.setIps(gatherIp(list.stream().map(MessageSendInfo::getIps).collect(Collectors.toList())));
+        messageSend.setIps(gatherIp(
+                list.stream().map(MessageSendInfo::getIps).collect(Collectors.toList())));
         //count
-        messageSend.setCount(list.stream().map(MessageSendInfo::getCount).reduce(Integer::sum).orElse(0));
+        messageSend.setCount(
+                list.stream().map(MessageSendInfo::getCount).reduce(Integer::sum).orElse(0));
         //start end time
         messageSend.setStartTm(list.stream().map(MessageSendInfo::getStartTm).min(Date::compareTo)
                 .orElse(list.get(0).getStartTm()));
@@ -365,17 +366,7 @@ public class MessageSender implements Runnable {
         return sb.toString();
     }
 
-    private void sendMail(String content, String clusterId, String subject) {
-        String mailAddress = MailUtils.getMailAddress(clusterId);
-        MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder()
-                .receivers(MailReceiver.create(mailAddress.split(",")))
-                .body(MailBody.create().setSubject(subject).setContent(content)).head(mailHead)
-                .build();
-        deliMailProvider.send(mailRequest);
-    }
-
-    private String findGroupName(){
-       return groupConfigManager.findGroupNameByCache(groupId);
+    private String findGroupName() {
+        return groupConfigManager.findGroupNameByCache(groupId);
     }
 }

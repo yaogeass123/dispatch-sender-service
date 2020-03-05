@@ -6,13 +6,9 @@ import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
-import com.dianwoba.dispatch.sender.util.MailUtils;
+import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
 import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
-import com.dianwoda.delibird.mail.dto.MailBody;
-import com.dianwoda.delibird.mail.dto.MailHead;
-import com.dianwoda.delibird.mail.dto.MailReceiver;
-import com.dianwoda.delibird.mail.dto.MailRequest;
 import com.dianwoda.delibird.provider.DeliMailProvider;
 import com.google.common.collect.Maps;
 import java.util.List;
@@ -44,6 +40,9 @@ public class StatisticHandler extends AbstractJobExecuteService {
     @Resource
     private GroupConfigManager groupConfigManager;
 
+    @Resource
+    private MailSendWrapper mailSendWrapper;
+
     @Override
     public void doExecute(ExecuteContext executeContext) {
         List<MessageSend> messageSendList = messageSenderManager.statisticMessage();
@@ -51,7 +50,8 @@ public class StatisticHandler extends AbstractJobExecuteService {
                 .collect(Collectors.groupingBy(MessageSend::getClusterId));
         divideByCluster.forEach((k, v) -> {
             String content = buildClusterContent(v);
-            sendMail(content, k);
+            String mailAddress = mailSendWrapper.getMailAddress(k);
+            mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_STATISTIC);
         });
     }
 
@@ -91,14 +91,5 @@ public class StatisticHandler extends AbstractJobExecuteService {
         context.setVariable("content", "统计");
         context.setVariable("map", map);
         return templateEngine.process("statisticTemplate", context);
-    }
-
-    private void sendMail(String content, String clusterId) {
-        String mailAddress = MailUtils.getMailAddress(clusterId);
-        MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder().receivers(MailReceiver.create(mailAddress))
-                .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_STATISTIC)
-                        .setContent(content)).head(mailHead).build();
-        deliMailProvider.send(mailRequest);
     }
 }

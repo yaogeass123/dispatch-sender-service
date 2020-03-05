@@ -22,6 +22,8 @@ public class GroupMatchRules implements Serializable {
 
     private String atWho;
 
+    private Boolean atAll;
+
     private Boolean isActive;
 
     private String creator;
@@ -98,6 +100,14 @@ public class GroupMatchRules implements Serializable {
         this.atWho = atWho == null ? null : atWho.trim();
     }
 
+    public Boolean getAtAll() {
+        return atAll;
+    }
+
+    public void setAtAll(Boolean atAll) {
+        this.atAll = atAll;
+    }
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -154,6 +164,7 @@ public class GroupMatchRules implements Serializable {
         groupId("group_id", "groupId", "BIGINT"),
         level("level", "level", "TINYINT"),
         atWho("at_who", "atWho", "VARCHAR"),
+        atAll("at_all", "atAll", "BIT"),
         isActive("is_active", "isActive", "BIT"),
         creator("creator", "creator", "VARCHAR"),
         createTime("create_time", "createTime", "TIMESTAMP"),

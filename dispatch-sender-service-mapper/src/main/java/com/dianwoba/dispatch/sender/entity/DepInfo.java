@@ -16,6 +16,8 @@ public class DepInfo implements Serializable {
 
     private Integer newest;
 
+    private String mail;
+
     private Date createTime;
 
     private Date modifyTime;
@@ -62,6 +64,14 @@ public class DepInfo implements Serializable {
         this.newest = newest;
     }
 
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail == null ? null : mail.trim();
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -91,6 +101,7 @@ public class DepInfo implements Serializable {
         parent("parent", "parent", "INTEGER"),
         path("path", "path", "VARCHAR"),
         newest("newest", "newest", "INTEGER"),
+        mail("mail", "mail", "VARCHAR"),
         createTime("create_time", "createTime", "TIMESTAMP"),
         modifyTime("modify_time", "modifyTime", "TIMESTAMP");
 

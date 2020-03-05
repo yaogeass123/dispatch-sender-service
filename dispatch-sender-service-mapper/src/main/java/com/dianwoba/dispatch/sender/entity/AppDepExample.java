@@ -508,6 +508,76 @@ public class AppDepExample {
             return (Criteria) this;
         }
 
+        public Criteria andOwnersMailIsNull() {
+            addCriterion("owners_mail is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailIsNotNull() {
+            addCriterion("owners_mail is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailEqualTo(String value) {
+            addCriterion("owners_mail =", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailNotEqualTo(String value) {
+            addCriterion("owners_mail <>", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailGreaterThan(String value) {
+            addCriterion("owners_mail >", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailGreaterThanOrEqualTo(String value) {
+            addCriterion("owners_mail >=", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailLessThan(String value) {
+            addCriterion("owners_mail <", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailLessThanOrEqualTo(String value) {
+            addCriterion("owners_mail <=", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailLike(String value) {
+            addCriterion("owners_mail like", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailNotLike(String value) {
+            addCriterion("owners_mail not like", value, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailIn(List<String> values) {
+            addCriterion("owners_mail in", values, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailNotIn(List<String> values) {
+            addCriterion("owners_mail not in", values, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailBetween(String value1, String value2) {
+            addCriterion("owners_mail between", value1, value2, "ownersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andOwnersMailNotBetween(String value1, String value2) {
+            addCriterion("owners_mail not between", value1, value2, "ownersMail");
+            return (Criteria) this;
+        }
+
         public Criteria andDevelopersDepIdIsNull() {
             addCriterion("developers_dep_id is null");
             return (Criteria) this;
@@ -645,6 +715,76 @@ public class AppDepExample {
 
         public Criteria andDevelopersPhoneNotBetween(String value1, String value2) {
             addCriterion("developers_phone not between", value1, value2, "developersPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailIsNull() {
+            addCriterion("developers_mail is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailIsNotNull() {
+            addCriterion("developers_mail is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailEqualTo(String value) {
+            addCriterion("developers_mail =", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailNotEqualTo(String value) {
+            addCriterion("developers_mail <>", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailGreaterThan(String value) {
+            addCriterion("developers_mail >", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailGreaterThanOrEqualTo(String value) {
+            addCriterion("developers_mail >=", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailLessThan(String value) {
+            addCriterion("developers_mail <", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailLessThanOrEqualTo(String value) {
+            addCriterion("developers_mail <=", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailLike(String value) {
+            addCriterion("developers_mail like", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailNotLike(String value) {
+            addCriterion("developers_mail not like", value, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailIn(List<String> values) {
+            addCriterion("developers_mail in", values, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailNotIn(List<String> values) {
+            addCriterion("developers_mail not in", values, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailBetween(String value1, String value2) {
+            addCriterion("developers_mail between", value1, value2, "developersMail");
+            return (Criteria) this;
+        }
+
+        public Criteria andDevelopersMailNotBetween(String value1, String value2) {
+            addCriterion("developers_mail not between", value1, value2, "developersMail");
             return (Criteria) this;
         }
 

@@ -21,9 +21,13 @@ public class AppDepInfo implements Serializable {
 
     private String ownersPhone;
 
+    private String ownersMail;
+
     private String developersDepId;
 
     private String developersPhone;
+
+    private String developersMail;
 
     private String depId;
 

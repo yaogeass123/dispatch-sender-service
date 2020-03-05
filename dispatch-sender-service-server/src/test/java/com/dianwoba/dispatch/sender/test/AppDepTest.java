@@ -221,8 +221,11 @@ public class AppDepTest extends UnitTestBase {
                         .collect(Collectors.toList());
                 List<String> developersPhone = developerDTO.stream().map(StaffDTO::getMobile)
                         .filter(Objects::nonNull).collect(Collectors.toList());
+                List<String> developersMail = developerDTO.stream().map(StaffDTO::getEmail)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 app.setDevelopersDepId(String.join(",", developersDepId));
                 app.setDevelopersPhone(String.join(",", developersPhone));
+                app.setDevelopersMail(String.join(",", developersMail));
             }
         }
         if (StringUtils.isNotEmpty(depPlatformAppDTO.getOwnersCode())) {
@@ -235,8 +238,11 @@ public class AppDepTest extends UnitTestBase {
                         .collect(Collectors.toList());
                 List<String> ownersPhone = ownersDTO.stream().map(StaffDTO::getMobile)
                         .filter(Objects::nonNull).collect(Collectors.toList());
+                List<String> ownersMail = ownersDTO.stream().map(StaffDTO::getEmail)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 app.setOwnersDepId(String.join(",", ownersDepId));
                 app.setOwnersPhone(String.join(",", ownersPhone));
+                app.setOwnersMail(String.join(",", ownersMail));
             }
         }
         if (StringUtils.isEmpty(app.getDevelopersDepId()) && StringUtils

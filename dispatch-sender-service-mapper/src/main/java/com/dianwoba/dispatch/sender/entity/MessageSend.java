@@ -32,6 +32,8 @@ public class MessageSend implements Serializable {
 
     private String atWho;
 
+    private Boolean atAll;
+
     private Date insertTm;
 
     private Byte status;
@@ -148,6 +150,14 @@ public class MessageSend implements Serializable {
         this.atWho = atWho == null ? null : atWho.trim();
     }
 
+    public Boolean getAtAll() {
+        return atAll;
+    }
+
+    public void setAtAll(Boolean atAll) {
+        this.atAll = atAll;
+    }
+
     public Date getInsertTm() {
         return insertTm;
     }
@@ -209,6 +219,7 @@ public class MessageSend implements Serializable {
         endTm("end_tm", "endTm", "TIMESTAMP"),
         count("count", "count", "INTEGER"),
         atWho("at_who", "atWho", "VARCHAR"),
+        atAll("at_all", "atAll", "BIT"),
         insertTm("insert_tm", "insertTm", "TIMESTAMP"),
         status("status", "status", "TINYINT"),
         sendTm("send_tm", "sendTm", "TIMESTAMP"),

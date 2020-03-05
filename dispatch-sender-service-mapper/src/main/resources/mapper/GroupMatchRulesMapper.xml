@@ -10,6 +10,7 @@
     <result column="group_id" jdbcType="BIGINT" property="groupId" />
     <result column="level" jdbcType="TINYINT" property="level" />
     <result column="at_who" jdbcType="VARCHAR" property="atWho" />
+    <result column="at_all" jdbcType="BIT" property="atAll" />
     <result column="is_active" jdbcType="BIT" property="isActive" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -75,7 +76,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, app_dep, exception, app_name, key_words, group_id, level, at_who, is_active, 
+    id, app_dep, exception, app_name, key_words, group_id, level, at_who, at_all, is_active, 
     creator, create_time, modifier, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRulesExample" resultMap="BaseResultMap">
@@ -117,7 +118,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_dep, exception, app_name, key_words, group_id, level, at_who, is_active, 
+        id, app_dep, exception, app_name, key_words, group_id, level, at_who, at_all, is_active, 
           creator, create_time, modifier, modify_time
       </otherwise>
     </choose>
@@ -149,7 +150,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_dep, exception, app_name, key_words, group_id, level, at_who, is_active, 
+        id, app_dep, exception, app_name, key_words, group_id, level, at_who, at_all, is_active, 
           creator, create_time, modifier, modify_time
       </otherwise>
     </choose>
@@ -169,12 +170,12 @@
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.GroupMatchRules">
     insert into `group_match_rules` (id, app_dep, exception, 
       app_name, key_words, group_id, 
-      level, at_who, is_active, 
+      level, at_who, at_all, is_active, 
       creator, create_time, modifier, 
       modify_time)
     values (#{id,jdbcType=BIGINT}, #{appDep,jdbcType=VARCHAR}, #{exception,jdbcType=VARCHAR}, 
       #{appName,jdbcType=VARCHAR}, #{keyWords,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
-      #{level,jdbcType=TINYINT}, #{atWho,jdbcType=VARCHAR}, #{isActive,jdbcType=BIT}, 
+      #{level,jdbcType=TINYINT}, #{atWho,jdbcType=VARCHAR}, #{atAll,jdbcType=BIT}, #{isActive,jdbcType=BIT}, 
       #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, 
       #{modifyTime,jdbcType=TIMESTAMP})
   </insert>
@@ -204,6 +205,9 @@
       </if>
       <if test="atWho != null">
         at_who,
+      </if>
+      <if test="atAll != null">
+        at_all,
       </if>
       <if test="isActive != null">
         is_active,
@@ -245,6 +249,9 @@
       </if>
       <if test="atWho != null">
         #{atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="atAll != null">
+        #{atAll,jdbcType=BIT},
       </if>
       <if test="isActive != null">
         #{isActive,jdbcType=BIT},
@@ -296,6 +303,9 @@
       <if test="record.atWho != null">
         at_who = #{record.atWho,jdbcType=VARCHAR},
       </if>
+      <if test="record.atAll != null">
+        at_all = #{record.atAll,jdbcType=BIT},
+      </if>
       <if test="record.isActive != null">
         is_active = #{record.isActive,jdbcType=BIT},
       </if>
@@ -326,6 +336,7 @@
       group_id = #{record.groupId,jdbcType=BIGINT},
       level = #{record.level,jdbcType=TINYINT},
       at_who = #{record.atWho,jdbcType=VARCHAR},
+      at_all = #{record.atAll,jdbcType=BIT},
       is_active = #{record.isActive,jdbcType=BIT},
       creator = #{record.creator,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -359,6 +370,9 @@
       <if test="atWho != null">
         at_who = #{atWho,jdbcType=VARCHAR},
       </if>
+      <if test="atAll != null">
+        at_all = #{atAll,jdbcType=BIT},
+      </if>
       <if test="isActive != null">
         is_active = #{isActive,jdbcType=BIT},
       </if>
@@ -386,6 +400,7 @@
       group_id = #{groupId,jdbcType=BIGINT},
       level = #{level,jdbcType=TINYINT},
       at_who = #{atWho,jdbcType=VARCHAR},
+      at_all = #{atAll,jdbcType=BIT},
       is_active = #{isActive,jdbcType=BIT},
       creator = #{creator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -400,15 +415,15 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `group_match_rules`
-    (id, app_dep, exception, app_name, key_words, group_id, level, at_who, is_active, 
+    (id, app_dep, exception, app_name, key_words, group_id, level, at_who, at_all, is_active, 
       creator, create_time, modifier, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.appDep,jdbcType=VARCHAR}, #{item.exception,jdbcType=VARCHAR}, 
         #{item.appName,jdbcType=VARCHAR}, #{item.keyWords,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
-        #{item.level,jdbcType=TINYINT}, #{item.atWho,jdbcType=VARCHAR}, #{item.isActive,jdbcType=BIT}, 
-        #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, 
-        #{item.modifyTime,jdbcType=TIMESTAMP})
+        #{item.level,jdbcType=TINYINT}, #{item.atWho,jdbcType=VARCHAR}, #{item.atAll,jdbcType=BIT}, 
+        #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -449,6 +464,9 @@
         </if>
         <if test="'at_who' == column.value">
           #{item.atWho,jdbcType=VARCHAR}
+        </if>
+        <if test="'at_all' == column.value">
+          #{item.atAll,jdbcType=BIT}
         </if>
         <if test="'is_active' == column.value">
           #{item.isActive,jdbcType=BIT}

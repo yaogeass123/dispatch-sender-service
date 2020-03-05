@@ -41,6 +41,8 @@ public class MessageSendInfo {
 
     private String atWho;
 
+    private Boolean atAll;
+
     private Date insertTm;
 
     private Byte status;

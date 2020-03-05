@@ -768,6 +768,66 @@ public class GroupMatchRulesExample {
             return (Criteria) this;
         }
 
+        public Criteria andAtAllIsNull() {
+            addCriterion("at_all is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllIsNotNull() {
+            addCriterion("at_all is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllEqualTo(Boolean value) {
+            addCriterion("at_all =", value, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllNotEqualTo(Boolean value) {
+            addCriterion("at_all <>", value, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllGreaterThan(Boolean value) {
+            addCriterion("at_all >", value, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("at_all >=", value, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllLessThan(Boolean value) {
+            addCriterion("at_all <", value, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllLessThanOrEqualTo(Boolean value) {
+            addCriterion("at_all <=", value, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllIn(List<Boolean> values) {
+            addCriterion("at_all in", values, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllNotIn(List<Boolean> values) {
+            addCriterion("at_all not in", values, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllBetween(Boolean value1, Boolean value2) {
+            addCriterion("at_all between", value1, value2, "atAll");
+            return (Criteria) this;
+        }
+
+        public Criteria andAtAllNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("at_all not between", value1, value2, "atAll");
+            return (Criteria) this;
+        }
+
         public Criteria andIsActiveIsNull() {
             addCriterion("is_active is null");
             return (Criteria) this;

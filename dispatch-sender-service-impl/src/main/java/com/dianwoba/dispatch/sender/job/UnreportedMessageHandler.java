@@ -5,13 +5,9 @@ import com.dianwoba.dispatch.sender.domain.MailListContent;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
-import com.dianwoba.dispatch.sender.util.MailUtils;
+import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
 import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
-import com.dianwoda.delibird.mail.dto.MailBody;
-import com.dianwoda.delibird.mail.dto.MailHead;
-import com.dianwoda.delibird.mail.dto.MailReceiver;
-import com.dianwoda.delibird.mail.dto.MailRequest;
 import com.dianwoda.delibird.provider.DeliMailProvider;
 import com.google.common.collect.Maps;
 import java.util.List;
@@ -43,6 +39,9 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
     @Resource
     private GroupConfigManager groupConfigManager;
 
+    @Resource
+    private MailSendWrapper mailSendWrapper;
+
     @Override
     public void doExecute(ExecuteContext executeContext) {
 
@@ -56,17 +55,9 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
         groupByClusterId.forEach((k, v) -> {
             List<Long> ids = v.stream().map(MessageSend::getId).collect(Collectors.toList());
             messageSenderManager.batchUpdateIgnore(ids);
-            sendMail(buildContent(v), k);
+            String mailAddress = mailSendWrapper.getMailAddress(k);
+            mailSendWrapper.sendMail(buildContent(v), mailAddress, Constant.MAIL_SUBJECT_IGNORE);
         });
-    }
-
-    private void sendMail(String content, String clusterId) {
-        String mailAddress = MailUtils.getMailAddress(clusterId);
-        MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder().receivers(MailReceiver.create(mailAddress))
-                .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_IGNORE)
-                        .setContent(content)).head(mailHead).build();
-        deliMailProvider.send(mailRequest);
     }
 
     private String buildContent(List<MessageSend> list) {

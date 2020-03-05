@@ -54,14 +54,14 @@ public class MessageSenderManager {
             messageSendMapper.batchInsertSelective(messageSend.subList(0, max), Column.clusterId,
                     Column.groupId, Column.appName, Column.ips, Column.exceptionType, Column.digest,
                     Column.msg, Column.level, Column.startTm, Column.endTm, Column.count,
-                    Column.atWho, Column.insertTm, Column.status);
+                    Column.atWho, Column.atAll, Column.insertTm, Column.status);
             messageSend = messageSend.subList(max, messageSend.size());
         }
         if (messageSend.size() > 0) {
             messageSendMapper.batchInsertSelective(messageSend, Column.clusterId, Column.groupId,
                     Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
                     Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho,
-                    Column.insertTm, Column.status);
+                    Column.atAll, Column.insertTm, Column.status);
         }
     }
 

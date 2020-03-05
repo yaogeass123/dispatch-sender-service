@@ -15,6 +15,7 @@
     <result column="end_tm" jdbcType="TIMESTAMP" property="endTm" />
     <result column="count" jdbcType="INTEGER" property="count" />
     <result column="at_who" jdbcType="VARCHAR" property="atWho" />
+    <result column="at_all" jdbcType="BIT" property="atAll" />
     <result column="insert_tm" jdbcType="TIMESTAMP" property="insertTm" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="send_tm" jdbcType="TIMESTAMP" property="sendTm" />
@@ -81,7 +82,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
-    end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+    end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.MessageSendExample" resultMap="BaseResultMap">
     select
@@ -123,7 +124,7 @@
       </when>
       <otherwise>
         id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
-          end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+          end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
           
       </otherwise>
     </choose>
@@ -156,7 +157,7 @@
       </when>
       <otherwise>
         id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
-          end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+          end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
           
       </otherwise>
     </choose>
@@ -178,16 +179,16 @@
       app_name, ips, exception_type, 
       digest, msg, level, 
       start_tm, end_tm, count, 
-      at_who, insert_tm, status, 
-      send_tm, robot_error_code, robot_error_msg
-      )
+      at_who, at_all, insert_tm, 
+      status, send_tm, robot_error_code, 
+      robot_error_msg)
     values (#{id,jdbcType=BIGINT}, #{clusterId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{appName,jdbcType=VARCHAR}, #{ips,jdbcType=VARCHAR}, #{exceptionType,jdbcType=VARCHAR}, 
       #{digest,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT}, 
       #{startTm,jdbcType=TIMESTAMP}, #{endTm,jdbcType=TIMESTAMP}, #{count,jdbcType=INTEGER}, 
-      #{atWho,jdbcType=VARCHAR}, #{insertTm,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
-      #{sendTm,jdbcType=TIMESTAMP}, #{robotErrorCode,jdbcType=VARCHAR}, #{robotErrorMsg,jdbcType=VARCHAR}
-      )
+      #{atWho,jdbcType=VARCHAR}, #{atAll,jdbcType=BIT}, #{insertTm,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=TINYINT}, #{sendTm,jdbcType=TIMESTAMP}, #{robotErrorCode,jdbcType=VARCHAR}, 
+      #{robotErrorMsg,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
     insert into `message_send`
@@ -230,6 +231,9 @@
       </if>
       <if test="atWho != null">
         at_who,
+      </if>
+      <if test="atAll != null">
+        at_all,
       </if>
       <if test="insertTm != null">
         insert_tm,
@@ -286,6 +290,9 @@
       </if>
       <if test="atWho != null">
         #{atWho,jdbcType=VARCHAR},
+      </if>
+      <if test="atAll != null">
+        #{atAll,jdbcType=BIT},
       </if>
       <if test="insertTm != null">
         #{insertTm,jdbcType=TIMESTAMP},
@@ -352,6 +359,9 @@
       <if test="record.atWho != null">
         at_who = #{record.atWho,jdbcType=VARCHAR},
       </if>
+      <if test="record.atAll != null">
+        at_all = #{record.atAll,jdbcType=BIT},
+      </if>
       <if test="record.insertTm != null">
         insert_tm = #{record.insertTm,jdbcType=TIMESTAMP},
       </if>
@@ -387,6 +397,7 @@
       end_tm = #{record.endTm,jdbcType=TIMESTAMP},
       count = #{record.count,jdbcType=INTEGER},
       at_who = #{record.atWho,jdbcType=VARCHAR},
+      at_all = #{record.atAll,jdbcType=BIT},
       insert_tm = #{record.insertTm,jdbcType=TIMESTAMP},
       status = #{record.status,jdbcType=TINYINT},
       send_tm = #{record.sendTm,jdbcType=TIMESTAMP},
@@ -435,6 +446,9 @@
       <if test="atWho != null">
         at_who = #{atWho,jdbcType=VARCHAR},
       </if>
+      <if test="atAll != null">
+        at_all = #{atAll,jdbcType=BIT},
+      </if>
       <if test="insertTm != null">
         insert_tm = #{insertTm,jdbcType=TIMESTAMP},
       </if>
@@ -467,6 +481,7 @@
       end_tm = #{endTm,jdbcType=TIMESTAMP},
       count = #{count,jdbcType=INTEGER},
       at_who = #{atWho,jdbcType=VARCHAR},
+      at_all = #{atAll,jdbcType=BIT},
       insert_tm = #{insertTm,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=TINYINT},
       send_tm = #{sendTm,jdbcType=TIMESTAMP},
@@ -482,7 +497,7 @@
     -->
     insert into `message_send`
     (id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
-      end_tm, count, at_who, insert_tm, status, send_tm, robot_error_code, robot_error_msg
+      end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
       )
     values
     <foreach collection="list" item="item" separator=",">
@@ -490,9 +505,9 @@
         #{item.appName,jdbcType=VARCHAR}, #{item.ips,jdbcType=VARCHAR}, #{item.exceptionType,jdbcType=VARCHAR}, 
         #{item.digest,jdbcType=VARCHAR}, #{item.msg,jdbcType=VARCHAR}, #{item.level,jdbcType=TINYINT}, 
         #{item.startTm,jdbcType=TIMESTAMP}, #{item.endTm,jdbcType=TIMESTAMP}, #{item.count,jdbcType=INTEGER}, 
-        #{item.atWho,jdbcType=VARCHAR}, #{item.insertTm,jdbcType=TIMESTAMP}, #{item.status,jdbcType=TINYINT}, 
-        #{item.sendTm,jdbcType=TIMESTAMP}, #{item.robotErrorCode,jdbcType=VARCHAR}, #{item.robotErrorMsg,jdbcType=VARCHAR}
-        )
+        #{item.atWho,jdbcType=VARCHAR}, #{item.atAll,jdbcType=BIT}, #{item.insertTm,jdbcType=TIMESTAMP}, 
+        #{item.status,jdbcType=TINYINT}, #{item.sendTm,jdbcType=TIMESTAMP}, #{item.robotErrorCode,jdbcType=VARCHAR}, 
+        #{item.robotErrorMsg,jdbcType=VARCHAR})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -548,6 +563,9 @@
         </if>
         <if test="'at_who' == column.value">
           #{item.atWho,jdbcType=VARCHAR}
+        </if>
+        <if test="'at_all' == column.value">
+          #{item.atAll,jdbcType=BIT}
         </if>
         <if test="'insert_tm' == column.value">
           #{item.insertTm,jdbcType=TIMESTAMP}

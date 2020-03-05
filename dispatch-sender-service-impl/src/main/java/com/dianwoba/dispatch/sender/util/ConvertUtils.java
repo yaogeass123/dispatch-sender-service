@@ -78,8 +78,10 @@ public class ConvertUtils {
         info.setAppName(appDep.getAppName());
         info.setDevelopersDepId(appDep.getDevelopersDepId());
         info.setDevelopersPhone(appDep.getDevelopersPhone());
+        info.setDevelopersMail(appDep.getDevelopersMail());
         info.setOwnersDepId(appDep.getOwnersDepId());
         info.setOwnersPhone(appDep.getOwnersPhone());
+        info.setOwnersMail(appDep.getOwnersMail());
         info.setDepId(String.valueOf(appDep.getDepId()));
         if (appDep.getManualDepId() != null) {
             info.setManualDepId(String.valueOf(appDep.getManualDepId()));
@@ -110,6 +112,7 @@ public class ConvertUtils {
         info.setEndTm(messageSend.getEndTm());
         info.setCount(messageSend.getCount());
         info.setAtWho(messageSend.getAtWho());
+        info.setAtAll(messageSend.getAtAll());
         info.setInsertTm(messageSend.getInsertTm());
         info.setStatus(messageSend.getStatus());
         return info;

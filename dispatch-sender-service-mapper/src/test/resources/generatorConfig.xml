@@ -61,8 +61,8 @@
 		</javaClientGenerator>
 
 <!--		<table tableName="message_log" domainObjectName="MessageLog" delimitIdentifiers="true"/>-->
-<!--		<table tableName="message_send" domainObjectName="MessageSend" delimitIdentifiers="true"/>-->
-		<table tableName="app_dep" domainObjectName="AppDep" delimitIdentifiers="true"/>
+		<table tableName="message_send" domainObjectName="MessageSend" delimitIdentifiers="true"/>
+<!--		<table tableName="app_dep" domainObjectName="AppDep" delimitIdentifiers="true"/>-->
 <!--		<table tableName="group_match_rules" domainObjectName="GroupMatchRules" delimitIdentifiers="true"/>-->
 <!--		<table tableName="ding_token_config" domainObjectName="DingTokenConfig" delimitIdentifiers="true"/>-->
 <!--		<table tableName="ding_group_name" domainObjectName="DingGroupName" delimitIdentifiers="true"/>-->

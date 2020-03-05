@@ -95,13 +95,4 @@ public class StatisticTest extends UnitTestBase {
         return templateEngine.process("statisticTemplate", context);
     }
 
-    private void sendMail(String content, String clusterId) {
-        String mailAddress = MailUtils.getMailAddress(clusterId);
-        MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder().receivers(MailReceiver.create(mailAddress))
-                .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_IGNORE)
-                        .setContent(content)).head(mailHead).build();
-        deliMailProvider.send(mailRequest);
-    }
-
 }

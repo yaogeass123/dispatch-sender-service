@@ -14,9 +14,13 @@ public class AppDep implements Serializable {
 
     private String ownersPhone;
 
+    private String ownersMail;
+
     private String developersDepId;
 
     private String developersPhone;
+
+    private String developersMail;
 
     private Integer depId;
 
@@ -62,6 +66,14 @@ public class AppDep implements Serializable {
         this.ownersPhone = ownersPhone == null ? null : ownersPhone.trim();
     }
 
+    public String getOwnersMail() {
+        return ownersMail;
+    }
+
+    public void setOwnersMail(String ownersMail) {
+        this.ownersMail = ownersMail == null ? null : ownersMail.trim();
+    }
+
     public String getDevelopersDepId() {
         return developersDepId;
     }
@@ -76,6 +88,14 @@ public class AppDep implements Serializable {
 
     public void setDevelopersPhone(String developersPhone) {
         this.developersPhone = developersPhone == null ? null : developersPhone.trim();
+    }
+
+    public String getDevelopersMail() {
+        return developersMail;
+    }
+
+    public void setDevelopersMail(String developersMail) {
+        this.developersMail = developersMail == null ? null : developersMail.trim();
     }
 
     public Integer getDepId() {
@@ -130,8 +150,10 @@ public class AppDep implements Serializable {
         appName("app_name", "appName", "VARCHAR"),
         ownersDepId("owners_dep_id", "ownersDepId", "VARCHAR"),
         ownersPhone("owners_phone", "ownersPhone", "VARCHAR"),
+        ownersMail("owners_mail", "ownersMail", "VARCHAR"),
         developersDepId("developers_dep_id", "developersDepId", "VARCHAR"),
         developersPhone("developers_phone", "developersPhone", "VARCHAR"),
+        developersMail("developers_mail", "developersMail", "VARCHAR"),
         depId("dep_id", "depId", "INTEGER"),
         manualDepId("manual_dep_id", "manualDepId", "INTEGER"),
         depPlatModifyTime("dep_plat_modify_time", "depPlatModifyTime", "TIMESTAMP"),

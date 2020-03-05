@@ -6,8 +6,10 @@
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
     <result column="owners_dep_id" jdbcType="VARCHAR" property="ownersDepId" />
     <result column="owners_phone" jdbcType="VARCHAR" property="ownersPhone" />
+    <result column="owners_mail" jdbcType="VARCHAR" property="ownersMail" />
     <result column="developers_dep_id" jdbcType="VARCHAR" property="developersDepId" />
     <result column="developers_phone" jdbcType="VARCHAR" property="developersPhone" />
+    <result column="developers_mail" jdbcType="VARCHAR" property="developersMail" />
     <result column="dep_id" jdbcType="INTEGER" property="depId" />
     <result column="manual_dep_id" jdbcType="INTEGER" property="manualDepId" />
     <result column="dep_plat_modify_time" jdbcType="TIMESTAMP" property="depPlatModifyTime" />
@@ -73,8 +75,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, dep_id, 
-    manual_dep_id, dep_plat_modify_time, create_time, modify_time
+    id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
+    developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.AppDepExample" resultMap="BaseResultMap">
     select
@@ -115,8 +117,9 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, dep_id, 
-          manual_dep_id, dep_plat_modify_time, create_time, modify_time
+        id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
+          developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
+          
       </otherwise>
     </choose>
     from `app_dep`
@@ -147,8 +150,9 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, dep_id, 
-          manual_dep_id, dep_plat_modify_time, create_time, modify_time
+        id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
+          developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
+          
       </otherwise>
     </choose>
     from `app_dep`
@@ -166,13 +170,15 @@
   </delete>
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
     insert into `app_dep` (id, app_name, owners_dep_id, 
-      owners_phone, developers_dep_id, developers_phone, 
-      dep_id, manual_dep_id, dep_plat_modify_time, 
-      create_time, modify_time)
+      owners_phone, owners_mail, developers_dep_id, 
+      developers_phone, developers_mail, dep_id, 
+      manual_dep_id, dep_plat_modify_time, create_time, 
+      modify_time)
     values (#{id,jdbcType=BIGINT}, #{appName,jdbcType=VARCHAR}, #{ownersDepId,jdbcType=VARCHAR}, 
-      #{ownersPhone,jdbcType=VARCHAR}, #{developersDepId,jdbcType=VARCHAR}, #{developersPhone,jdbcType=VARCHAR}, 
-      #{depId,jdbcType=INTEGER}, #{manualDepId,jdbcType=INTEGER}, #{depPlatModifyTime,jdbcType=TIMESTAMP}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP})
+      #{ownersPhone,jdbcType=VARCHAR}, #{ownersMail,jdbcType=VARCHAR}, #{developersDepId,jdbcType=VARCHAR}, 
+      #{developersPhone,jdbcType=VARCHAR}, #{developersMail,jdbcType=VARCHAR}, #{depId,jdbcType=INTEGER}, 
+      #{manualDepId,jdbcType=INTEGER}, #{depPlatModifyTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modifyTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
     insert into `app_dep`
@@ -189,11 +195,17 @@
       <if test="ownersPhone != null">
         owners_phone,
       </if>
+      <if test="ownersMail != null">
+        owners_mail,
+      </if>
       <if test="developersDepId != null">
         developers_dep_id,
       </if>
       <if test="developersPhone != null">
         developers_phone,
+      </if>
+      <if test="developersMail != null">
+        developers_mail,
       </if>
       <if test="depId != null">
         dep_id,
@@ -224,11 +236,17 @@
       <if test="ownersPhone != null">
         #{ownersPhone,jdbcType=VARCHAR},
       </if>
+      <if test="ownersMail != null">
+        #{ownersMail,jdbcType=VARCHAR},
+      </if>
       <if test="developersDepId != null">
         #{developersDepId,jdbcType=VARCHAR},
       </if>
       <if test="developersPhone != null">
         #{developersPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="developersMail != null">
+        #{developersMail,jdbcType=VARCHAR},
       </if>
       <if test="depId != null">
         #{depId,jdbcType=INTEGER},
@@ -268,11 +286,17 @@
       <if test="record.ownersPhone != null">
         owners_phone = #{record.ownersPhone,jdbcType=VARCHAR},
       </if>
+      <if test="record.ownersMail != null">
+        owners_mail = #{record.ownersMail,jdbcType=VARCHAR},
+      </if>
       <if test="record.developersDepId != null">
         developers_dep_id = #{record.developersDepId,jdbcType=VARCHAR},
       </if>
       <if test="record.developersPhone != null">
         developers_phone = #{record.developersPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.developersMail != null">
+        developers_mail = #{record.developersMail,jdbcType=VARCHAR},
       </if>
       <if test="record.depId != null">
         dep_id = #{record.depId,jdbcType=INTEGER},
@@ -300,8 +324,10 @@
       app_name = #{record.appName,jdbcType=VARCHAR},
       owners_dep_id = #{record.ownersDepId,jdbcType=VARCHAR},
       owners_phone = #{record.ownersPhone,jdbcType=VARCHAR},
+      owners_mail = #{record.ownersMail,jdbcType=VARCHAR},
       developers_dep_id = #{record.developersDepId,jdbcType=VARCHAR},
       developers_phone = #{record.developersPhone,jdbcType=VARCHAR},
+      developers_mail = #{record.developersMail,jdbcType=VARCHAR},
       dep_id = #{record.depId,jdbcType=INTEGER},
       manual_dep_id = #{record.manualDepId,jdbcType=INTEGER},
       dep_plat_modify_time = #{record.depPlatModifyTime,jdbcType=TIMESTAMP},
@@ -323,11 +349,17 @@
       <if test="ownersPhone != null">
         owners_phone = #{ownersPhone,jdbcType=VARCHAR},
       </if>
+      <if test="ownersMail != null">
+        owners_mail = #{ownersMail,jdbcType=VARCHAR},
+      </if>
       <if test="developersDepId != null">
         developers_dep_id = #{developersDepId,jdbcType=VARCHAR},
       </if>
       <if test="developersPhone != null">
         developers_phone = #{developersPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="developersMail != null">
+        developers_mail = #{developersMail,jdbcType=VARCHAR},
       </if>
       <if test="depId != null">
         dep_id = #{depId,jdbcType=INTEGER},
@@ -352,8 +384,10 @@
     set app_name = #{appName,jdbcType=VARCHAR},
       owners_dep_id = #{ownersDepId,jdbcType=VARCHAR},
       owners_phone = #{ownersPhone,jdbcType=VARCHAR},
+      owners_mail = #{ownersMail,jdbcType=VARCHAR},
       developers_dep_id = #{developersDepId,jdbcType=VARCHAR},
       developers_phone = #{developersPhone,jdbcType=VARCHAR},
+      developers_mail = #{developersMail,jdbcType=VARCHAR},
       dep_id = #{depId,jdbcType=INTEGER},
       manual_dep_id = #{manualDepId,jdbcType=INTEGER},
       dep_plat_modify_time = #{depPlatModifyTime,jdbcType=TIMESTAMP},
@@ -368,15 +402,16 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `app_dep`
-    (id, app_name, owners_dep_id, owners_phone, developers_dep_id, developers_phone, 
-      dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time)
+    (id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
+      developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
+      )
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.appName,jdbcType=VARCHAR}, #{item.ownersDepId,jdbcType=VARCHAR}, 
-        #{item.ownersPhone,jdbcType=VARCHAR}, #{item.developersDepId,jdbcType=VARCHAR}, 
-        #{item.developersPhone,jdbcType=VARCHAR}, #{item.depId,jdbcType=INTEGER}, #{item.manualDepId,jdbcType=INTEGER}, 
-        #{item.depPlatModifyTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP}, 
-        #{item.modifyTime,jdbcType=TIMESTAMP})
+        #{item.ownersPhone,jdbcType=VARCHAR}, #{item.ownersMail,jdbcType=VARCHAR}, #{item.developersDepId,jdbcType=VARCHAR}, 
+        #{item.developersPhone,jdbcType=VARCHAR}, #{item.developersMail,jdbcType=VARCHAR}, 
+        #{item.depId,jdbcType=INTEGER}, #{item.manualDepId,jdbcType=INTEGER}, #{item.depPlatModifyTime,jdbcType=TIMESTAMP}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -406,11 +441,17 @@
         <if test="'owners_phone' == column.value">
           #{item.ownersPhone,jdbcType=VARCHAR}
         </if>
+        <if test="'owners_mail' == column.value">
+          #{item.ownersMail,jdbcType=VARCHAR}
+        </if>
         <if test="'developers_dep_id' == column.value">
           #{item.developersDepId,jdbcType=VARCHAR}
         </if>
         <if test="'developers_phone' == column.value">
           #{item.developersPhone,jdbcType=VARCHAR}
+        </if>
+        <if test="'developers_mail' == column.value">
+          #{item.developersMail,jdbcType=VARCHAR}
         </if>
         <if test="'dep_id' == column.value">
           #{item.depId,jdbcType=INTEGER}

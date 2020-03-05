@@ -105,16 +105,4 @@ public class SendTest extends UnitTestBase {
         context.setVariable("map", listMap);
         return templateEngine.process("mailTemplate", context);
     }
-
-    private void sendMail(String content, String clusterId) {
-        String mailAddress = MailUtils.getMailAddress(clusterId);
-        MailHead mailHead = MailHead.create();
-        MailRequest mailRequest = MailRequest.builder()
-                .receivers(MailReceiver.create(mailAddress))
-                .body(MailBody.create().setSubject(Constant.MAIL_SUBJECT_IGNORE)
-                        .setContent(content)).head(mailHead).build();
-        DeliResponse response = deliMailProvider.send(mailRequest);
-        System.out.println(JSONObject.toJSONString(response));
-    }
-
 }
