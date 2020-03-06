@@ -8,4 +8,6 @@ public interface Constant {
 
     int PLATFORM_DWD = 4;
 
+    String DING_MESSAGE = "DingMessage";
+
 }

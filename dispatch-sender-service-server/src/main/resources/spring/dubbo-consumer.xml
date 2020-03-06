@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://code.alibabatech.com/schema/dubbo 
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:reference id="jobExecuteRespService" timeout="40000"
+		interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteRespService" registry="unitRegistry"/>
+	<dubbo:reference id="deliMailProvider" interface="com.dianwoda.delibird.provider.DeliMailProvider"
+		registry="commonRegistry" version="1.0.0"/>
+	<!-- genius -->
+	<dubbo:reference id="staffProvider" interface="com.dianwoba.genius.provider.StaffProvider"
+		registry="commonRegistry" timeout="500" check="false" retries="2"/>
+	<dubbo:reference id="departProvider" interface="com.dianwoba.genius.provider.DepartProvider"
+		registry="commonRegistry" timeout="500" check="false" retries="2"/>
+</beans>

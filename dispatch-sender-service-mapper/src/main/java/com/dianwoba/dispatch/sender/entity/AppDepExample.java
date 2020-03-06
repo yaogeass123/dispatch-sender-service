@@ -968,6 +968,76 @@ public class AppDepExample {
             return (Criteria) this;
         }
 
+        public Criteria andCreatorIsNull() {
+            addCriterion("creator is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorIsNotNull() {
+            addCriterion("creator is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorEqualTo(String value) {
+            addCriterion("creator =", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorNotEqualTo(String value) {
+            addCriterion("creator <>", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorGreaterThan(String value) {
+            addCriterion("creator >", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorGreaterThanOrEqualTo(String value) {
+            addCriterion("creator >=", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorLessThan(String value) {
+            addCriterion("creator <", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorLessThanOrEqualTo(String value) {
+            addCriterion("creator <=", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorLike(String value) {
+            addCriterion("creator like", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorNotLike(String value) {
+            addCriterion("creator not like", value, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorIn(List<String> values) {
+            addCriterion("creator in", values, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorNotIn(List<String> values) {
+            addCriterion("creator not in", values, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorBetween(String value1, String value2) {
+            addCriterion("creator between", value1, value2, "creator");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreatorNotBetween(String value1, String value2) {
+            addCriterion("creator not between", value1, value2, "creator");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;
@@ -1025,6 +1095,76 @@ public class AppDepExample {
 
         public Criteria andCreateTimeNotBetween(Date value1, Date value2) {
             addCriterion("create_time not between", value1, value2, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferIsNull() {
+            addCriterion("modifer is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferIsNotNull() {
+            addCriterion("modifer is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferEqualTo(String value) {
+            addCriterion("modifer =", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferNotEqualTo(String value) {
+            addCriterion("modifer <>", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferGreaterThan(String value) {
+            addCriterion("modifer >", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferGreaterThanOrEqualTo(String value) {
+            addCriterion("modifer >=", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferLessThan(String value) {
+            addCriterion("modifer <", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferLessThanOrEqualTo(String value) {
+            addCriterion("modifer <=", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferLike(String value) {
+            addCriterion("modifer like", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferNotLike(String value) {
+            addCriterion("modifer not like", value, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferIn(List<String> values) {
+            addCriterion("modifer in", values, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferNotIn(List<String> values) {
+            addCriterion("modifer not in", values, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferBetween(String value1, String value2) {
+            addCriterion("modifer between", value1, value2, "modifer");
+            return (Criteria) this;
+        }
+
+        public Criteria andModiferNotBetween(String value1, String value2) {
+            addCriterion("modifer not between", value1, value2, "modifer");
             return (Criteria) this;
         }
 

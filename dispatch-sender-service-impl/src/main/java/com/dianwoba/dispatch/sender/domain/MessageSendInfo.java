@@ -18,7 +18,7 @@ public class MessageSendInfo {
 
     private List<Long> ids;
 
-    private String clusterId;
+    private String appDep;
 
     private Long groupId;
 

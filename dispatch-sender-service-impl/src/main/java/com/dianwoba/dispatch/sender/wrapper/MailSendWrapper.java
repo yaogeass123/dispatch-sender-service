@@ -36,8 +36,8 @@ public class MailSendWrapper {
     @Resource
     private DeliMailProvider deliMailProvider;
 
-    public String getMailAddress(String clusterId, String appCode) {
-        DepInfo info = depInfoCache.queryFromClientCache(Integer.parseInt(clusterId));
+    public String getMailAddress(String appDep, String appCode) {
+        DepInfo info = depInfoCache.queryFromClientCache(Integer.parseInt(appDep));
         if (info != null && info.getMail() != null) {
             return info.getMail();
         }
@@ -51,8 +51,8 @@ public class MailSendWrapper {
         return defaultMailAddress;
     }
 
-    public String getMailAddress(String clusterId) {
-        DepInfo info = depInfoCache.queryFromClientCache(Integer.parseInt(clusterId));
+    public String getMailAddress(String appDep) {
+        DepInfo info = depInfoCache.queryFromClientCache(Integer.parseInt(appDep));
         if (info != null && info.getMail() != null) {
             return info.getMail();
         }

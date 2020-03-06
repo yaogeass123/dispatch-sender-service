@@ -96,10 +96,10 @@ public class MessageSender implements Runnable {
     public void run() {
         try {
             if (CollectionUtils.isEmpty(tokens)) {
-                String clusterId = messageSendList.get(0).getClusterId();
+                String appDep = messageSendList.get(0).getAppDep();
                 String content = "群编号: " + groupId + "\n" + "群名称：" + findGroupName() + "\n"
                         + "无正确机器人配置，请及时处理";
-                String mailAddress = mailSendWrapper.getMailAddress(clusterId);
+                String mailAddress = mailSendWrapper.getMailAddress(appDep);
                 mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_EXIST);
                 return;
             }
@@ -221,7 +221,7 @@ public class MessageSender implements Runnable {
                             .convert2ErrorInfo(res, messages.get(index).getIds());
                     error.add(errorInfo);
                 }
-                String mailAddress = mailSendWrapper.getMailAddress(messages.get(index).getClusterId(),
+                String mailAddress = mailSendWrapper.getMailAddress(messages.get(index).getAppDep(),
                         messages.get(index).getAppName());
                 mailSendWrapper.sendMail(sb.toString(), mailAddress, Constant.MAIL_SUBJECT_SEND_ERROR);
             }

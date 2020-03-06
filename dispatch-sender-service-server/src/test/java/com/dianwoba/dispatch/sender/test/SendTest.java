@@ -68,7 +68,7 @@ public class SendTest extends UnitTestBase {
             return;
         }
         Map<String, List<MessageSend>> groupBy = unreportedMessage.stream().collect(
-                Collectors.groupingBy(MessageSend::getClusterId));
+                Collectors.groupingBy(MessageSend::getAppDep));
 
         groupBy.forEach((k,v) ->{
             List<Long> ids = v.stream().map(MessageSend::getId).collect(Collectors.toList());

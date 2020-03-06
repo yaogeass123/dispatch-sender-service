@@ -102,7 +102,7 @@ public class ConvertUtils {
     public static MessageSendInfo convert2MessageSendInfo(MessageSend messageSend) {
         MessageSendInfo info = new MessageSendInfo();
         info.setIds(Lists.newArrayList(messageSend.getId()));
-        info.setClusterId(messageSend.getClusterId());
+        info.setAppDep(messageSend.getAppDep());
         info.setGroupId(messageSend.getGroupId());
         info.setAppName(messageSend.getAppName());
         info.setIps(messageSend.getIps());

@@ -49,4 +49,8 @@ public interface Constant {
 
     String DATE_FORMAT = "HH:mm:ss";
 
+    String DEFAULT_STAFF = "automate";
+
+    String PREFIX_LINK_DEPLOY_PLATFORM = "http://new-robert-service.nidianwo.com/api/app/getModifyApp?modifyTime=";
+
 }

@@ -28,7 +28,11 @@ public class AppDep implements Serializable {
 
     private Date depPlatModifyTime;
 
+    private String creator;
+
     private Date createTime;
+
+    private String modifer;
 
     private Date modifyTime;
 
@@ -122,12 +126,28 @@ public class AppDep implements Serializable {
         this.depPlatModifyTime = depPlatModifyTime;
     }
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator == null ? null : creator.trim();
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getModifer() {
+        return modifer;
+    }
+
+    public void setModifer(String modifer) {
+        this.modifer = modifer == null ? null : modifer.trim();
     }
 
     public Date getModifyTime() {
@@ -157,7 +177,9 @@ public class AppDep implements Serializable {
         depId("dep_id", "depId", "INTEGER"),
         manualDepId("manual_dep_id", "manualDepId", "INTEGER"),
         depPlatModifyTime("dep_plat_modify_time", "depPlatModifyTime", "TIMESTAMP"),
+        creator("creator", "creator", "VARCHAR"),
         createTime("create_time", "createTime", "TIMESTAMP"),
+        modifer("modifer", "modifer", "VARCHAR"),
         modifyTime("modify_time", "modifyTime", "TIMESTAMP");
 
         /**

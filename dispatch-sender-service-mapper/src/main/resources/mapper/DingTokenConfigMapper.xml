@@ -3,7 +3,7 @@
 <mapper namespace="com.dianwoba.dispatch.sender.mapper.DingTokenConfigMapper">
   <resultMap id="BaseResultMap" type="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="cluster_id" jdbcType="VARCHAR" property="clusterId" />
+    <result column="app_dep" jdbcType="VARCHAR" property="appDep" />
     <result column="group_id" jdbcType="BIGINT" property="groupId" />
     <result column="token" jdbcType="VARCHAR" property="token" />
     <result column="key_words" jdbcType="VARCHAR" property="keyWords" />
@@ -74,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, create_time, 
+    id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
     modifier, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfigExample" resultMap="BaseResultMap">
@@ -116,7 +116,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, create_time, 
+        id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
           modifier, modify_time
       </otherwise>
     </choose>
@@ -148,7 +148,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, create_time, 
+        id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
           modifier, modify_time
       </otherwise>
     </choose>
@@ -166,12 +166,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
-    insert into `ding_token_config` (id, cluster_id, group_id, 
+    insert into `ding_token_config` (id, app_dep, group_id, 
       token, key_words, secret, 
       status, is_active, creator, 
       create_time, modifier, modify_time
       )
-    values (#{id,jdbcType=BIGINT}, #{clusterId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
+    values (#{id,jdbcType=BIGINT}, #{appDep,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{token,jdbcType=VARCHAR}, #{keyWords,jdbcType=VARCHAR}, #{secret,jdbcType=VARCHAR}, 
       #{status,jdbcType=TINYINT}, #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}
@@ -183,8 +183,8 @@
       <if test="id != null">
         id,
       </if>
-      <if test="clusterId != null">
-        cluster_id,
+      <if test="appDep != null">
+        app_dep,
       </if>
       <if test="groupId != null">
         group_id,
@@ -221,8 +221,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="clusterId != null">
-        #{clusterId,jdbcType=VARCHAR},
+      <if test="appDep != null">
+        #{appDep,jdbcType=VARCHAR},
       </if>
       <if test="groupId != null">
         #{groupId,jdbcType=BIGINT},
@@ -268,8 +268,8 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.clusterId != null">
-        cluster_id = #{record.clusterId,jdbcType=VARCHAR},
+      <if test="record.appDep != null">
+        app_dep = #{record.appDep,jdbcType=VARCHAR},
       </if>
       <if test="record.groupId != null">
         group_id = #{record.groupId,jdbcType=BIGINT},
@@ -309,7 +309,7 @@
   <update id="updateByExample" parameterType="map">
     update `ding_token_config`
     set id = #{record.id,jdbcType=BIGINT},
-      cluster_id = #{record.clusterId,jdbcType=VARCHAR},
+      app_dep = #{record.appDep,jdbcType=VARCHAR},
       group_id = #{record.groupId,jdbcType=BIGINT},
       token = #{record.token,jdbcType=VARCHAR},
       key_words = #{record.keyWords,jdbcType=VARCHAR},
@@ -327,8 +327,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     update `ding_token_config`
     <set>
-      <if test="clusterId != null">
-        cluster_id = #{clusterId,jdbcType=VARCHAR},
+      <if test="appDep != null">
+        app_dep = #{appDep,jdbcType=VARCHAR},
       </if>
       <if test="groupId != null">
         group_id = #{groupId,jdbcType=BIGINT},
@@ -365,7 +365,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     update `ding_token_config`
-    set cluster_id = #{clusterId,jdbcType=VARCHAR},
+    set app_dep = #{appDep,jdbcType=VARCHAR},
       group_id = #{groupId,jdbcType=BIGINT},
       token = #{token,jdbcType=VARCHAR},
       key_words = #{keyWords,jdbcType=VARCHAR},
@@ -385,11 +385,11 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `ding_token_config`
-    (id, cluster_id, group_id, token, key_words, secret, status, is_active, creator, 
-      create_time, modifier, modify_time)
+    (id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
+      modifier, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.clusterId,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
+      (#{item.id,jdbcType=BIGINT}, #{item.appDep,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
         #{item.token,jdbcType=VARCHAR}, #{item.keyWords,jdbcType=VARCHAR}, #{item.secret,jdbcType=VARCHAR}, 
         #{item.status,jdbcType=TINYINT}, #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, 
         #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP}
@@ -414,8 +414,8 @@
         <if test="'id' == column.value">
           #{item.id,jdbcType=BIGINT}
         </if>
-        <if test="'cluster_id' == column.value">
-          #{item.clusterId,jdbcType=VARCHAR}
+        <if test="'app_dep' == column.value">
+          #{item.appDep,jdbcType=VARCHAR}
         </if>
         <if test="'group_id' == column.value">
           #{item.groupId,jdbcType=BIGINT}

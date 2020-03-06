@@ -47,17 +47,17 @@ public class StatisticTest extends UnitTestBase {
     private void doTest() {
 
         List<MessageSend> messageSendList = messageSenderManager.statisticMessage();
-        Map<String, List<MessageSend>> divideByCluster = messageSendList.stream()
-                .collect(Collectors.groupingBy(MessageSend::getClusterId));
-        divideByCluster.forEach((k, v) -> {
-            String content = buildClusterContent(v);
+        Map<String, List<MessageSend>> divideByAppDep = messageSendList.stream()
+                .collect(Collectors.groupingBy(MessageSend::getAppDep));
+        divideByAppDep.forEach((k, v) -> {
+            String content = buildContent(v);
             System.out.println(content);
 //            sendMail(content, k);
         });
 
     }
 
-    private String buildClusterContent(List<MessageSend> list) {
+    private String buildContent(List<MessageSend> list) {
         Map<Long, List<MessageSend>> group = list.stream()
                 .collect(Collectors.groupingBy(MessageSend::getGroupId));
         Map<String, List<StatisticContent>> map = Maps.newHashMap();

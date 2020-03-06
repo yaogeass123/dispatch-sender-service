@@ -46,16 +46,16 @@ public class StatisticHandler extends AbstractJobExecuteService {
     @Override
     public void doExecute(ExecuteContext executeContext) {
         List<MessageSend> messageSendList = messageSenderManager.statisticMessage();
-        Map<String, List<MessageSend>> divideByCluster = messageSendList.stream()
-                .collect(Collectors.groupingBy(MessageSend::getClusterId));
-        divideByCluster.forEach((k, v) -> {
-            String content = buildClusterContent(v);
+        Map<String, List<MessageSend>> divideByDep = messageSendList.stream()
+                .collect(Collectors.groupingBy(MessageSend::getAppDep));
+        divideByDep.forEach((k, v) -> {
+            String content = buildContent(v);
             String mailAddress = mailSendWrapper.getMailAddress(k);
             mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_STATISTIC);
         });
     }
 
-    private String buildClusterContent(List<MessageSend> list) {
+    private String buildContent(List<MessageSend> list) {
         Map<Long, List<MessageSend>> group = list.stream()
                 .collect(Collectors.groupingBy(MessageSend::getGroupId));
         Map<String, List<StatisticContent>> map = Maps.newHashMap();

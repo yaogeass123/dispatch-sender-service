@@ -3,7 +3,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.dianwoba.dispatch</groupId>
   <artifactId>dispatch-sender-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -16,10 +15,15 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <skipTests>true</skipTests>
+  </properties>
+
   <modules>
     <module>dispatch-sender-service-api</module>
     <module>dispatch-sender-service-impl</module>
     <module>dispatch-sender-service-server</module>
     <module>dispatch-sender-service-mapper</module>
+    <module>dispatch-sender-service-support</module>
   </modules>
 </project>

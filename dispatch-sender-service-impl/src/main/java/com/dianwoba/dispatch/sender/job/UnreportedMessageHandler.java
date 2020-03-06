@@ -49,10 +49,10 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
         if (CollectionUtils.isEmpty(unreportedMessage)) {
             return;
         }
-        Map<String, List<MessageSend>> groupByClusterId = unreportedMessage.stream()
-                .collect(Collectors.groupingBy(MessageSend::getClusterId));
+        Map<String, List<MessageSend>> groupByAppDep = unreportedMessage.stream()
+                .collect(Collectors.groupingBy(MessageSend::getAppDep));
 
-        groupByClusterId.forEach((k, v) -> {
+        groupByAppDep.forEach((k, v) -> {
             List<Long> ids = v.stream().map(MessageSend::getId).collect(Collectors.toList());
             messageSenderManager.batchUpdateIgnore(ids);
             String mailAddress = mailSendWrapper.getMailAddress(k);

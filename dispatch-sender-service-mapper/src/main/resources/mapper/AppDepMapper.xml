@@ -13,7 +13,9 @@
     <result column="dep_id" jdbcType="INTEGER" property="depId" />
     <result column="manual_dep_id" jdbcType="INTEGER" property="manualDepId" />
     <result column="dep_plat_modify_time" jdbcType="TIMESTAMP" property="depPlatModifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modifer" jdbcType="VARCHAR" property="modifer" />
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -76,7 +78,8 @@
   </sql>
   <sql id="Base_Column_List">
     id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
-    developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
+    developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, creator, create_time, 
+    modifer, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.AppDepExample" resultMap="BaseResultMap">
     select
@@ -118,8 +121,8 @@
       </when>
       <otherwise>
         id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
-          developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
-          
+          developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, creator, create_time, 
+          modifer, modify_time
       </otherwise>
     </choose>
     from `app_dep`
@@ -151,8 +154,8 @@
       </when>
       <otherwise>
         id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
-          developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
-          
+          developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, creator, create_time, 
+          modifer, modify_time
       </otherwise>
     </choose>
     from `app_dep`
@@ -172,13 +175,15 @@
     insert into `app_dep` (id, app_name, owners_dep_id, 
       owners_phone, owners_mail, developers_dep_id, 
       developers_phone, developers_mail, dep_id, 
-      manual_dep_id, dep_plat_modify_time, create_time, 
-      modify_time)
+      manual_dep_id, dep_plat_modify_time, creator, 
+      create_time, modifer, modify_time
+      )
     values (#{id,jdbcType=BIGINT}, #{appName,jdbcType=VARCHAR}, #{ownersDepId,jdbcType=VARCHAR}, 
       #{ownersPhone,jdbcType=VARCHAR}, #{ownersMail,jdbcType=VARCHAR}, #{developersDepId,jdbcType=VARCHAR}, 
       #{developersPhone,jdbcType=VARCHAR}, #{developersMail,jdbcType=VARCHAR}, #{depId,jdbcType=INTEGER}, 
-      #{manualDepId,jdbcType=INTEGER}, #{depPlatModifyTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{modifyTime,jdbcType=TIMESTAMP})
+      #{manualDepId,jdbcType=INTEGER}, #{depPlatModifyTime,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifer,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.AppDep">
     insert into `app_dep`
@@ -216,8 +221,14 @@
       <if test="depPlatModifyTime != null">
         dep_plat_modify_time,
       </if>
+      <if test="creator != null">
+        creator,
+      </if>
       <if test="createTime != null">
         create_time,
+      </if>
+      <if test="modifer != null">
+        modifer,
       </if>
       <if test="modifyTime != null">
         modify_time,
@@ -257,8 +268,14 @@
       <if test="depPlatModifyTime != null">
         #{depPlatModifyTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifer != null">
+        #{modifer,jdbcType=VARCHAR},
       </if>
       <if test="modifyTime != null">
         #{modifyTime,jdbcType=TIMESTAMP},
@@ -307,8 +324,14 @@
       <if test="record.depPlatModifyTime != null">
         dep_plat_modify_time = #{record.depPlatModifyTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.creator != null">
+        creator = #{record.creator,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.modifer != null">
+        modifer = #{record.modifer,jdbcType=VARCHAR},
       </if>
       <if test="record.modifyTime != null">
         modify_time = #{record.modifyTime,jdbcType=TIMESTAMP},
@@ -331,7 +354,9 @@
       dep_id = #{record.depId,jdbcType=INTEGER},
       manual_dep_id = #{record.manualDepId,jdbcType=INTEGER},
       dep_plat_modify_time = #{record.depPlatModifyTime,jdbcType=TIMESTAMP},
+      creator = #{record.creator,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      modifer = #{record.modifer,jdbcType=VARCHAR},
       modify_time = #{record.modifyTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -370,8 +395,14 @@
       <if test="depPlatModifyTime != null">
         dep_plat_modify_time = #{depPlatModifyTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifer != null">
+        modifer = #{modifer,jdbcType=VARCHAR},
       </if>
       <if test="modifyTime != null">
         modify_time = #{modifyTime,jdbcType=TIMESTAMP},
@@ -391,7 +422,9 @@
       dep_id = #{depId,jdbcType=INTEGER},
       manual_dep_id = #{manualDepId,jdbcType=INTEGER},
       dep_plat_modify_time = #{depPlatModifyTime,jdbcType=TIMESTAMP},
+      creator = #{creator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
+      modifer = #{modifer,jdbcType=VARCHAR},
       modify_time = #{modifyTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -403,15 +436,16 @@
     -->
     insert into `app_dep`
     (id, app_name, owners_dep_id, owners_phone, owners_mail, developers_dep_id, developers_phone, 
-      developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, create_time, modify_time
-      )
+      developers_mail, dep_id, manual_dep_id, dep_plat_modify_time, creator, create_time, 
+      modifer, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.appName,jdbcType=VARCHAR}, #{item.ownersDepId,jdbcType=VARCHAR}, 
         #{item.ownersPhone,jdbcType=VARCHAR}, #{item.ownersMail,jdbcType=VARCHAR}, #{item.developersDepId,jdbcType=VARCHAR}, 
         #{item.developersPhone,jdbcType=VARCHAR}, #{item.developersMail,jdbcType=VARCHAR}, 
         #{item.depId,jdbcType=INTEGER}, #{item.manualDepId,jdbcType=INTEGER}, #{item.depPlatModifyTime,jdbcType=TIMESTAMP}, 
-        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP})
+        #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifer,jdbcType=VARCHAR}, 
+        #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -462,8 +496,14 @@
         <if test="'dep_plat_modify_time' == column.value">
           #{item.depPlatModifyTime,jdbcType=TIMESTAMP}
         </if>
+        <if test="'creator' == column.value">
+          #{item.creator,jdbcType=VARCHAR}
+        </if>
         <if test="'create_time' == column.value">
           #{item.createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'modifer' == column.value">
+          #{item.modifer,jdbcType=VARCHAR}
         </if>
         <if test="'modify_time' == column.value">
           #{item.modifyTime,jdbcType=TIMESTAMP}

@@ -298,73 +298,73 @@ public class DingTokenConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdIsNull() {
-            addCriterion("cluster_id is null");
+        public Criteria andAppDepIsNull() {
+            addCriterion("app_dep is null");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdIsNotNull() {
-            addCriterion("cluster_id is not null");
+        public Criteria andAppDepIsNotNull() {
+            addCriterion("app_dep is not null");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdEqualTo(String value) {
-            addCriterion("cluster_id =", value, "clusterId");
+        public Criteria andAppDepEqualTo(String value) {
+            addCriterion("app_dep =", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdNotEqualTo(String value) {
-            addCriterion("cluster_id <>", value, "clusterId");
+        public Criteria andAppDepNotEqualTo(String value) {
+            addCriterion("app_dep <>", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdGreaterThan(String value) {
-            addCriterion("cluster_id >", value, "clusterId");
+        public Criteria andAppDepGreaterThan(String value) {
+            addCriterion("app_dep >", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdGreaterThanOrEqualTo(String value) {
-            addCriterion("cluster_id >=", value, "clusterId");
+        public Criteria andAppDepGreaterThanOrEqualTo(String value) {
+            addCriterion("app_dep >=", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdLessThan(String value) {
-            addCriterion("cluster_id <", value, "clusterId");
+        public Criteria andAppDepLessThan(String value) {
+            addCriterion("app_dep <", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdLessThanOrEqualTo(String value) {
-            addCriterion("cluster_id <=", value, "clusterId");
+        public Criteria andAppDepLessThanOrEqualTo(String value) {
+            addCriterion("app_dep <=", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdLike(String value) {
-            addCriterion("cluster_id like", value, "clusterId");
+        public Criteria andAppDepLike(String value) {
+            addCriterion("app_dep like", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdNotLike(String value) {
-            addCriterion("cluster_id not like", value, "clusterId");
+        public Criteria andAppDepNotLike(String value) {
+            addCriterion("app_dep not like", value, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdIn(List<String> values) {
-            addCriterion("cluster_id in", values, "clusterId");
+        public Criteria andAppDepIn(List<String> values) {
+            addCriterion("app_dep in", values, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdNotIn(List<String> values) {
-            addCriterion("cluster_id not in", values, "clusterId");
+        public Criteria andAppDepNotIn(List<String> values) {
+            addCriterion("app_dep not in", values, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdBetween(String value1, String value2) {
-            addCriterion("cluster_id between", value1, value2, "clusterId");
+        public Criteria andAppDepBetween(String value1, String value2) {
+            addCriterion("app_dep between", value1, value2, "appDep");
             return (Criteria) this;
         }
 
-        public Criteria andClusterIdNotBetween(String value1, String value2) {
-            addCriterion("cluster_id not between", value1, value2, "clusterId");
+        public Criteria andAppDepNotBetween(String value1, String value2) {
+            addCriterion("app_dep not between", value1, value2, "appDep");
             return (Criteria) this;
         }
 

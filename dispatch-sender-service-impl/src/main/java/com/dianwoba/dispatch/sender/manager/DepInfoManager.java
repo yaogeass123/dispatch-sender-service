@@ -1,5 +1,6 @@
 package com.dianwoba.dispatch.sender.manager;
 
+import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.entity.DepInfoExample;
 import com.dianwoba.dispatch.sender.entity.DepInfoExample.Criteria;
@@ -45,6 +46,7 @@ public class DepInfoManager {
     }
 
     public void save(DepInfo depInfo) {
+        depInfo.setCreator(Constant.DEFAULT_STAFF);
         depInfo.setCreateTime(new Date());
         depInfo.setNewest(depInfo.getId());
         depInfoMapper.insertSelective(depInfo);
@@ -57,6 +59,7 @@ public class DepInfoManager {
         criteria.andIdIn(ids);
         DepInfo record = new DepInfo();
         record.setNewest(depInfo.getId());
+        record.setModifier(Constant.DEFAULT_STAFF);
         record.setModifyTime(new Date());
         save(depInfo);
         depInfoMapper.updateByExampleSelective(record, example);

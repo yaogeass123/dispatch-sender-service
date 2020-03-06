@@ -7,6 +7,8 @@
         http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
 	<bean id="failHandle" class="com.dianwoba.pt.goodjob.node.file.FailHandle"/>
+
 	<dubbo:service interface="com.dianwoba.dispatch.sender.provider.MessageSendProvider"
 		ref="messageSendProviderImpl" version="1.0.0" retries="0" timeout="500" registry="baseRegistry"/>
+
 </beans>

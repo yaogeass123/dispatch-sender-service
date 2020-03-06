@@ -53,14 +53,14 @@ public class MessageSenderManager {
     public void batchSave(List<MessageSend> messageSend) {
         int max = Constant.BATCH_INSERT_MAX_SIZE;
         while (messageSend.size() > max) {
-            messageSendMapper.batchInsertSelective(messageSend.subList(0, max), Column.clusterId,
+            messageSendMapper.batchInsertSelective(messageSend.subList(0, max), Column.appDep,
                     Column.groupId, Column.appName, Column.ips, Column.exceptionType, Column.digest,
                     Column.msg, Column.level, Column.startTm, Column.endTm, Column.count,
                     Column.atWho, Column.atAll, Column.insertTm, Column.status);
             messageSend = messageSend.subList(max, messageSend.size());
         }
         if (messageSend.size() > 0) {
-            messageSendMapper.batchInsertSelective(messageSend, Column.clusterId, Column.groupId,
+            messageSendMapper.batchInsertSelective(messageSend, Column.appDep, Column.groupId,
                     Column.appName, Column.ips, Column.exceptionType, Column.digest, Column.msg,
                     Column.level, Column.startTm, Column.endTm, Column.count, Column.atWho,
                     Column.atAll, Column.insertTm, Column.status);

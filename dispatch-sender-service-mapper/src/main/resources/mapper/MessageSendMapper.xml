@@ -3,7 +3,7 @@
 <mapper namespace="com.dianwoba.dispatch.sender.mapper.MessageSendMapper">
   <resultMap id="BaseResultMap" type="com.dianwoba.dispatch.sender.entity.MessageSend">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="cluster_id" jdbcType="VARCHAR" property="clusterId" />
+    <result column="app_dep" jdbcType="VARCHAR" property="appDep" />
     <result column="group_id" jdbcType="BIGINT" property="groupId" />
     <result column="app_name" jdbcType="VARCHAR" property="appName" />
     <result column="ips" jdbcType="VARCHAR" property="ips" />
@@ -81,7 +81,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+    id, app_dep, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
     end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.MessageSendExample" resultMap="BaseResultMap">
@@ -123,7 +123,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+        id, app_dep, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
           end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
           
       </otherwise>
@@ -156,7 +156,7 @@
         </foreach>
       </when>
       <otherwise>
-        id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+        id, app_dep, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
           end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
           
       </otherwise>
@@ -175,14 +175,14 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
-    insert into `message_send` (id, cluster_id, group_id, 
+    insert into `message_send` (id, app_dep, group_id, 
       app_name, ips, exception_type, 
       digest, msg, level, 
       start_tm, end_tm, count, 
       at_who, at_all, insert_tm, 
       status, send_tm, robot_error_code, 
       robot_error_msg)
-    values (#{id,jdbcType=BIGINT}, #{clusterId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
+    values (#{id,jdbcType=BIGINT}, #{appDep,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{appName,jdbcType=VARCHAR}, #{ips,jdbcType=VARCHAR}, #{exceptionType,jdbcType=VARCHAR}, 
       #{digest,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT}, 
       #{startTm,jdbcType=TIMESTAMP}, #{endTm,jdbcType=TIMESTAMP}, #{count,jdbcType=INTEGER}, 
@@ -196,8 +196,8 @@
       <if test="id != null">
         id,
       </if>
-      <if test="clusterId != null">
-        cluster_id,
+      <if test="appDep != null">
+        app_dep,
       </if>
       <if test="groupId != null">
         group_id,
@@ -255,8 +255,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="clusterId != null">
-        #{clusterId,jdbcType=VARCHAR},
+      <if test="appDep != null">
+        #{appDep,jdbcType=VARCHAR},
       </if>
       <if test="groupId != null">
         #{groupId,jdbcType=BIGINT},
@@ -323,8 +323,8 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.clusterId != null">
-        cluster_id = #{record.clusterId,jdbcType=VARCHAR},
+      <if test="record.appDep != null">
+        app_dep = #{record.appDep,jdbcType=VARCHAR},
       </if>
       <if test="record.groupId != null">
         group_id = #{record.groupId,jdbcType=BIGINT},
@@ -385,7 +385,7 @@
   <update id="updateByExample" parameterType="map">
     update `message_send`
     set id = #{record.id,jdbcType=BIGINT},
-      cluster_id = #{record.clusterId,jdbcType=VARCHAR},
+      app_dep = #{record.appDep,jdbcType=VARCHAR},
       group_id = #{record.groupId,jdbcType=BIGINT},
       app_name = #{record.appName,jdbcType=VARCHAR},
       ips = #{record.ips,jdbcType=VARCHAR},
@@ -410,8 +410,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
     update `message_send`
     <set>
-      <if test="clusterId != null">
-        cluster_id = #{clusterId,jdbcType=VARCHAR},
+      <if test="appDep != null">
+        app_dep = #{appDep,jdbcType=VARCHAR},
       </if>
       <if test="groupId != null">
         group_id = #{groupId,jdbcType=BIGINT},
@@ -469,7 +469,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.dianwoba.dispatch.sender.entity.MessageSend">
     update `message_send`
-    set cluster_id = #{clusterId,jdbcType=VARCHAR},
+    set app_dep = #{appDep,jdbcType=VARCHAR},
       group_id = #{groupId,jdbcType=BIGINT},
       app_name = #{appName,jdbcType=VARCHAR},
       ips = #{ips,jdbcType=VARCHAR},
@@ -496,12 +496,12 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `message_send`
-    (id, cluster_id, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
+    (id, app_dep, group_id, app_name, ips, exception_type, digest, msg, level, start_tm, 
       end_tm, count, at_who, at_all, insert_tm, status, send_tm, robot_error_code, robot_error_msg
       )
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.clusterId,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
+      (#{item.id,jdbcType=BIGINT}, #{item.appDep,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
         #{item.appName,jdbcType=VARCHAR}, #{item.ips,jdbcType=VARCHAR}, #{item.exceptionType,jdbcType=VARCHAR}, 
         #{item.digest,jdbcType=VARCHAR}, #{item.msg,jdbcType=VARCHAR}, #{item.level,jdbcType=TINYINT}, 
         #{item.startTm,jdbcType=TIMESTAMP}, #{item.endTm,jdbcType=TIMESTAMP}, #{item.count,jdbcType=INTEGER}, 
@@ -528,8 +528,8 @@
         <if test="'id' == column.value">
           #{item.id,jdbcType=BIGINT}
         </if>
-        <if test="'cluster_id' == column.value">
-          #{item.clusterId,jdbcType=VARCHAR}
+        <if test="'app_dep' == column.value">
+          #{item.appDep,jdbcType=VARCHAR}
         </if>
         <if test="'group_id' == column.value">
           #{item.groupId,jdbcType=BIGINT}

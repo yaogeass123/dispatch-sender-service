@@ -62,7 +62,7 @@ public class GroupMatcher implements Runnable {
         List<MessageSend> messageSend = Lists.newArrayList();
         lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
         //3、匹配群组
-        AppDepInfo appDepInfo = matchCluster(messageSend);
+        AppDepInfo appDepInfo = matchAppDep(messageSend);
         //4、匹配群并获取规则
         GroupMatchRules rule = matchGroup(messageSend.get(0));
         String atWho = matchAtWho(rule, appDepInfo);
@@ -81,19 +81,19 @@ public class GroupMatcher implements Runnable {
         messageLogManager.batchUpdateStatus(ids);
     }
 
-    private AppDepInfo matchCluster(List<MessageSend> messageSends) {
+    private AppDepInfo matchAppDep(List<MessageSend> messageSends) {
         String appName = messageSends.get(0).getAppName();
         AppDepInfo appDepInfo = appDepCache.queryFromClientCache(appName);
-        String clusterId = determineClusterId(appDepInfo);
-        messageSends.forEach(messageSend -> messageSend.setClusterId(clusterId));
+        String appDepId = determineAppDepId(appDepInfo);
+        messageSends.forEach(messageSend -> messageSend.setAppDep(appDepId));
         return appDepInfo;
     }
 
     private GroupMatchRules matchGroup(MessageSend messageSend) {
         String appName = messageSend.getAppName();
-        String clusterId = messageSend.getClusterId();
+        String appDep = messageSend.getAppDep();
         String exceptionType = messageSend.getExceptionType();
-        List<String> keys = buildKeys(clusterId, exceptionType, appName);
+        List<String> keys = buildKeys(appDep, exceptionType, appName);
         GroupMatchRules matchInfo = doMatch(messageSend, keys);
         if (matchInfo == null) {
             matchInfo = backMatch(messageSend);
@@ -108,6 +108,7 @@ public class GroupMatcher implements Runnable {
         if (StringUtils.isNotEmpty(rules.getAtWho())) {
             return rules.getAtWho();
         }
+
         DingGroupName groupName = groupConfigCache.queryFromClientCache(rules.getGroupId());
         if (groupName.getAtAll()) {
             return Constant.AT_ALL;
@@ -125,10 +126,10 @@ public class GroupMatcher implements Runnable {
         return String.join(",", staffs);
     }
 
-    private List<String> buildKeys(String clusterId, String exceptionType, String appName) {
+    private List<String> buildKeys(String appDep, String exceptionType, String appName) {
         List<String> keys = Lists.newArrayList();
-        keys.add(String.format(Constant.GROUP_COMMON_FORMAT, clusterId, exceptionType, appName));
-        keys.add(String.format(Constant.GROUP_COMMON_FORMAT, clusterId, exceptionType,
+        keys.add(String.format(Constant.GROUP_COMMON_FORMAT, appDep, exceptionType, appName));
+        keys.add(String.format(Constant.GROUP_COMMON_FORMAT, appDep, exceptionType,
                 Constant.BACK));
         return keys;
     }
@@ -165,13 +166,13 @@ public class GroupMatcher implements Runnable {
     }
 
     private GroupMatchRules backMatch(MessageSend messageSend) {
-        String key = String.format(Constant.GROUP_COMMON_FORMAT, messageSend.getClusterId(),
+        String key = String.format(Constant.GROUP_COMMON_FORMAT, messageSend.getAppDep(),
                 Constant.BACK, Constant.BACK);
         List<GroupMatchRules> rules = groupMatchCache.queryFromClientCache(key);
         return rules.get(0);
     }
 
-    private String determineClusterId(AppDepInfo appDepInfo) {
+    private String determineAppDepId(AppDepInfo appDepInfo) {
         if (StringUtils.isNotEmpty(appDepInfo.getManualDepId())) {
             return appDepInfo.getManualDepId();
         }

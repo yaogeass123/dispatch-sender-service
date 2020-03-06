@@ -22,6 +22,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.dianwoba.wireless</groupId>
+            <artifactId>wireless-fundamental</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

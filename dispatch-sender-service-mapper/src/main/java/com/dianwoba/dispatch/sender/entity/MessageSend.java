@@ -8,7 +8,7 @@ import java.util.Date;
 public class MessageSend implements Serializable {
     private Long id;
 
-    private String clusterId;
+    private String appDep;
 
     private Long groupId;
 
@@ -54,12 +54,12 @@ public class MessageSend implements Serializable {
         this.id = id;
     }
 
-    public String getClusterId() {
-        return clusterId;
+    public String getAppDep() {
+        return appDep;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId == null ? null : clusterId.trim();
+    public void setAppDep(String appDep) {
+        this.appDep = appDep == null ? null : appDep.trim();
     }
 
     public Long getGroupId() {
@@ -207,7 +207,7 @@ public class MessageSend implements Serializable {
      */
     public enum Column {
         id("id", "id", "BIGINT"),
-        clusterId("cluster_id", "clusterId", "VARCHAR"),
+        appDep("app_dep", "appDep", "VARCHAR"),
         groupId("group_id", "groupId", "BIGINT"),
         appName("app_name", "appName", "VARCHAR"),
         ips("ips", "ips", "VARCHAR"),

@@ -6,6 +6,7 @@ import com.dianwoba.dispatch.sender.entity.DingTokenConfigExample;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfigExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.DingTokenConfigMapper;
 import com.dianwoba.wireless.paging.PagingSearchable;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,8 @@ public class DingTokenConfigManager {
         criteria.andIdEqualTo(id);
         criteria.andStatusEqualTo(Constant.TOKEN_NORMAL);
         DingTokenConfig record = new DingTokenConfig();
+        record.setModifier(Constant.DEFAULT_STAFF);
+        record.setModifyTime(new Date());
         record.setStatus(Constant.TOKEN_ERROR);
         return dingTokenConfigMapper.updateByExampleSelective(record, example);
     }

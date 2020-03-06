@@ -3,6 +3,7 @@ package com.dianwoba.dispatch.sender.job;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.cache.DepInfoCache;
+import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.manager.AppDepManager;
@@ -16,7 +17,6 @@ import com.dianwoba.genius.provider.StaffProvider;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
 import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
 import com.dianwoba.wireless.http.support.util.HttpUtils;
-import com.dianwoba.wireless.monitor.constant.Constant;
 import com.dianwoba.wireless.monitor.domain.dto.common.DepPlatformAppDTO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -242,10 +242,13 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
         if (appDep != null) {
             app.setId(appDep.getId());
             app.setCreateTime(appDep.getCreateTime());
+            app.setCreator(appDep.getCreator());
+            app.setModifer(Constant.DEFAULT_STAFF);
+            app.setModifyTime(new Date());
         } else {
+            app.setCreator(Constant.DEFAULT_STAFF);
             app.setCreateTime(new Date());
         }
-        app.setModifyTime(new Date());
         app.setAppName(depPlatformAppDTO.getName());
         app.setDepPlatModifyTime(depPlatformAppDTO.getModifyTime());
         app.setDepId(determineDepId(app.getDevelopersDepId(), app.getOwnersDepId()));

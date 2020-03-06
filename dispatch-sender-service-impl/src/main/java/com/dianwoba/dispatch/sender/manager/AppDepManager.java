@@ -55,19 +55,19 @@ public class AppDepManager {
                     .batchInsertSelective(lists.subList(0, max), Column.appName, Column.ownersDepId,
                             Column.ownersPhone, Column.developersDepId, Column.depId,
                             Column.developersPhone, Column.depPlatModifyTime, Column.createTime,
-                            Column.modifyTime, Column.developersMail, Column.ownersMail);
+                            Column.creator, Column.developersMail, Column.ownersMail);
             lists = lists.subList(max, lists.size());
         }
         if (lists.size() > 0) {
             appDepMapper.batchInsertSelective(lists, Column.appName, Column.ownersDepId,
-                    Column.developersMail, Column.ownersMail, Column.ownersPhone,
-                    Column.developersDepId, Column.developersPhone, Column.depId,
-                    Column.depPlatModifyTime, Column.createTime, Column.modifyTime);
+                    Column.ownersPhone, Column.developersDepId, Column.depId,
+                    Column.developersPhone, Column.depPlatModifyTime, Column.createTime,
+                    Column.creator, Column.developersMail, Column.ownersMail);
         }
     }
 
     public int update(AppDep appDep) {
-        return appDepMapper.updateByPrimaryKey(appDep);
+        return appDepMapper.updateByPrimaryKeySelective(appDep);
     }
 
 }
