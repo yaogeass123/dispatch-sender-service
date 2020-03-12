@@ -238,10 +238,12 @@ public class MessageSender implements Runnable {
     private int sendProcess(int times, List<MessageSendInfo> messages) {
         //todo 改成异步发送
         //可发送次数与消息数量的最小值
+        if (messages.size() == 0) {
+            return times;
+        }
         int count = Math.min(times, messages.size());
         List<Future<SendResultInfo>> futures = Lists.newArrayList();
         List<SendResultInfo> results = Lists.newArrayList();
-
         for (int i = 0; i < count; i++) {
             DingTokenConfig token = tokenMap.get(poll()).get(0);
             futures.add(threadPool.submit(new SendProcessor(messages.get(i), token, client)));
@@ -266,7 +268,6 @@ public class MessageSender implements Runnable {
         successResults.forEach(t -> success.addAll(t.getIds()));
         //本时段成功次数 - 成功次数
         times -= successResults.size();
-
         List<SendResultInfo> errorResults = results.stream().filter(t -> !t.getIsSuccess())
                 .collect(Collectors.toList());
         Map<Integer, List<SendResultInfo>> errorMap = errorResults.stream()
@@ -301,7 +302,6 @@ public class MessageSender implements Runnable {
                 }
                 //tokenQueue删除
                 tokenQueue.removeAll(tokenIds);
-
                 if (tokenMap.size() == 0) {
                     //remove后没有机器人了
                     sb.append("此群已无可用机器人,请及时配置");
@@ -329,7 +329,6 @@ public class MessageSender implements Runnable {
             String mailAddress = mailSendWrapper.getMailAddress(v.get(0).getAppDep());
             mailSendWrapper.sendMail(sb.toString(), mailAddress, Constant.MAIL_SUBJECT_SEND_ERROR);
         }
-
         return times;
     }
 
