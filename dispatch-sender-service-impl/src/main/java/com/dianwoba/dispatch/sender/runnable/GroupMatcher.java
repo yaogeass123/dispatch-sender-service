@@ -1,6 +1,8 @@
 package com.dianwoba.dispatch.sender.runnable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.cache.AppDepCache;
+import com.dianwoba.dispatch.sender.cache.DepInfoCache;
 import com.dianwoba.dispatch.sender.cache.GroupConfigCache;
 import com.dianwoba.dispatch.sender.cache.GroupMatchCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
@@ -12,6 +14,7 @@ import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.MessageLogManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
+import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.wireless.fundamental.util.SpringUtils;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +47,10 @@ public class GroupMatcher implements Runnable {
 
     private List<MessageLog> messageLogs;
 
+    private MailSendWrapper mailSendWrapper;
+
+    private DepInfoCache depInfoCache;
+
     public GroupMatcher(List<MessageLog> messageLogs) {
         this.messageLogs = messageLogs;
         messageLogManager = SpringUtils.getBean(MessageLogManager.class);
@@ -51,10 +58,13 @@ public class GroupMatcher implements Runnable {
         appDepCache = SpringUtils.getBean(AppDepCache.class);
         groupMatchCache = SpringUtils.getBean(GroupMatchCache.class);
         groupConfigCache = SpringUtils.getBean(GroupConfigCache.class);
+        mailSendWrapper = SpringUtils.getBean(MailSendWrapper.class);
+        depInfoCache = SpringUtils.getBean(DepInfoCache.class);
     }
 
     @Override
     public void run() {
+        Long start = System.currentTimeMillis();
         //1、app-digest-msg暂时按照一摸一样聚合，后期考虑计算相似度
         Map<String, List<MessageLog>> lists = messageLogs.stream().collect(Collectors.groupingBy(
                 log -> String.format(Constant.GROUP_COMMON_FORMAT, log.getAppName(), log.getDigest(), log.getMsg())));
@@ -63,8 +73,18 @@ public class GroupMatcher implements Runnable {
         lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
         //3、匹配群组
         AppDepInfo appDepInfo = matchAppDep(messageSend);
+        LOGGER.info("匹配到群组信息:{}", JSONObject.toJSONString(appDepInfo));
         //4、匹配群并获取规则
         GroupMatchRules rule = matchGroup(messageSend.get(0));
+        if (rule == null) {
+            String content = String.format("未配置兜底群, 部门id：%s", messageSend.get(0).getId());
+            LOGGER.warn(content);
+            String mailAddress = mailSendWrapper.getMailAddress(messageSend.get(0).getAppDep(),
+                    messageSend.get(0).getAppName());
+            mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_MATCH);
+            return;
+        }
+        LOGGER.info("匹配到规则信息:{}", JSONObject.toJSONString(rule));
         String atWho = matchAtWho(rule, appDepInfo);
         setGroup(messageSend, rule, atWho);
         //5、去掉1min内已发送的消息（以群、app、digest和msg的维度，最终保证的是一摸一样的消息不重复发送）
@@ -76,9 +96,13 @@ public class GroupMatcher implements Runnable {
         } else {
             messageSenderManager.batchSave(messageSend);
         }
+        LOGGER.info("插入完成");
         //6、messageLog数据库中相应入库数据置位成已处理状态
         List<Long> ids = messageLogs.stream().map(MessageLog::getId).collect(Collectors.toList());
         messageLogManager.batchUpdateStatus(ids);
+        LOGGER.info("更新完成");
+        Long end = System.currentTimeMillis();
+        LOGGER.info("总共耗时：{}", end - start);
     }
 
     private AppDepInfo matchAppDep(List<MessageSend> messageSends) {
@@ -108,7 +132,6 @@ public class GroupMatcher implements Runnable {
         if (StringUtils.isNotEmpty(rules.getAtWho())) {
             return rules.getAtWho();
         }
-
         DingGroupName groupName = groupConfigCache.queryFromClientCache(rules.getGroupId());
         if (groupName.getAtAll()) {
             return Constant.AT_ALL;
@@ -169,6 +192,9 @@ public class GroupMatcher implements Runnable {
         String key = String.format(Constant.GROUP_COMMON_FORMAT, messageSend.getAppDep(),
                 Constant.BACK, Constant.BACK);
         List<GroupMatchRules> rules = groupMatchCache.queryFromClientCache(key);
+        if(CollectionUtils.isEmpty(rules)) {
+            return null;
+        }
         return rules.get(0);
     }
 

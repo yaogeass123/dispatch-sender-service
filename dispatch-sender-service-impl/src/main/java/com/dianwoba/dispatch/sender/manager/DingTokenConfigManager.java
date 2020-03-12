@@ -39,10 +39,10 @@ public class DingTokenConfigManager {
         return dingTokenConfigMapper.selectByExample(example);
     }
 
-    public int setTokenError(long id) {
+    public int setTokenError(List<Long> ids) {
         DingTokenConfigExample example = new DingTokenConfigExample();
         Criteria criteria = example.createCriteria();
-        criteria.andIdEqualTo(id);
+        criteria.andIdIn(ids);
         criteria.andStatusEqualTo(Constant.TOKEN_NORMAL);
         DingTokenConfig record = new DingTokenConfig();
         record.setModifier(Constant.DEFAULT_STAFF);

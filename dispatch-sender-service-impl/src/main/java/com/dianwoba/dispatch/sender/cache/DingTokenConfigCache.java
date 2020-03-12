@@ -25,6 +25,12 @@ public class DingTokenConfigCache extends
     private DingTokenConfigManager dingTokenConfigManager;
 
     @Override
+    public String cronExpression() {
+        //每分钟缓存一次
+        return "0 0/1 * * * ?";
+    }
+
+    @Override
     public Long totalCount() {
         return dingTokenConfigManager.totalCount();
     }
