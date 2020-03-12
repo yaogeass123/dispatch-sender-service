@@ -6,6 +6,7 @@
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
     <result column="at_who" jdbcType="VARCHAR" property="atWho" />
     <result column="at_all" jdbcType="BIT" property="atAll" />
+    <result column="mail" jdbcType="VARCHAR" property="mail" />
     <result column="is_active" jdbcType="BIT" property="isActive" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -71,7 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
+    id, group_name, at_who, at_all, mail, is_active, creator, create_time, modifier, 
+    modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupNameExample" resultMap="BaseResultMap">
     select
@@ -112,8 +114,8 @@
         </foreach>
       </when>
       <otherwise>
-        id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
-          
+        id, group_name, at_who, at_all, mail, is_active, creator, create_time, modifier, 
+          modify_time
       </otherwise>
     </choose>
     from `ding_group_name`
@@ -144,8 +146,8 @@
         </foreach>
       </when>
       <otherwise>
-        id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
-          
+        id, group_name, at_who, at_all, mail, is_active, creator, create_time, modifier, 
+          modify_time
       </otherwise>
     </choose>
     from `ding_group_name`
@@ -163,11 +165,13 @@
   </delete>
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupName">
     insert into `ding_group_name` (id, group_name, at_who, 
-      at_all, is_active, creator, create_time, 
-      modifier, modify_time)
+      at_all, mail, is_active, creator, 
+      create_time, modifier, modify_time
+      )
     values (#{id,jdbcType=BIGINT}, #{groupName,jdbcType=VARCHAR}, #{atWho,jdbcType=VARCHAR}, 
-      #{atAll,jdbcType=BIT}, #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP})
+      #{atAll,jdbcType=BIT}, #{mail,jdbcType=VARCHAR}, #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.DingGroupName">
     insert into `ding_group_name`
@@ -183,6 +187,9 @@
       </if>
       <if test="atAll != null">
         at_all,
+      </if>
+      <if test="mail != null">
+        mail,
       </if>
       <if test="isActive != null">
         is_active,
@@ -212,6 +219,9 @@
       </if>
       <if test="atAll != null">
         #{atAll,jdbcType=BIT},
+      </if>
+      <if test="mail != null">
+        #{mail,jdbcType=VARCHAR},
       </if>
       <if test="isActive != null">
         #{isActive,jdbcType=BIT},
@@ -251,6 +261,9 @@
       <if test="record.atAll != null">
         at_all = #{record.atAll,jdbcType=BIT},
       </if>
+      <if test="record.mail != null">
+        mail = #{record.mail,jdbcType=VARCHAR},
+      </if>
       <if test="record.isActive != null">
         is_active = #{record.isActive,jdbcType=BIT},
       </if>
@@ -277,6 +290,7 @@
       group_name = #{record.groupName,jdbcType=VARCHAR},
       at_who = #{record.atWho,jdbcType=VARCHAR},
       at_all = #{record.atAll,jdbcType=BIT},
+      mail = #{record.mail,jdbcType=VARCHAR},
       is_active = #{record.isActive,jdbcType=BIT},
       creator = #{record.creator,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -297,6 +311,9 @@
       </if>
       <if test="atAll != null">
         at_all = #{atAll,jdbcType=BIT},
+      </if>
+      <if test="mail != null">
+        mail = #{mail,jdbcType=VARCHAR},
       </if>
       <if test="isActive != null">
         is_active = #{isActive,jdbcType=BIT},
@@ -321,6 +338,7 @@
     set group_name = #{groupName,jdbcType=VARCHAR},
       at_who = #{atWho,jdbcType=VARCHAR},
       at_all = #{atAll,jdbcType=BIT},
+      mail = #{mail,jdbcType=VARCHAR},
       is_active = #{isActive,jdbcType=BIT},
       creator = #{creator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -335,14 +353,14 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `ding_group_name`
-    (id, group_name, at_who, at_all, is_active, creator, create_time, modifier, modify_time
-      )
+    (id, group_name, at_who, at_all, mail, is_active, creator, create_time, modifier, 
+      modify_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.groupName,jdbcType=VARCHAR}, #{item.atWho,jdbcType=VARCHAR}, 
-        #{item.atAll,jdbcType=BIT}, #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, 
-        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP}
-        )
+        #{item.atAll,jdbcType=BIT}, #{item.mail,jdbcType=VARCHAR}, #{item.isActive,jdbcType=BIT}, 
+        #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, 
+        #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -371,6 +389,9 @@
         </if>
         <if test="'at_all' == column.value">
           #{item.atAll,jdbcType=BIT}
+        </if>
+        <if test="'mail' == column.value">
+          #{item.mail,jdbcType=VARCHAR}
         </if>
         <if test="'is_active' == column.value">
           #{item.isActive,jdbcType=BIT}

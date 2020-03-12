@@ -14,6 +14,8 @@ public class DingGroupName implements Serializable {
 
     private Boolean atAll;
 
+    private String mail;
+
     private Boolean isActive;
 
     private String creator;
@@ -56,6 +58,14 @@ public class DingGroupName implements Serializable {
 
     public void setAtAll(Boolean atAll) {
         this.atAll = atAll;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail == null ? null : mail.trim();
     }
 
     public Boolean getIsActive() {
@@ -110,6 +120,7 @@ public class DingGroupName implements Serializable {
         groupName("group_name", "groupName", "VARCHAR"),
         atWho("at_who", "atWho", "VARCHAR"),
         atAll("at_all", "atAll", "BIT"),
+        mail("mail", "mail", "VARCHAR"),
         isActive("is_active", "isActive", "BIT"),
         creator("creator", "creator", "VARCHAR"),
         createTime("create_time", "createTime", "TIMESTAMP"),

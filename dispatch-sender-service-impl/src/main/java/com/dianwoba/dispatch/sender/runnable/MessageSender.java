@@ -95,7 +95,7 @@ public class MessageSender implements Runnable {
         client = new HttpClientUtils();
         second = Calendar.getInstance().get(Calendar.SECOND);
         threadPool = MonitoringThreadPoolMaintainer
-                .newFixedThreadPool(String.format(Constant.EXECUTOR_SEND_FORMAT, groupId), 120);
+                .newFixedThreadPool(String.format(Constant.EXECUTOR_SEND_FORMAT, groupId), 20);
     }
 
     @Override
@@ -114,8 +114,7 @@ public class MessageSender implements Runnable {
                 mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_EXIST);
                 return;
             }
-            tokenMap = tokenList.stream()
-                    .collect(Collectors.groupingBy(DingTokenConfig::getId));
+            tokenMap = tokenList.stream().collect(Collectors.groupingBy(DingTokenConfig::getId));
             queryRedis();
             //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
             List<MessageSendInfo> messages = dealHighLevelMessage();
@@ -204,7 +203,7 @@ public class MessageSender implements Runnable {
     private void updateRedis() {
         String bucket = BucketUtils.buildBucketString(tokenQueue);
         stringRedisTemplate.opsForValue().set(String.format(Constant.REDIS_SEND_STR, groupId),
-                String.format("%d,%s", residualSentAbleTimes, bucket));
+                String.format("%d,%s", residualSentAbleTimes, bucket), 15, TimeUnit.SECONDS);
     }
 
     private void updateSql() {
@@ -255,7 +254,7 @@ public class MessageSender implements Runnable {
         }
         for (Future<SendResultInfo> future : futures) {
             try {
-                SendResultInfo resultInfo = future.get(2000, TimeUnit.MILLISECONDS);
+                SendResultInfo resultInfo = future.get(1000, TimeUnit.MILLISECONDS);
                 if (resultInfo != null) {
                     results.add(resultInfo);
                 }
@@ -263,6 +262,11 @@ public class MessageSender implements Runnable {
                 LOGGER.warn("多线程发送获取结果失败", e);
             }
         }
+        times = handleResult(results, times);
+        return times;
+    }
+
+    private int handleResult(List<SendResultInfo> results, int times) {
         List<SendResultInfo> successResults = results.stream().filter(SendResultInfo::getIsSuccess)
                 .collect(Collectors.toList());
         successResults.forEach(t -> success.addAll(t.getIds()));
@@ -284,9 +288,10 @@ public class MessageSender implements Runnable {
                 sb.append(tokenIds.stream().map(String::valueOf).collect(Collectors.joining(",")))
                         .append("号机器人配置错误，请及时检查修改");
                 sb.append("\n").append("错误代码: ").append(k).append("\n");
-                for (SendResultInfo result : v) {
-                    sb.append(result.getTokenId()).append("号机器人:").append(result.getErrorMsg())
-                            .append("\n");
+                Set<String> set = v.stream().map(t -> t.getTokenId() + "号机器人:" + t.getErrorMsg())
+                        .collect(Collectors.toSet());
+                for (String str : set) {
+                    sb.append(str).append("\n");
                 }
                 //数据库置位
                 dingTokenConfigManager.setTokenError(tokenIds);
@@ -325,8 +330,7 @@ public class MessageSender implements Runnable {
                     tokenQueue.add(result.getTokenId());
                 }
             }
-            // TODO: 2020/3/11  这里设计有问题，之前串行通知给app相关人员处理，这里应该给群设置个邮件群组或者负责人，进行通知
-            String mailAddress = mailSendWrapper.getMailAddress(v.get(0).getAppDep());
+            String mailAddress = mailSendWrapper.getMailAddress(v.get(0).getAppDep(), groupId);
             mailSendWrapper.sendMail(sb.toString(), mailAddress, Constant.MAIL_SUBJECT_SEND_ERROR);
         }
         return times;
@@ -429,7 +433,7 @@ public class MessageSender implements Runnable {
         int tokenNum = tokenMap.size();
         //本批次
         if (second < Constant.FIFTY) {
-            return  tokenNum * 3 + residualSentAbleTimes;
+            return tokenNum * 3 + residualSentAbleTimes;
         }
         //对于单个机器人，最多可发送20，冗余1条，故期望19条。对于前5论，理想中包和发送3*5个
         //故最后一轮 4 = 19 - 3 * 5

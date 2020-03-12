@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -68,20 +69,20 @@ public class SendTest extends UnitTestBase {
         List<MessageSend> messageSends = messageSenderManager.queryMessageToBeSent();
         List<MessageSendInfo> infoList = messageSends.stream()
                 .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
-        while (Calendar.getInstance().get(Calendar.SECOND) < 50) {
-            try {
-                Thread.sleep(2000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        while (Calendar.getInstance().get(Calendar.SECOND) < 50) {
+//            try {
+//                Thread.sleep(2000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(infoList)) {
             Map<Long, List<MessageSendInfo>> group = infoList.stream()
                     .collect(Collectors.groupingBy(MessageSendInfo::getGroupId));
             group.values().forEach(v -> es.submit(new MessageSender(v)));
         }
         try {
-            Thread.sleep(3000);
+            Thread.sleep(300000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,9 +92,10 @@ public class SendTest extends UnitTestBase {
     public void init() {
         //测试初始化redis
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
-        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k, "60:" + BucketUtils
-                .buildBucketString(
-                        v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet()))));
+        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k,
+                "0:" + BucketUtils.buildBucketString(
+                        v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())), 15,
+                TimeUnit.SECONDS));
 
     }
 

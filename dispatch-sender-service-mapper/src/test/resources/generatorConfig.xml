@@ -66,9 +66,9 @@
 <!--		<table tableName="app_dep" domainObjectName="AppDep" delimitIdentifiers="true"/>-->
 <!--		<table tableName="group_match_rules" domainObjectName="GroupMatchRules" delimitIdentifiers="true"/>-->
 <!--		<table tableName="ding_token_config" domainObjectName="DingTokenConfig" delimitIdentifiers="true"/>-->
-<!--		<table tableName="ding_group_name" domainObjectName="DingGroupName" delimitIdentifiers="true"/>-->
+		<table tableName="ding_group_name" domainObjectName="DingGroupName" delimitIdentifiers="true"/>
 <!--		<table tableName="dep_info" domainObjectName="DepInfo" delimitIdentifiers="true"/>-->
-		<table tableName="token_bucket_backup" domainObjectName="TokenBucketBackup" delimitIdentifiers="true"/>
+<!--		<table tableName="token_bucket_backup" domainObjectName="TokenBucketBackup" delimitIdentifiers="true"/>-->
 
 	</context>
 </generatorConfiguration>

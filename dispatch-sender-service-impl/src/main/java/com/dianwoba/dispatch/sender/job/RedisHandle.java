@@ -7,6 +7,7 @@ import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
 import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -30,8 +31,8 @@ public class RedisHandle extends AbstractJobExecuteService {
     @Override
     public void doExecute(ExecuteContext executeContext) {
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
-        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k, "0:" + BucketUtils
-                .buildBucketString(
-                        v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet()))));
+        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k,
+                "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
+                15, TimeUnit.SECONDS));
     }
 }
