@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class MessageSendHandler extends AbstractJobExecuteService {
 
     private static MonitoringThreadPool messageSendThreadPool = MonitoringThreadPoolMaintainer
-            .newFixedThreadPool("message-send", 100);
+            .newFixedThreadPool("message-send", 500);
 
     @Resource
     private MessageSenderManager messageSenderManager;

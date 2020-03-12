@@ -77,27 +77,25 @@ public class MessageSenderManager {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
-        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.SECOND, -10));
+//        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.SECOND, -10));
         lists.addAll(messageSendMapper.selectByExample(example));
         MessageSendExample example2 = new MessageSendExample();
         Criteria criteria2 = example2.createCriteria();
         criteria2.andStatusEqualTo(StatusEn.INIT.getStatusCode());
         criteria2.andLevelEqualTo(LevelEn.HIGH.getLevelCode());
-        criteria2.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
+//        criteria2.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
         lists.addAll(messageSendMapper.selectByExample(example2));
         return lists;
     }
 
     public List<MessageSend> queryUnSentMessage4Retry(long groupId) {
-        //测试时使用 所以先注释掉，其它的时间信息也同样
-        return new ArrayList<>();
-//        MessageSendExample example = new MessageSendExample();
-//        Criteria criteria = example.createCriteria();
-//        criteria.andGroupIdEqualTo(groupId);
-//        criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
-//        criteria.andLevelLessThan(LevelEn.HIGH.getLevelCode());
-//        criteria.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
-//        return messageSendMapper.selectByExample(example);
+        MessageSendExample example = new MessageSendExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andGroupIdEqualTo(groupId);
+        criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
+        criteria.andLevelLessThan(LevelEn.HIGH.getLevelCode());
+        criteria.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
+        return messageSendMapper.selectByExample(example);
     }
 
     public List<MessageSend> queryUnsentMessageWithMinute(int minute) {
@@ -146,7 +144,7 @@ public class MessageSenderManager {
         Criteria criteria = example.createCriteria();
         criteria.andStatusIn(Lists.newArrayList(StatusEn.IGNORE.getStatusCode(),
                 StatusEn.ERROR.getStatusCode()));
-//        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.HOUR, -24));
+        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.HOUR, -24));
         return messageSendMapper.selectByExample(example);
     }
 }

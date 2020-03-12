@@ -4,6 +4,7 @@ import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.AppDepInfo;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
+import com.dianwoba.dispatch.sender.domain.SendResultInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
 import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.en.StatusEn;
@@ -28,7 +29,11 @@ public class ConvertUtils {
         MessageLog messageLog = new MessageLog();
         messageLog.setAppName(messageSendDTO.getAppName());
         messageLog.setDigest(messageSendDTO.getDigest());
-        messageLog.setMsg(messageSendDTO.getMsg());
+        if (messageSendDTO.getMsg().length() > Constant.MAX_MSG_LEN) {
+            messageLog.setMsg(messageSendDTO.getMsg().substring(0, Constant.MAX_MSG_LEN) + "\n...");
+        } else {
+            messageLog.setMsg(messageSendDTO.getMsg());
+        }
         messageLog.setLevel(messageSendDTO.getLevel().getLevelCode());
         messageLog.setTime(messageSendDTO.getTime());
         messageLog.setIp(messageSendDTO.getIp());
@@ -91,9 +96,9 @@ public class ConvertUtils {
         return info;
     }
 
-    public static ErrorInfo convert2ErrorInfo(SendResult result, List<Long> ids) {
+    public static ErrorInfo convert2ErrorInfo(SendResultInfo result) {
         ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setIds(ids);
+        errorInfo.setIds(result.getIds());
         errorInfo.setErrorCode(String.valueOf(result.getErrorCode()));
         errorInfo.setErrorMsg(result.getErrorMsg());
         return errorInfo;

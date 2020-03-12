@@ -11,9 +11,7 @@ public interface Constant {
 
     String GROUP_TOKEN_PREFIX = "groupId_%s";
 
-    String REDIS_SEND_TIMES = "redis_groupId_%s";
-
-    String GROUP_NEXT_TOKEN = "groupId_%s_next_token";
+    String REDIS_SEND_STR = "redis_groupId_%s";
 
     String BACK = "back";
 
@@ -41,6 +39,8 @@ public interface Constant {
 
     String MAIL_SUBJECT_NOT_EXIST = "钉钉无配置机器人告警";
 
+    String MAIL_SUBJECT_NOT_MATCH = "消息无匹配规则告警";
+
     Byte TOKEN_ERROR = 1;
 
     Byte TOKEN_NORMAL = 0;
@@ -53,4 +53,9 @@ public interface Constant {
 
     String PREFIX_LINK_DEPLOY_PLATFORM = "http://new-robert-service.nidianwo.com/api/app/getModifyApp?modifyTime=";
 
+    Integer MAX_MSG_LEN = 10000;
+
+    String EXECUTOR_SEND_FORMAT = "send-groupId-%d";
+
+    Integer MAX_SENT_TIMES_ONE_TOKEN = 19;
 }

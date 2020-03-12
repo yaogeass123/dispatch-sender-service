@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -97,22 +98,27 @@ public class AppDepTest extends UnitTestBase {
     }
 
     public void synTest() {
-        //获取增量数据
+        //获取最新修改的时间
         long modifyTime = 0L;
         List<AppDep> appDep = appDepManager.queryLastModify();
         if (CollectionUtils.isNotEmpty(appDep)) {
             modifyTime = DateUtils.addHours(appDep.get(0).getDepPlatModifyTime(), -1).getTime();
         }
+        //获取该时间开始的增量数据
         List<DepPlatformAppDTO> appLists = getAppDepFromDepPlatform(modifyTime);
         if (CollectionUtils.isEmpty(appLists)) {
             return;
         }
+        //按照更新时间排序
+        appLists.sort(Comparator.comparing(DepPlatformAppDTO::getModifyTime));
+
         //有了owner、dev的code、名字，下一步找员工信息
         Set<String> staffCode = filterStaffCode(appLists);
         Map<String, StaffDTO> staffMap = staffProvider.findByCodes(Lists.newArrayList(staffCode));
         List<String> emptyStaff = staffMap.entrySet().stream().filter(e -> e.getValue() == null)
                 .map(Entry::getKey).collect(Collectors.toList());
         staffMap.keySet().removeAll(emptyStaff);
+
         //处理部门信息 步骤提前，计算应用默认部门使用
         List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
                 .collect(Collectors.toList());
@@ -252,10 +258,13 @@ public class AppDepTest extends UnitTestBase {
         if (appDep != null) {
             app.setId(appDep.getId());
             app.setCreateTime(appDep.getCreateTime());
+            app.setCreator(appDep.getCreator());
+            app.setModifer(com.dianwoba.dispatch.sender.constant.Constant.DEFAULT_STAFF);
+            app.setModifyTime(new Date());
         } else {
+            app.setCreator(com.dianwoba.dispatch.sender.constant.Constant.DEFAULT_STAFF);
             app.setCreateTime(new Date());
         }
-        app.setModifyTime(new Date());
         app.setAppName(depPlatformAppDTO.getName());
         app.setDepPlatModifyTime(depPlatformAppDTO.getModifyTime());
         app.setDepId(determineDepId(app.getDevelopersDepId(), app.getOwnersDepId()));
@@ -300,16 +309,16 @@ public class AppDepTest extends UnitTestBase {
                         newestDepMap.keySet().removeAll(
                                 path.stream().map(Integer::parseInt).collect(Collectors.toList()));
                     }
-                } );
+                });
                 if (newestDepMap.keySet().size() == 1) {
                     return Lists.newArrayList(newestDepMap.keySet()).get(0);
                 }
                 List<List<String>> paths = newestDepMap.values().stream()
-                        .map(v -> v.get(0).getPath()).filter(StringUtils::isNotEmpty).distinct()
+                        .map(v -> v.get(0).getPath()).distinct().filter(StringUtils::isNotEmpty)
                         .map(str -> Arrays.asList(str.substring(0, str.length() - 1).split(",")))
                         .collect(Collectors.toList());
                 List<String> path = paths.get(0);
-                for (int i = 1; i < paths.size(); i ++) {
+                for (int i = 1; i < paths.size() && path.size() > 0; i++) {
                     int len = Math.min(path.size(), paths.get(i).size());
                     int index = 0;
                     while (index < len && path.get(index).equals(paths.get(i).get(index))) {

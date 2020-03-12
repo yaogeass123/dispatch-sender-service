@@ -12,7 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class Application {
 
 	static {
-		System.setProperty("Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
+//		System.setProperty("Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
 	}
 
 	public static void main(String[] args) {
