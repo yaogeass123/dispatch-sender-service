@@ -17,6 +17,7 @@ import com.dianwoba.dispatch.sender.util.BucketUtils;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
 import com.dianwoda.delibird.provider.DeliMailProvider;
 import com.google.common.collect.Maps;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,19 +62,26 @@ public class SendTest extends UnitTestBase {
 //        test();
     }
 
-    public void sendTest(){
+    public void sendTest() {
         init();
         ExecutorService es = Executors.newFixedThreadPool(10);
         List<MessageSend> messageSends = messageSenderManager.queryMessageToBeSent();
         List<MessageSendInfo> infoList = messageSends.stream()
                 .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
+        while (Calendar.getInstance().get(Calendar.SECOND) < 50) {
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(infoList)) {
             Map<Long, List<MessageSendInfo>> group = infoList.stream()
                     .collect(Collectors.groupingBy(MessageSendInfo::getGroupId));
             group.values().forEach(v -> es.submit(new MessageSender(v)));
         }
         try {
-            Thread.sleep(100000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -83,7 +91,7 @@ public class SendTest extends UnitTestBase {
     public void init() {
         //测试初始化redis
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
-        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k, "0:" + BucketUtils
+        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k, "60:" + BucketUtils
                 .buildBucketString(
                         v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet()))));
 
