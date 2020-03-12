@@ -37,10 +37,16 @@ public class MatchTest extends UnitTestBase {
 
     @Test
     public void doTest(){
+//        query();
         matchTest();
 //        log();
 //        logTest();
     }
+
+    private void query(){
+        System.out.println(messageLogManager.queryAllUnhandled().get(0).getMsg().length());
+    }
+
 
     private void matchTest() {
         List<MessageLog> unhandledMessage = messageLogManager.queryAllUnhandled();

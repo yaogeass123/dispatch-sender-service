@@ -9,7 +9,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
-public class webConfig {
+public class WebConfig {
 
 
         /**

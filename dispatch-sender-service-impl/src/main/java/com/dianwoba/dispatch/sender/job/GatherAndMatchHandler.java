@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class GatherAndMatchHandler extends AbstractJobExecuteService {
 
     private static MonitoringThreadPool gatherMatchThreadPool = MonitoringThreadPoolMaintainer
-            .newFixedThreadPool("group-match", 100);
+            .newFixedThreadPool("group-match", 500);
 
     @Resource
     private MessageLogManager messageLogManager;

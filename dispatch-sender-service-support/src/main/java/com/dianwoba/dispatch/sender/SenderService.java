@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Polaris
@@ -47,9 +46,4 @@ public class SenderService {
     public static void sendDingMsg(String msg) {
         sendDingMsg(msg, LevelEn.MEDIUM);
     }
-
-    public static void main(String[] args) {
-        sendDingMsg("13");
-    }
-
 }
