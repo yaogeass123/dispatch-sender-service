@@ -53,7 +53,7 @@ public interface Constant {
 
     String PREFIX_LINK_DEPLOY_PLATFORM = "http://new-robert-service.nidianwo.com/api/app/getModifyApp?modifyTime=";
 
-    Integer MAX_MSG_LEN = 10000;
+    Integer MAX_MSG_LEN = 5000;
 
     String EXECUTOR_SEND_FORMAT = "send-groupId-%d";
 

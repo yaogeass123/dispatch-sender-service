@@ -71,9 +71,10 @@ public class GroupMatcher implements Runnable {
         //2、转换
         List<MessageSend> messageSend = Lists.newArrayList();
         lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
+        LOGGER.info("信息内容:{} ", JSONObject.toJSONString(messageSend));
         //3、匹配群组
         AppDepInfo appDepInfo = matchAppDep(messageSend);
-        LOGGER.info("匹配到群组信息:{}", JSONObject.toJSONString(appDepInfo));
+        LOGGER.info("匹配到群组信息:{} ", JSONObject.toJSONString(appDepInfo));
         //4、匹配群并获取规则
         GroupMatchRules rule = matchGroup(messageSend.get(0));
         if (rule == null) {

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +29,14 @@ public class RedisHandle extends AbstractJobExecuteService {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    @Value("${switches-redisGroupKeyTimeOut:15}")
+    private String redisGroupKeyTimeOut;
+
     @Override
     public void doExecute(ExecuteContext executeContext) {
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
         map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k,
                 "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
-                15, TimeUnit.SECONDS));
+                Integer.parseInt(redisGroupKeyTimeOut), TimeUnit.SECONDS));
     }
 }

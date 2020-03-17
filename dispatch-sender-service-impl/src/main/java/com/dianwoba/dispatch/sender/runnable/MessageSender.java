@@ -1,5 +1,6 @@
 package com.dianwoba.dispatch.sender.runnable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.ErrorInfo;
@@ -14,6 +15,7 @@ import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.manager.TokenBucketBackupManager;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
+import com.dianwoba.dispatch.sender.util.SwitchConfigUtils;
 import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.dispatch.utils.HttpClientUtils;
 import com.dianwoba.wireless.fundamental.util.SpringUtils;
@@ -77,6 +79,8 @@ public class MessageSender implements Runnable {
 
     private TokenBucketBackupManager sendBucketBackupManager;
 
+    private SwitchConfigUtils switchConfigUtils;
+
     private int second;
 
     public MessageSender(List<MessageSendInfo> list) {
@@ -89,13 +93,12 @@ public class MessageSender implements Runnable {
         groupConfigManager = SpringUtils.getBean(GroupConfigManager.class);
         dingTokenConfigCache = SpringUtils.getBean(DingTokenConfigCache.class);
         sendBucketBackupManager = SpringUtils.getBean(TokenBucketBackupManager.class);
+        switchConfigUtils = SpringUtils.getBean(SwitchConfigUtils.class);
         tokenQueue = null;
         success = Lists.newArrayList();
         error = Lists.newArrayList();
         client = new HttpClientUtils();
         second = Calendar.getInstance().get(Calendar.SECOND);
-        threadPool = MonitoringThreadPoolMaintainer
-                .newFixedThreadPool(String.format(Constant.EXECUTOR_SEND_FORMAT, groupId), 20);
     }
 
     @Override
@@ -114,6 +117,10 @@ public class MessageSender implements Runnable {
                 mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_EXIST);
                 return;
             }
+            //机器人数量*配置的比
+            threadPool = MonitoringThreadPoolMaintainer.newFixedThreadPool(
+                    String.format(Constant.EXECUTOR_SEND_FORMAT, groupId), tokenList.size()
+                            * Integer.parseInt(switchConfigUtils.getThreadMultiple()));
             tokenMap = tokenList.stream().collect(Collectors.groupingBy(DingTokenConfig::getId));
             queryRedis();
             //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
@@ -147,6 +154,7 @@ public class MessageSender implements Runnable {
         try {
             String redisStr = stringRedisTemplate.opsForValue()
                     .get(String.format(Constant.REDIS_SEND_STR, groupId));
+            LOGGER.info("redis:{}", redisStr);
             if (StringUtils.isEmpty(redisStr)) {
                 if (second == 0) {
                     tokenQueue = BucketUtils.buildTokenQueue(tokenMap.keySet());
@@ -196,6 +204,7 @@ public class MessageSender implements Runnable {
             return times;
         }
         retryMessages.sort(MessageSender::compare);
+        LOGGER.info("Retry Messages: {}", JSONObject.toJSONString(retryMessages));
         times = sendProcess(times, retryMessages);
         return times;
     }

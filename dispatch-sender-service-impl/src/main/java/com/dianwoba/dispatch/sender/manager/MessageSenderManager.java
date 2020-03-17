@@ -77,13 +77,13 @@ public class MessageSenderManager {
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
-//        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.SECOND, -10));
+        criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.SECOND, -10));
         lists.addAll(messageSendMapper.selectByExample(example));
         MessageSendExample example2 = new MessageSendExample();
         Criteria criteria2 = example2.createCriteria();
         criteria2.andStatusEqualTo(StatusEn.INIT.getStatusCode());
         criteria2.andLevelEqualTo(LevelEn.HIGH.getLevelCode());
-//        criteria2.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
+        criteria2.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
         lists.addAll(messageSendMapper.selectByExample(example2));
         return lists;
     }
