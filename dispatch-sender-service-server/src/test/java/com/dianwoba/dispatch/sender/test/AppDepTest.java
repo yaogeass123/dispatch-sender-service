@@ -18,6 +18,7 @@ import com.dianwoba.wireless.http.support.util.HttpUtils;
 import com.dianwoba.wireless.monitor.constant.Constant;
 import com.dianwoba.wireless.monitor.domain.dto.common.DepPlatformAppDTO;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
@@ -122,16 +124,17 @@ public class AppDepTest extends UnitTestBase {
         //处理部门信息 步骤提前，计算应用默认部门使用
         List<Integer> depCode = staffMap.values().stream().map(StaffDTO::getDepartId).distinct()
                 .collect(Collectors.toList());
+        List<DepInfo> depInfoList = Lists
+                .newArrayList(depInfoCache.queryAllFromClientCache().values());
         if (depInfoCache.totalCount() > 0) {
             //移除已有的
-            List<DepInfo> depInfoList = Lists
-                    .newArrayList(depInfoCache.queryAllFromClientCache().values());
             List<Integer> depCodeList = depInfoList.stream().map(DepInfo::getId)
                     .collect(Collectors.toList());
             depCode = ListUtils.removeAll(depCode, depCodeList);
         }
         if (CollectionUtils.isNotEmpty(depCode)) {
-            gainAndUpdateDepartInfo(depCode);
+//            gainAndUpdateDepartInfo(depCode);
+            updateDepartInfo(depCode, depInfoList);
             depInfoCache.reload();
         }
 
@@ -159,6 +162,77 @@ public class AppDepTest extends UnitTestBase {
             appDepManager.batchSave(appLists.stream().map(t -> buildAppDep(null, t, staffMap))
                     .filter(Objects::nonNull).collect(Collectors.toList()));
         }
+    }
+
+    private void updateDepartInfo(List<Integer> depCodeList, List<DepInfo> depInfoList) {
+        List<DepInfo> save = Lists.newArrayList();
+        List<Integer> exist = depInfoList.stream().map(DepInfo::getId).collect(Collectors.toList());
+        //map  最新部门id， 同名部门id的list
+        Map<Integer, List<Integer>> updateMap = Maps.newHashMap();
+        for (Integer depCode : depCodeList) {
+            DepartDTO departDTO = getDepartInfo(depCode);
+            if (departDTO != null) {
+                save.add(ConvertUtils.convert2DepInfo(departDTO));
+                List<DepInfo> savedDepInfoList = depInfoManager.queryByAppName(departDTO.getName());
+                if (CollectionUtils.isNotEmpty(savedDepInfoList)) {
+                    List<Integer> ids = savedDepInfoList.stream().map(DepInfo::getId)
+                            .collect(Collectors.toList());
+                    updateMap.put(departDTO.getId(), ids);
+                }
+                if (departDTO.getPath() != null) {
+                    String[] ancestors = departDTO.getPath().split(",");
+                    for (int i = ancestors.length - 1; i >= 0; i--) {
+                        if (StringUtils.isEmpty(ancestors[i])) {
+                            continue;
+                        }
+                        int ancDep = Integer.parseInt(ancestors[i]);
+                        if (exist.contains(ancDep)) {
+                            break;
+                        }
+                        if (depCodeList.contains(ancDep)) {
+                            break;
+                        }
+                        List<Integer> saveId = save.stream().map(DepInfo::getId)
+                                .collect(Collectors.toList());
+                        if (saveId.contains(ancDep)) {
+                            break;
+                        }
+                        DepartDTO ancDepart = getDepartInfo(ancDep);
+                        if (ancDepart != null) {
+                            save.add(ConvertUtils.convert2DepInfo(ancDepart));
+                            List<DepInfo> acfInfoList = depInfoManager
+                                    .queryByAppName(ancDepart.getName());
+                            if (CollectionUtils.isNotEmpty(acfInfoList)) {
+                                List<Integer> ids = acfInfoList.stream().map(DepInfo::getId)
+                                        .collect(Collectors.toList());
+                                updateMap.put(ancDepart.getId(), ids);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(save)) {
+            depInfoManager.batchSave(save);
+        }
+        if (MapUtils.isNotEmpty(updateMap)) {
+            updateMap.forEach((k, v) -> depInfoManager.update(k, v));
+        }
+    }
+
+    private DepartDTO getDepartInfo(Integer depCode) {
+        try {
+            ResponseDTO<DepartDTO> response = departProvider.findById(depCode);
+            if (response.isSuccess()) {
+                DepartDTO departDTO = response.getData();
+                if (departDTO != null) {
+                    return departDTO;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("查找部门信息时异常，", e);
+        }
+        return null;
     }
 
     private void gainAndUpdateDepartInfo(List<Integer> depCode) {

@@ -130,6 +130,9 @@ public class ConvertUtils {
         depInfo.setName(departDTO.getName());
         depInfo.setPath(departDTO.getPath());
         depInfo.setParent(departDTO.getParent());
+        depInfo.setCreator(Constant.DEFAULT_STAFF);
+        depInfo.setCreateTime(new Date());
+        depInfo.setNewest(depInfo.getId());
         return depInfo;
     }
 }

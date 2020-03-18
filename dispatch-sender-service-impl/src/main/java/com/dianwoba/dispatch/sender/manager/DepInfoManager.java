@@ -2,6 +2,7 @@ package com.dianwoba.dispatch.sender.manager;
 
 import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
+import com.dianwoba.dispatch.sender.entity.DepInfo.Column;
 import com.dianwoba.dispatch.sender.entity.DepInfoExample;
 import com.dianwoba.dispatch.sender.entity.DepInfoExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.DepInfoMapper;
@@ -65,5 +66,30 @@ public class DepInfoManager {
         depInfoMapper.updateByExampleSelective(record, example);
     }
 
+    public void update(Integer newId, List<Integer> ids) {
+        DepInfoExample example = new DepInfoExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        DepInfo record = new DepInfo();
+        record.setNewest(newId);
+        record.setModifier(Constant.DEFAULT_STAFF);
+        record.setModifyTime(new Date());
+        depInfoMapper.updateByExampleSelective(record, example);
+    }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void batchSave(List<DepInfo> lists) {
+        int max = Constant.BATCH_INSERT_MAX_SIZE;
+        while (lists.size() > max) {
+            depInfoMapper
+                    .batchInsertSelective(lists, Column.id, Column.name, Column.parent, Column.path,
+                            Column.newest, Column.creator, Column.createTime);
+            lists = lists.subList(max, lists.size());
+        }
+        if (lists.size() > 0) {
+            depInfoMapper
+                    .batchInsertSelective(lists, Column.id, Column.name, Column.parent, Column.path,
+                            Column.newest, Column.creator, Column.createTime);
+        }
+    }
 }
