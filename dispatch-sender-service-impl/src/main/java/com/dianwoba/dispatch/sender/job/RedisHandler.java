@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,9 @@ import org.springframework.stereotype.Component;
  * @author Polaris
  */
 @Component
-public class RedisHandle extends AbstractJobExecuteService {
+public class RedisHandler extends AbstractJobExecuteService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisHandler.class);
 
     @Resource
     private DingTokenConfigCache dingTokenConfigCache;
@@ -35,8 +39,15 @@ public class RedisHandle extends AbstractJobExecuteService {
     @Override
     public void doExecute(ExecuteContext executeContext) {
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
-        map.forEach((k, v) -> stringRedisTemplate.opsForValue().set("redis_" + k,
-                "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
-                Integer.parseInt(redisGroupKeyTimeOut), TimeUnit.SECONDS));
+        map.forEach((k, v) -> {
+            try {
+                stringRedisTemplate.opsForValue().set("redis_" + k,
+                        "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
+                        Integer.parseInt(redisGroupKeyTimeOut), TimeUnit.SECONDS);
+                LOGGER.info("组{}次数更新成功", k);
+            } catch (Exception e) {
+                LOGGER.error("更新组{}次数失败", k, e);
+            }
+        });
     }
 }

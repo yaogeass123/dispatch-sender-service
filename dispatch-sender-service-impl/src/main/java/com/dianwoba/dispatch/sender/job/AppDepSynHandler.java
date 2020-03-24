@@ -124,10 +124,13 @@ public class AppDepSynHandler extends AbstractJobExecuteService {
                     .filter(t -> !existAppNames.contains(t.getName()))
                     .map(t -> buildAppDep(null, t, staffMap)).filter(Objects::nonNull)
                     .collect(Collectors.toList());
+            LOGGER.info("appList insert :{}", JSONObject.toJSONString(depInsert));
             appDepManager.batchSave(depInsert);
         } else {
-            appDepManager.batchSave(appLists.stream().map(t -> buildAppDep(null, t, staffMap))
-                    .filter(Objects::nonNull).collect(Collectors.toList()));
+            List<AppDep> save = appLists.stream().map(t -> buildAppDep(null, t, staffMap))
+                    .filter(Objects::nonNull).collect(Collectors.toList());
+            LOGGER.info("appList insert :{}", JSONObject.toJSONString(save));
+            appDepManager.batchSave(save);
         }
     }
 
