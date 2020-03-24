@@ -11,11 +11,11 @@
 	<dubbo:service interface="com.dianwoba.dispatch.sender.provider.MessageSendProvider"
 		ref="messageSendProviderImpl" version="1.0.0" retries="0" timeout="500" registry="baseRegistry"/>
 
-	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="sender-service_job1" ref="messageSendHandler" timeout="30000" retries="1" registry="baseRegistry" />
-	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="sender-service_job2" ref="gatherAndMatchHandler" timeout="30000" retries="1" registry="baseRegistry" />
-	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="sender-service_job3" ref="statisticHandler" timeout="30000" retries="3" registry="baseRegistry" />
-	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="sender-service_job4" ref="unreportedMessageHandler" timeout="30000" retries="1" registry="baseRegistry" />
-	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="sender-service_job5" ref="appDepSynHandler" timeout="30000" retries="3" registry="baseRegistry" />
-	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="sender-service_job6" ref="redisHandler" timeout="30000" retries="3" registry="baseRegistry" />
+	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="dispatch-sender-service_job1" ref="messageSendHandler" timeout="30000" retries="1" registry="baseRegistry" />
+	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="dispatch-sender-service_job2" ref="gatherAndMatchHandler" timeout="30000" retries="1" registry="baseRegistry" />
+	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="dispatch-sender-service_job3" ref="statisticHandler" timeout="30000" retries="3" registry="baseRegistry" />
+	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="dispatch-sender-service_job4" ref="unreportedMessageHandler" timeout="30000" retries="1" registry="baseRegistry" />
+	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="dispatch-sender-service_job5" ref="appDepSynHandler" timeout="30000" retries="3" registry="baseRegistry" />
+	<dubbo:service interface="com.dianwoba.pt.goodjob.remote.service.JobExecuteService" group="dispatch-sender-service_job6" ref="redisHandler" timeout="30000" retries="3" registry="baseRegistry" />
 
 </beans>
