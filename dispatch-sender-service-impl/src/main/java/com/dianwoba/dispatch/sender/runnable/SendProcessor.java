@@ -41,12 +41,17 @@ public class SendProcessor implements Callable<SendResultInfo> {
 
     @Override
     public SendResultInfo call() {
-        String msg = msgAppend(messageSend);
-        SendResultInfo result = sendMessage(messageSend, msg, token);
-        if (result == null) {
-            LOGGER.warn("请求错误，msg等待重试，信息：{}", JSONObject.toJSONString(messageSend));
+        try {
+            String msg = msgAppend(messageSend);
+            SendResultInfo result = sendMessage(messageSend, msg, token);
+            if (result == null) {
+                LOGGER.warn("请求错误，msg等待重试，信息：{}", JSONObject.toJSONString(messageSend));
+            }
+            return result;
+        } catch (Exception e) {
+            LOGGER.warn("发送消息异常", e);
         }
-        return result;
+        return null;
     }
 
     private SendResultInfo sendMessage(MessageSendInfo messageSend, String msg,

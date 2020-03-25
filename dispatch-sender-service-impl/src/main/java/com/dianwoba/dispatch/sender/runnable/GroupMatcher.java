@@ -64,46 +64,51 @@ public class GroupMatcher implements Runnable {
 
     @Override
     public void run() {
-        Long start = System.currentTimeMillis();
-        //1、app-digest-msg暂时按照一摸一样聚合，后期考虑计算相似度
-        Map<String, List<MessageLog>> lists = messageLogs.stream().collect(Collectors.groupingBy(
-                log -> String.format(Constant.GROUP_COMMON_FORMAT, log.getAppName(), log.getDigest(), log.getMsg())));
-        //2、转换
-        List<MessageSend> messageSend = Lists.newArrayList();
-        lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
-        LOGGER.info("信息内容:{} ", JSONObject.toJSONString(messageSend));
-        //3、匹配群组
-        AppDepInfo appDepInfo = matchAppDep(messageSend);
-        LOGGER.info("匹配到群组信息:{} ", JSONObject.toJSONString(appDepInfo));
-        //4、匹配群并获取规则
-        GroupMatchRules rule = matchGroup(messageSend.get(0));
-        if (rule == null) {
-            String content = String.format("未配置兜底群, 部门id：%s", messageSend.get(0).getId());
-            LOGGER.warn(content);
-            String mailAddress = mailSendWrapper.getMailAddress(messageSend.get(0).getAppDep(),
-                    messageSend.get(0).getAppName());
-            mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_MATCH);
-            return;
+        try {
+            Long start = System.currentTimeMillis();
+            //1、app-digest-msg暂时按照一摸一样聚合，后期考虑计算相似度
+            Map<String, List<MessageLog>> lists = messageLogs.stream().collect(Collectors.groupingBy(
+                    log -> String.format(Constant.GROUP_COMMON_FORMAT, log.getAppName(), log.getDigest(), log.getMsg())));
+            //2、转换
+            List<MessageSend> messageSend = Lists.newArrayList();
+            lists.values().forEach(list -> messageSend.add(ConvertUtils.convert2MessageSend(list)));
+            LOGGER.info("信息内容:{} ", JSONObject.toJSONString(messageSend));
+            //3、匹配群组
+            AppDepInfo appDepInfo = matchAppDep(messageSend);
+            LOGGER.info("匹配到群组信息:{} ", JSONObject.toJSONString(appDepInfo));
+            //4、匹配群并获取规则
+            GroupMatchRules rule = matchGroup(messageSend.get(0));
+            if (rule == null) {
+                String content = String.format("未配置兜底群, 部门id：%s", messageSend.get(0).getId());
+                LOGGER.warn(content);
+                String mailAddress = mailSendWrapper.getMailAddress(messageSend.get(0).getAppDep(),
+                        messageSend.get(0).getAppName());
+                mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_MATCH);
+                return;
+            }
+            LOGGER.info("匹配到规则信息:{}", JSONObject.toJSONString(rule));
+            String atWho = matchAtWho(rule, appDepInfo);
+            setGroup(messageSend, rule, atWho);
+            //5、去掉1min内已发送的消息（以群、app、digest和msg的维度，最终保证的是一摸一样的消息不重复发送）
+            List<String> hasSent = messageSenderManager.hasSent(messageSend);
+            if (CollectionUtils.isNotEmpty(hasSent)) {
+                LOGGER.info("已发送消息内容:{}", hasSent);
+                messageSenderManager.batchSave(messageSend.stream().filter(t -> !hasSent
+                        .contains(t.getMsg())).collect(Collectors.toList()));
+            } else {
+                messageSenderManager.batchSave(messageSend);
+            }
+            LOGGER.info("插入完成");
+            //6、messageLog数据库中相应入库数据置位成已处理状态
+            List<Long> ids = messageLogs.stream().map(MessageLog::getId).collect(Collectors.toList());
+            messageLogManager.batchUpdateStatus(ids);
+            LOGGER.info("更新完成");
+            Long end = System.currentTimeMillis();
+            LOGGER.info("总共耗时：{}", end - start);
+        } catch (Exception e) {
+            LOGGER.warn("匹配处理异常", e);
         }
-        LOGGER.info("匹配到规则信息:{}", JSONObject.toJSONString(rule));
-        String atWho = matchAtWho(rule, appDepInfo);
-        setGroup(messageSend, rule, atWho);
-        //5、去掉1min内已发送的消息（以群、app、digest和msg的维度，最终保证的是一摸一样的消息不重复发送）
-        List<String> hasSent = messageSenderManager.hasSent(messageSend);
-        if (CollectionUtils.isNotEmpty(hasSent)) {
-            LOGGER.info("已发送消息内容:{}", hasSent);
-            messageSenderManager.batchSave(messageSend.stream().filter(t -> !hasSent
-                    .contains(t.getMsg())).collect(Collectors.toList()));
-        } else {
-            messageSenderManager.batchSave(messageSend);
-        }
-        LOGGER.info("插入完成");
-        //6、messageLog数据库中相应入库数据置位成已处理状态
-        List<Long> ids = messageLogs.stream().map(MessageLog::getId).collect(Collectors.toList());
-        messageLogManager.batchUpdateStatus(ids);
-        LOGGER.info("更新完成");
-        Long end = System.currentTimeMillis();
-        LOGGER.info("总共耗时：{}", end - start);
+
     }
 
     private AppDepInfo matchAppDep(List<MessageSend> messageSends) {
