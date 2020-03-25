@@ -13,13 +13,14 @@ import com.dianwoda.delibird.mail.dto.MailHead;
 import com.dianwoda.delibird.mail.dto.MailReceiver;
 import com.dianwoda.delibird.mail.dto.MailRequest;
 import com.dianwoda.delibird.provider.DeliMailProvider;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
-import org.assertj.core.util.Lists;
+
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;

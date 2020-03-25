@@ -13,11 +13,12 @@ import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.genius.domain.dto.DepartDTO;
+import com.google.common.collect.Lists;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
-import org.assertj.core.util.Lists;
+
 
 /**
  * @author Polaris

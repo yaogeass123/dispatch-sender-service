@@ -21,6 +21,7 @@ import com.dianwoba.dispatch.utils.HttpClientUtils;
 import com.dianwoba.wireless.fundamental.util.SpringUtils;
 import com.dianwoba.wireless.threadpool.MonitoringThreadPool;
 import com.dianwoba.wireless.threadpool.MonitoringThreadPoolMaintainer;
+import com.google.common.collect.Lists;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -35,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-import org.assertj.core.util.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;

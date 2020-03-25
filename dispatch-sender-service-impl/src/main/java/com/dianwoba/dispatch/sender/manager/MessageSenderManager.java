@@ -10,14 +10,14 @@ import com.dianwoba.dispatch.sender.entity.MessageSendExample;
 import com.dianwoba.dispatch.sender.entity.MessageSendExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.MessageSendMapper;
 import com.dianwoba.wireless.treasure.util.DateUtil;
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
-import org.assertj.core.util.Lists;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

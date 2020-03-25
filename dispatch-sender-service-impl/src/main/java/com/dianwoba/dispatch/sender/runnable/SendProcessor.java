@@ -7,6 +7,7 @@ import com.dianwoba.dispatch.sender.domain.SendResultInfo;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.utils.HttpClientUtils;
 import com.dianwoda.delibird.dingtalk.chatbot.message.TextMessage;
+import com.google.common.collect.Lists;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

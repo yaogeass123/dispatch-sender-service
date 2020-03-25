@@ -10,6 +10,7 @@ import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.manager.MessageLogManager;
 import com.dianwoba.dispatch.sender.provider.impl.MessageSendProviderImpl;
 import com.dianwoba.dispatch.sender.runnable.GroupMatcher;
+import com.google.common.collect.Lists;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
-import org.assertj.core.util.Lists;
+
 import org.junit.Test;
 
 public class MatchTest extends UnitTestBase {
