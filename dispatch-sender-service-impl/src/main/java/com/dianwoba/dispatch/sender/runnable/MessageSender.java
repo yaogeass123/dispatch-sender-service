@@ -49,6 +49,8 @@ public class MessageSender implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSender.class);
 
+    private static final int TEN = 10;
+
     private static MonitoringThreadPool threadPool;
 
     private List<MessageSendInfo> messageSendList;
@@ -157,7 +159,7 @@ public class MessageSender implements Runnable {
                     .get(String.format(Constant.REDIS_SEND_STR, groupId));
             LOGGER.info("redis:{}", redisStr);
             if (StringUtils.isEmpty(redisStr)) {
-                if (second == 0) {
+                if (second % TEN == 0) {
                     tokenQueue = BucketUtils.buildTokenQueue(tokenMap.keySet());
                     residualSentAbleTimes = 0;
                     return;
