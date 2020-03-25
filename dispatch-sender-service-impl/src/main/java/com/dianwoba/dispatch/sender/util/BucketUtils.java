@@ -1,10 +1,11 @@
 package com.dianwoba.dispatch.sender.util;
 
 import com.dianwoba.dispatch.sender.constant.Constant;
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.assertj.core.util.Lists;
+
 
 /**
  * @author Polaris
