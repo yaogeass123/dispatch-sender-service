@@ -50,8 +50,13 @@ public class GatherAndMatchHandler extends AbstractJobExecuteService {
                                 message.getExceptionType(), message.getDigest())));
         LOGGER.info("聚合结果：{}", JSONObject.toJSONString(unhandledGroup));
         //3、分组进行匹配落库
-        unhandledGroup.values()
-                .forEach(list -> gatherMatchThreadPool.submit(new GroupMatcher(list)));
+        try {
+            unhandledGroup.values()
+                    .forEach(list -> gatherMatchThreadPool.submit(new GroupMatcher(list)));
+        } catch (Exception e) {
+            LOGGER.warn("error",e );
+        }
+
 
     }
 }
