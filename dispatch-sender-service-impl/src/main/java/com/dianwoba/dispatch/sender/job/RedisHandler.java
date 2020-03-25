@@ -42,7 +42,8 @@ public class RedisHandler extends AbstractJobExecuteService {
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
         map.forEach((k, v) -> {
             try {
-                stringRedisTemplate.opsForValue().set(String.format(Constant.REDIS_SEND_STR, k),
+                stringRedisTemplate.opsForValue()
+                        .set(String.format(Constant.REDIS_SEND_STR, v.get(0).getGroupId()),
                         "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
                         Integer.parseInt(redisGroupKeyTimeOut), TimeUnit.SECONDS);
                 LOGGER.info("组{}次数更新成功", k);
