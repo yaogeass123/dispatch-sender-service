@@ -1,6 +1,7 @@
 package com.dianwoba.dispatch.sender.job;
 
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
+import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
@@ -41,7 +42,7 @@ public class RedisHandler extends AbstractJobExecuteService {
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
         map.forEach((k, v) -> {
             try {
-                stringRedisTemplate.opsForValue().set("redis_" + k,
+                stringRedisTemplate.opsForValue().set(Constant.REDIS_SEND_STR + k,
                         "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
                         Integer.parseInt(redisGroupKeyTimeOut), TimeUnit.SECONDS);
                 LOGGER.info("组{}次数更新成功", k);
