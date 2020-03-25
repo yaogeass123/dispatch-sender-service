@@ -1,9 +1,11 @@
 package com.dianwoba.dispatch.sender.test;
 
+import com.alibaba.fastjson.JSON;
 import com.dianwoba.dispatch.sender.UnitTestBase;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.entity.DingGroupName;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
+import com.dianwoba.dispatch.sender.manager.MessageLogManager;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,16 @@ public class QuickTest extends UnitTestBase {
     @Value("${switches-redisGroupKeyTimeOut:15}")
     private String redisGroupKeyTimeOut;
 
+    @Resource
+    private MessageLogManager messageLogManager;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuickTest.class);
 
     @Test
     public void test() {
-        doTest();
+//        doTest();
+        test2();
     }
 
     private void doTest() {
@@ -48,5 +54,9 @@ public class QuickTest extends UnitTestBase {
                 LOGGER.error("更新组{}次数失败", k, e);
             }
         });
+    }
+
+    private void test2() {
+        System.out.println(JSON.toJSONString(messageLogManager.queryAllUnhandled()));
     }
 }
