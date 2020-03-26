@@ -215,7 +215,7 @@ public class MessageSender implements Runnable {
     private void updateRedis() {
         String bucket = BucketUtils.buildBucketString(tokenQueue);
         stringRedisTemplate.opsForValue().set(String.format(Constant.REDIS_SEND_STR, groupId),
-                String.format("%d,%s", residualSentAbleTimes, bucket), 15, TimeUnit.SECONDS);
+                String.format("%d:%s", residualSentAbleTimes, bucket), 15, TimeUnit.SECONDS);
     }
 
     private void updateSql() {
