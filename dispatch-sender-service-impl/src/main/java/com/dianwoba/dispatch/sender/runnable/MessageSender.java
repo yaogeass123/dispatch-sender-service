@@ -217,6 +217,7 @@ public class MessageSender implements Runnable {
 
     private void updateRedis() {
         String bucket = BucketUtils.buildBucketString(tokenQueue);
+        LOGGER.info("times:{}, bucket:{}", residualSentAbleTimes, bucket);
         stringRedisTemplate.opsForValue().set(String.format(Constant.REDIS_SEND_STR, groupId),
                 String.format("%d:%s", residualSentAbleTimes, bucket), 15, TimeUnit.SECONDS);
     }
@@ -288,6 +289,7 @@ public class MessageSender implements Runnable {
                 .collect(Collectors.toList());
         successResults.forEach(t -> success.addAll(t.getIds()));
         //本时段成功次数 - 成功次数
+        LOGGER.info("success num:{}", successResults.size());
         times -= successResults.size();
         List<SendResultInfo> errorResults = results.stream().filter(t -> !t.getIsSuccess())
                 .collect(Collectors.toList());

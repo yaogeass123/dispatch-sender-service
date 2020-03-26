@@ -73,6 +73,7 @@ public class SendProcessor implements Callable<SendResultInfo> {
             SendResultInfo sendResult = new SendResultInfo();
             String result = client.post(url, textMessage.toJsonString());
             if (StringUtils.isNotEmpty(result)) {
+                LOGGER.info("Token:{}, result:{}", token.getId(), JSONObject.toJSONString(result));
                 JSONObject obj = JSONObject.parseObject(result);
                 Integer errCode = obj.getInteger("errcode");
                 sendResult.setIsSuccess(errCode.equals(0));
