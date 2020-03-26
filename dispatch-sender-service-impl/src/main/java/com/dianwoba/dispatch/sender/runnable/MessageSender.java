@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -86,9 +85,8 @@ public class MessageSender implements Runnable {
 
     private int second;
 
-    public MessageSender(List<MessageSendInfo> list) {
-        messageSendList = list;
-        groupId = list.get(0).getGroupId();
+    public MessageSender(Long groupId) {
+        this.groupId = groupId;
         messageSenderManager = SpringUtils.getBean(MessageSenderManager.class);
         stringRedisTemplate = SpringUtils.getBean(StringRedisTemplate.class);
         dingTokenConfigManager = SpringUtils.getBean(DingTokenConfigManager.class);
@@ -113,18 +111,20 @@ public class MessageSender implements Runnable {
             if (CollectionUtils.isEmpty(tokenList)) {
                 String group = findGroupName();
                 LOGGER.warn("群{}无正确机器人配置", group);
-                String appDep = messageSendList.get(0).getAppDep();
                 String content =
                         "群编号: " + groupId + "\n" + "群名称：" + group + "\n" + "无正确机器人配置，请及时处理";
-                String mailAddress = mailSendWrapper.getMailAddress(appDep);
+                String mailAddress = mailSendWrapper.getMailAddress(groupId);
                 mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_EXIST);
                 return;
             }
             //机器人数量*配置的比
-            threadPool = MonitoringThreadPoolMaintainer.newFixedThreadPool(
-                    String.format(Constant.EXECUTOR_SEND_FORMAT, groupId), tokenList.size()
-                            * Integer.parseInt(switchConfigUtils.getThreadMultiple()));
+            threadPool = MonitoringThreadPoolMaintainer
+                    .newFixedThreadPool(String.format(Constant.EXECUTOR_SEND_FORMAT, groupId),
+                            tokenList.size() * Integer
+                                    .parseInt(switchConfigUtils.getThreadMultiple()));
             tokenMap = tokenList.stream().collect(Collectors.groupingBy(DingTokenConfig::getId));
+            messageSendList = messageSenderManager.queryMessageToBeSent(groupId).stream()
+                    .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
             queryRedis();
             //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
             List<MessageSendInfo> messages = dealHighLevelMessage();

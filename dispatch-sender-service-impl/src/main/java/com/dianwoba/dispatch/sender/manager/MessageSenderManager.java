@@ -6,9 +6,11 @@ import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.entity.MessageSend.Column;
+import com.dianwoba.dispatch.sender.entity.MessageSendCountPO;
 import com.dianwoba.dispatch.sender.entity.MessageSendExample;
 import com.dianwoba.dispatch.sender.entity.MessageSendExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.MessageSendMapper;
+import com.dianwoba.dispatch.sender.mapper.MessageSendMapperExt;
 import com.dianwoba.wireless.treasure.util.DateUtil;
 import com.google.common.collect.Lists;
 import java.util.Calendar;
@@ -17,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
-
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class MessageSenderManager {
 
     @Resource
     private MessageSendMapper messageSendMapper;
+
+    @Resource
+    private MessageSendMapperExt messageSendMapperExt;
 
     public List<String> hasSent(List<MessageSend> messageSend) {
         //n秒内已发送过该消息,判断标注：app一致，群一致，digest一致，
@@ -72,15 +76,17 @@ public class MessageSenderManager {
      *
      * @return 消息
      */
-    public List<MessageSend> queryMessageToBeSent() {
+    public List<MessageSend> queryMessageToBeSent(Long groupId) {
         List<MessageSend> lists = Lists.newArrayList();
         MessageSendExample example = new MessageSendExample();
         Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(StatusEn.INIT.getStatusCode());
+        criteria.andGroupIdEqualTo(groupId);
         criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.SECOND, -10));
         lists.addAll(messageSendMapper.selectByExample(example));
         MessageSendExample example2 = new MessageSendExample();
         Criteria criteria2 = example2.createCriteria();
+        criteria.andGroupIdEqualTo(groupId);
         criteria2.andStatusEqualTo(StatusEn.INIT.getStatusCode());
         criteria2.andLevelEqualTo(LevelEn.HIGH.getLevelCode());
         criteria2.andInsertTmLessThan(DateUtil.add(new Date(), Calendar.SECOND, -10));
@@ -146,5 +152,9 @@ public class MessageSenderManager {
                 StatusEn.ERROR.getStatusCode()));
         criteria.andInsertTmGreaterThanOrEqualTo(DateUtil.add(new Date(), Calendar.HOUR, -24));
         return messageSendMapper.selectByExample(example);
+    }
+
+    public List<MessageSendCountPO> countByGroupId(Byte status) {
+        return messageSendMapperExt.countByGroupId(status);
     }
 }

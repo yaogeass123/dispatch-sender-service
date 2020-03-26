@@ -1,12 +1,16 @@
 package com.dianwoba.dispatch.sender.test;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.UnitTestBase;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.entity.DingGroupName;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
+import com.dianwoba.dispatch.sender.entity.MessageSendCountPO;
 import com.dianwoba.dispatch.sender.manager.MessageLogManager;
+import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +35,9 @@ public class QuickTest extends UnitTestBase {
 
     @Resource
     private MessageLogManager messageLogManager;
+
+    @Resource
+    private MessageSenderManager messageSenderManager;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuickTest.class);
@@ -57,6 +64,9 @@ public class QuickTest extends UnitTestBase {
     }
 
     private void test2() {
-        System.out.println(JSON.toJSONString(messageLogManager.queryAllUnhandled()));
+        List<MessageSendCountPO> list = messageSenderManager.countByGroupId((byte) 0);
+        System.out.println(JSONObject.toJSONString(list));
+        System.out.println(JSONObject.toJSONString(list.get(0)));
+        System.out.println(JSONObject.toJSONString(list.get(1)));
     }
 }

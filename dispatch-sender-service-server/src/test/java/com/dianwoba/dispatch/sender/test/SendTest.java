@@ -1,5 +1,6 @@
 package com.dianwoba.dispatch.sender.test;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.UnitTestBase;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
@@ -7,8 +8,10 @@ import com.dianwoba.dispatch.sender.domain.MailListContent;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
 import com.dianwoba.dispatch.sender.en.LevelEn;
+import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
+import com.dianwoba.dispatch.sender.entity.MessageSendCountPO;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.provider.impl.MessageSendProviderImpl;
@@ -67,20 +70,10 @@ public class SendTest extends UnitTestBase {
     public void sendTest() {
         init();
         ExecutorService es = Executors.newFixedThreadPool(10);
-        List<MessageSend> messageSends = messageSenderManager.queryMessageToBeSent();
-        List<MessageSendInfo> infoList = messageSends.stream()
-                .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
-//        while (Calendar.getInstance().get(Calendar.SECOND) < 50) {
-//            try {
-//                Thread.sleep(2000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(infoList)) {
-            Map<Long, List<MessageSendInfo>> group = infoList.stream()
-                    .collect(Collectors.groupingBy(MessageSendInfo::getGroupId));
-            group.values().forEach(v -> es.submit(new MessageSender(v)));
+        List<MessageSendCountPO> countList = messageSenderManager
+                .countByGroupId(StatusEn.INIT.getStatusCode());
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(countList)) {
+            countList.forEach(v -> es.submit(new MessageSender(v.getGroupId())));
         }
         try {
             Thread.sleep(300000);

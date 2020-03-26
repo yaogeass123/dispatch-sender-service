@@ -72,6 +72,14 @@ public class MailSendWrapper {
         return defaultMailAddress;
     }
 
+    public String getMailAddress(long groupId) {
+        DingGroupName groupName = groupConfigCache.queryFromClientCache(groupId);
+        if (groupName != null && StringUtils.isNotEmpty(groupName.getMail())) {
+            return groupName.getMail();
+        }
+        return defaultMailAddress;
+    }
+
     public void sendMail(String content, String mailAddress, String subject) {
         LOGGER.info(content);
 //        MailHead mailHead = MailHead.create();

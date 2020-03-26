@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianwoba.dispatch.sender.mapper.MessageSendMapperExt">
+
+  <resultMap id="CountResultMap" type="com.dianwoba.dispatch.sender.entity.MessageSendCountPO">
+    <result column="group_id" jdbcType="BIGINT" property="groupId" />
+    <result column="count_num" jdbcType="INTEGER" property="count" />
+  </resultMap>
+
+  <select id="countByGroupId" resultMap="CountResultMap" >
+    SELECT group_id, COUNT(*) as count_num FROM `message_send`
+    WHERE status = #{status,jdbcType=TINYINT}
+    GROUP BY group_id
+  </select>
+
+</mapper>
