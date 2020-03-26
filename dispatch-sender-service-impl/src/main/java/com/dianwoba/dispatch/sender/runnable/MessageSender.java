@@ -455,7 +455,8 @@ public class MessageSender implements Runnable {
         }
         //对于单个机器人，最多可发送20，冗余1条，故期望19条。对于前5论，理想中包和发送3*5个
         //故最后一轮 4 = 19 - 3 * 5
-        return 4 * tokenNum + residualSentAbleTimes;
+        //现改为3 冗余两条 进行测试
+        return 3 * tokenNum + residualSentAbleTimes;
     }
 
 
