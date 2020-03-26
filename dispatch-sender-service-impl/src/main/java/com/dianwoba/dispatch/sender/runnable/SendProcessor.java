@@ -5,7 +5,7 @@ import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.SendResultInfo;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
-import com.dianwoba.dispatch.utils.HttpClientUtils;
+import com.dianwoba.dispatch.sender.util.HttpClientUtils;
 import com.dianwoda.delibird.dingtalk.chatbot.message.TextMessage;
 import com.google.common.collect.Lists;
 import java.net.URLEncoder;
