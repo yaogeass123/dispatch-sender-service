@@ -9,11 +9,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class SwitchConfigUtils {
 
-    @Value("${switches-threadMultiple:2}")
+    @Value("${threadMultiple:2}")
     private String threadMultiple;
+
+    @Value("${sendThreadSleepTime:1000}")
+    private String sendThreadSleepTime;
+
+    @Value("${futureTimeOut:2000}")
+    private String futureTimeOut;
 
     public String getThreadMultiple() {
         return threadMultiple;
+    }
+
+    public String getSendThreadSleepTime() {
+        return sendThreadSleepTime;
+    }
+
+    public String getFutureTimeOut() {
+        return futureTimeOut;
     }
 
 }

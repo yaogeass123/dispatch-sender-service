@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -150,6 +151,8 @@ public class MessageSender implements Runnable {
             LOGGER.info("耗时:{}", end - start);
         } catch (Exception e) {
             LOGGER.error("发送流程异常", e);
+            //假如异常了，没有更新redis，redis会过期，下次就找不到key
+            //这样没问题 本分钟不再发送
         }
     }
 
@@ -247,7 +250,6 @@ public class MessageSender implements Runnable {
      * 发送流程
      */
     private int sendProcess(int times, List<MessageSendInfo> messages) {
-        //todo 改成异步发送
         //可发送次数与消息数量的最小值
         if (messages.size() == 0) {
             return times;
@@ -260,15 +262,18 @@ public class MessageSender implements Runnable {
             futures.add(threadPool.submit(new SendProcessor(messages.get(i), token, client)));
         }
         try {
-            Thread.sleep(1000);
+            Thread.sleep(Integer.parseInt(switchConfigUtils.getSendThreadSleepTime()));
         } catch (InterruptedException e) {
             LOGGER.error("中断", e);
         }
         for (Future<SendResultInfo> future : futures) {
             try {
-                SendResultInfo resultInfo = future.get(1000, TimeUnit.MILLISECONDS);
-                if (resultInfo != null) {
+                SendResultInfo resultInfo = future
+                        .get(Integer.parseInt(switchConfigUtils.getFutureTimeOut()), TimeUnit.MILLISECONDS);
+                if (resultInfo != null && resultInfo.getIsSuccess() != null) {
                     results.add(resultInfo);
+                } else {
+                    LOGGER.warn("未获取到结果");
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 LOGGER.warn("多线程发送获取结果失败", e);
