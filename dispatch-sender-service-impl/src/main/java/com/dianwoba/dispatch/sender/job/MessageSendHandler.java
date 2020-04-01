@@ -34,7 +34,7 @@ public class MessageSendHandler extends AbstractJobExecuteService {
         if (CollectionUtils.isNotEmpty(groupIdList)) {
             groupIdList.forEach(v -> messageSendThreadPool.submit(new MessageSender(v)));
         } else {
-            LOGGER.info("无消息发送");
+            LOGGER.info("群组配置不存在");
         }
     }
 }

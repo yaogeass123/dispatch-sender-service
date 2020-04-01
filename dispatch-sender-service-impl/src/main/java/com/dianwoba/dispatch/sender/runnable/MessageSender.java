@@ -119,22 +119,28 @@ public class MessageSender implements Runnable {
             tokenMap = tokenList.stream().collect(Collectors.toMap(DingTokenConfig::getId, v -> v));
             messageSendList = messageSenderManager.queryMessageToBeSent(groupId).stream()
                     .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
+            //查询redis数据
             queryRedis();
-            //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
-            List<MessageSendInfo> messages = dealHighLevelMessage();
-            //2、消息排序
-            messages.sort(MessageSender::compare);
-            //3、计算本时段可发送消息
+            //计算本时段可发送消息
             int times = calSendAbleTimes();
-            LOGGER.info("times : {} ", times);
-            //4、循环发送
-            times = sendProcess(times, messages);
-            LOGGER.info("times now : {} ", times);
-            //5、更新数据库
-            updateSql();
-            //6、本时段有剩余可发送次数，尝试发送堆积的消息
+            //优先处理时效性高的消息
+            if (CollectionUtils.isNotEmpty(messageSendList)) {
+                //1、消息再聚合（当前时段的high可能与10s前未发送的high消息重复）
+                List<MessageSendInfo> messages = dealHighLevelMessage();
+                //2、消息排序
+                messages.sort(MessageSender::compare);
+                LOGGER.info("times : {} ", times);
+                //3、循环发送
+                times = sendProcess(times, messages);
+                LOGGER.info("times now : {} ", times);
+                //4、更新数据库
+                updateSql();
+            }
+            //本时段有剩余可发送次数，尝试发送堆积的消息
             if (times > 0) {
+                LOGGER.info("Retry times : {} ", times);
                 times = retry(times);
+                LOGGER.info("Retry times now : {} ", times);
                 updateSql();
             }
             //7、更新redis
