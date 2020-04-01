@@ -16,7 +16,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,18 +72,25 @@ public class SendProcessor implements Callable<SendResultInfo> {
             SendResultInfo sendResult = new SendResultInfo();
             String result = client.post(url, textMessage.toJsonString());
             if (StringUtils.isNotEmpty(result)) {
-                LOGGER.info("Token:{}, result:{}", token.getId(), JSONObject.toJSONString(result));
-                JSONObject obj = JSONObject.parseObject(result);
-                Integer errCode = obj.getInteger("errcode");
-                sendResult.setIsSuccess(errCode.equals(0));
-                sendResult.setIds(messageSend.getIds());
-                sendResult.setAppDep(messageSend.getAppDep());
-                sendResult.setAppName(messageSend.getAppName());
-                sendResult.setTokenId(token.getId());
-                if (!sendResult.getIsSuccess()) {
-                    sendResult.setMsg(msg);
-                    sendResult.setErrorCode(errCode);
-                    sendResult.setErrorMsg(obj.getString("errmsg"));
+                if (Constant.HTTP_MOVED_TEMPORARILY.equals(result)) {
+                    LOGGER.warn("Token:{} is in black list.", token.getId());
+                    sendResult.setIsSuccess(Boolean.FALSE);
+                    sendResult.setErrorCode(Constant.HTTP_MOVED_TEMPORARILY_CODE);
+                } else {
+                    LOGGER.info("Token:{}, result:{}", token.getId(),
+                            JSONObject.toJSONString(result));
+                    JSONObject obj = JSONObject.parseObject(result);
+                    Integer errCode = obj.getInteger("errcode");
+                    sendResult.setIsSuccess(errCode.equals(0));
+                    sendResult.setIds(messageSend.getIds());
+                    sendResult.setAppDep(messageSend.getAppDep());
+                    sendResult.setAppName(messageSend.getAppName());
+                    sendResult.setTokenId(token.getId());
+                    if (!sendResult.getIsSuccess()) {
+                        sendResult.setMsg(msg);
+                        sendResult.setErrorCode(errCode);
+                        sendResult.setErrorMsg(obj.getString("errmsg"));
+                    }
                 }
             }
             return sendResult;

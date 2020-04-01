@@ -22,6 +22,8 @@ public class DingTokenConfig implements Serializable {
 
     private Boolean isActive;
 
+    private Date availableTime;
+
     private String creator;
 
     private Date createTime;
@@ -96,6 +98,14 @@ public class DingTokenConfig implements Serializable {
         this.isActive = isActive;
     }
 
+    public Date getAvailableTime() {
+        return availableTime;
+    }
+
+    public void setAvailableTime(Date availableTime) {
+        this.availableTime = availableTime;
+    }
+
     public String getCreator() {
         return creator;
     }
@@ -144,6 +154,7 @@ public class DingTokenConfig implements Serializable {
         secret("secret", "secret", "VARCHAR"),
         status("status", "status", "TINYINT"),
         isActive("is_active", "isActive", "BIT"),
+        availableTime("available_time", "availableTime", "TIMESTAMP"),
         creator("creator", "creator", "VARCHAR"),
         createTime("create_time", "createTime", "TIMESTAMP"),
         modifier("modifier", "modifier", "VARCHAR"),

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +33,6 @@ public class RedisHandler extends AbstractJobExecuteService {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    @Value("${switches-redisGroupKeyTimeOut:15}")
-    private String redisGroupKeyTimeOut;
-
     @Override
     public void doExecute(ExecuteContext executeContext) {
         Map<String, List<DingTokenConfig>> map = dingTokenConfigCache.queryAllFromClientCache();
@@ -45,7 +41,7 @@ public class RedisHandler extends AbstractJobExecuteService {
                 stringRedisTemplate.opsForValue()
                         .set(String.format(Constant.REDIS_SEND_STR, v.get(0).getGroupId()),
                         "0:" + BucketUtils.buildBucketString(v.stream().map(DingTokenConfig::getId).collect(Collectors.toSet())),
-                        Integer.parseInt(redisGroupKeyTimeOut), TimeUnit.SECONDS);
+                        60, TimeUnit.SECONDS);
                 LOGGER.info("组{}次数更新成功", k);
             } catch (Exception e) {
                 LOGGER.error("更新组{}次数失败", k, e);

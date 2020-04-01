@@ -1,11 +1,9 @@
 package com.dianwoba.dispatch.sender.test;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.UnitTestBase;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
 import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.MailListContent;
-import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
 import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.en.StatusEn;
@@ -17,11 +15,9 @@ import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.provider.impl.MessageSendProviderImpl;
 import com.dianwoba.dispatch.sender.runnable.MessageSender;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
-import com.dianwoba.dispatch.sender.util.ConvertUtils;
 import com.dianwoda.delibird.provider.DeliMailProvider;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

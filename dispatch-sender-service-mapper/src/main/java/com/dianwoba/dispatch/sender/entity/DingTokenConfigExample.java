@@ -758,6 +758,66 @@ public class DingTokenConfigExample {
             return (Criteria) this;
         }
 
+        public Criteria andAvailableTimeIsNull() {
+            addCriterion("available_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeIsNotNull() {
+            addCriterion("available_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeEqualTo(Date value) {
+            addCriterion("available_time =", value, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeNotEqualTo(Date value) {
+            addCriterion("available_time <>", value, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeGreaterThan(Date value) {
+            addCriterion("available_time >", value, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("available_time >=", value, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeLessThan(Date value) {
+            addCriterion("available_time <", value, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeLessThanOrEqualTo(Date value) {
+            addCriterion("available_time <=", value, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeIn(List<Date> values) {
+            addCriterion("available_time in", values, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeNotIn(List<Date> values) {
+            addCriterion("available_time not in", values, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeBetween(Date value1, Date value2) {
+            addCriterion("available_time between", value1, value2, "availableTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvailableTimeNotBetween(Date value1, Date value2) {
+            addCriterion("available_time not between", value1, value2, "availableTime");
+            return (Criteria) this;
+        }
+
         public Criteria andCreatorIsNull() {
             addCriterion("creator is null");
             return (Criteria) this;

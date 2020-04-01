@@ -13,6 +13,8 @@ public interface Constant {
 
     String REDIS_SEND_STR = "redis_groupId_%s";
 
+    String GROUP_BLACK_LIST = "redis_groupId_%s_black_list";
+
     String BACK = "back";
 
     Integer FIFTY = 50;
@@ -24,6 +26,10 @@ public interface Constant {
     String DING_URL_PRE = "https://oapi.dingtalk.com/robot/send?access_token=";
 
     Integer HTTP_OK = 200;
+
+    Integer HTTP_MOVED_TEMPORARILY_CODE  = 302;
+
+    String HTTP_MOVED_TEMPORARILY = "302";
 
     Integer DING_PARAM_ERROR = 300001;
 

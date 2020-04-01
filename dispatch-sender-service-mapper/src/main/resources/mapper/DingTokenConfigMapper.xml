@@ -10,6 +10,7 @@
     <result column="secret" jdbcType="VARCHAR" property="secret" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="is_active" jdbcType="BIT" property="isActive" />
+    <result column="available_time" jdbcType="TIMESTAMP" property="availableTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="modifier" jdbcType="VARCHAR" property="modifier" />
@@ -74,8 +75,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
-    modifier, modify_time
+    id, app_dep, group_id, token, key_words, secret, status, is_active, available_time, 
+    creator, create_time, modifier, modify_time
   </sql>
   <select id="selectByExample" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfigExample" resultMap="BaseResultMap">
     select
@@ -116,8 +117,8 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
-          modifier, modify_time
+        id, app_dep, group_id, token, key_words, secret, status, is_active, available_time, 
+          creator, create_time, modifier, modify_time
       </otherwise>
     </choose>
     from `ding_token_config`
@@ -148,8 +149,8 @@
         </foreach>
       </when>
       <otherwise>
-        id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
-          modifier, modify_time
+        id, app_dep, group_id, token, key_words, secret, status, is_active, available_time, 
+          creator, create_time, modifier, modify_time
       </otherwise>
     </choose>
     from `ding_token_config`
@@ -168,14 +169,14 @@
   <insert id="insert" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     insert into `ding_token_config` (id, app_dep, group_id, 
       token, key_words, secret, 
-      status, is_active, creator, 
-      create_time, modifier, modify_time
-      )
+      status, is_active, available_time, 
+      creator, create_time, modifier, 
+      modify_time)
     values (#{id,jdbcType=BIGINT}, #{appDep,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{token,jdbcType=VARCHAR}, #{keyWords,jdbcType=VARCHAR}, #{secret,jdbcType=VARCHAR}, 
-      #{status,jdbcType=TINYINT}, #{isActive,jdbcType=BIT}, #{creator,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}
-      )
+      #{status,jdbcType=TINYINT}, #{isActive,jdbcType=BIT}, #{availableTime,jdbcType=TIMESTAMP}, 
+      #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, 
+      #{modifyTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.dianwoba.dispatch.sender.entity.DingTokenConfig">
     insert into `ding_token_config`
@@ -203,6 +204,9 @@
       </if>
       <if test="isActive != null">
         is_active,
+      </if>
+      <if test="availableTime != null">
+        available_time,
       </if>
       <if test="creator != null">
         creator,
@@ -241,6 +245,9 @@
       </if>
       <if test="isActive != null">
         #{isActive,jdbcType=BIT},
+      </if>
+      <if test="availableTime != null">
+        #{availableTime,jdbcType=TIMESTAMP},
       </if>
       <if test="creator != null">
         #{creator,jdbcType=VARCHAR},
@@ -289,6 +296,9 @@
       <if test="record.isActive != null">
         is_active = #{record.isActive,jdbcType=BIT},
       </if>
+      <if test="record.availableTime != null">
+        available_time = #{record.availableTime,jdbcType=TIMESTAMP},
+      </if>
       <if test="record.creator != null">
         creator = #{record.creator,jdbcType=VARCHAR},
       </if>
@@ -316,6 +326,7 @@
       secret = #{record.secret,jdbcType=VARCHAR},
       status = #{record.status,jdbcType=TINYINT},
       is_active = #{record.isActive,jdbcType=BIT},
+      available_time = #{record.availableTime,jdbcType=TIMESTAMP},
       creator = #{record.creator,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       modifier = #{record.modifier,jdbcType=VARCHAR},
@@ -348,6 +359,9 @@
       <if test="isActive != null">
         is_active = #{isActive,jdbcType=BIT},
       </if>
+      <if test="availableTime != null">
+        available_time = #{availableTime,jdbcType=TIMESTAMP},
+      </if>
       <if test="creator != null">
         creator = #{creator,jdbcType=VARCHAR},
       </if>
@@ -372,6 +386,7 @@
       secret = #{secret,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT},
       is_active = #{isActive,jdbcType=BIT},
+      available_time = #{availableTime,jdbcType=TIMESTAMP},
       creator = #{creator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       modifier = #{modifier,jdbcType=VARCHAR},
@@ -385,15 +400,15 @@
       @project https://github.com/itfsw/mybatis-generator-plugin
     -->
     insert into `ding_token_config`
-    (id, app_dep, group_id, token, key_words, secret, status, is_active, creator, create_time, 
-      modifier, modify_time)
+    (id, app_dep, group_id, token, key_words, secret, status, is_active, available_time, 
+      creator, create_time, modifier, modify_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.appDep,jdbcType=VARCHAR}, #{item.groupId,jdbcType=BIGINT}, 
         #{item.token,jdbcType=VARCHAR}, #{item.keyWords,jdbcType=VARCHAR}, #{item.secret,jdbcType=VARCHAR}, 
-        #{item.status,jdbcType=TINYINT}, #{item.isActive,jdbcType=BIT}, #{item.creator,jdbcType=VARCHAR}, 
-        #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP}
-        )
+        #{item.status,jdbcType=TINYINT}, #{item.isActive,jdbcType=BIT}, #{item.availableTime,jdbcType=TIMESTAMP}, 
+        #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifier,jdbcType=VARCHAR}, 
+        #{item.modifyTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -434,6 +449,9 @@
         </if>
         <if test="'is_active' == column.value">
           #{item.isActive,jdbcType=BIT}
+        </if>
+        <if test="'available_time' == column.value">
+          #{item.availableTime,jdbcType=TIMESTAMP}
         </if>
         <if test="'creator' == column.value">
           #{item.creator,jdbcType=VARCHAR}

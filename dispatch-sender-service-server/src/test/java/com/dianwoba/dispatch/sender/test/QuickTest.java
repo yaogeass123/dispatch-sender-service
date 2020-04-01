@@ -1,16 +1,13 @@
 package com.dianwoba.dispatch.sender.test;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dianwoba.dispatch.sender.UnitTestBase;
 import com.dianwoba.dispatch.sender.cache.DingTokenConfigCache;
-import com.dianwoba.dispatch.sender.entity.DingGroupName;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.sender.entity.MessageSendCountPO;
 import com.dianwoba.dispatch.sender.manager.MessageLogManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

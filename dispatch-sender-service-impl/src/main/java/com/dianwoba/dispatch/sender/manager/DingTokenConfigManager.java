@@ -6,6 +6,8 @@ import com.dianwoba.dispatch.sender.entity.DingTokenConfigExample;
 import com.dianwoba.dispatch.sender.entity.DingTokenConfigExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.DingTokenConfigMapper;
 import com.dianwoba.wireless.paging.PagingSearchable;
+import com.dianwoba.wireless.treasure.util.DateUtil;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
@@ -33,6 +35,7 @@ public class DingTokenConfigManager {
         Criteria criteria = example.createCriteria();
         criteria.andIsActiveEqualTo(true);
         criteria.andStatusEqualTo(Constant.TOKEN_NORMAL);
+        criteria.andAvailableTimeLessThan(new Date());
         if (pagingSearchable.isPaging()) {
             example.page(pagingSearchable.getCurrentPage() - 1, pagingSearchable.getPageSize());
         }
@@ -51,4 +54,14 @@ public class DingTokenConfigManager {
         return dingTokenConfigMapper.updateByExampleSelective(record, example);
     }
 
+    public int setTokenBlock(List<Long> ids) {
+        DingTokenConfigExample example = new DingTokenConfigExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        DingTokenConfig record = new DingTokenConfig();
+        record.setModifier(Constant.DEFAULT_STAFF);
+        record.setModifyTime(new Date());
+        record.setAvailableTime(DateUtil.add(new Date(), Calendar.MINUTE, 3));
+        return dingTokenConfigMapper.updateByExampleSelective(record, example);
+    }
 }

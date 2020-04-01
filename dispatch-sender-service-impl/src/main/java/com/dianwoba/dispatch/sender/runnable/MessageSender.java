@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.thymeleaf.util.StringUtils;
+import sun.awt.SunHints.Value;
 
 /**
  * @author Polaris
@@ -60,7 +61,7 @@ public class MessageSender implements Runnable {
 
     private StringRedisTemplate stringRedisTemplate;
 
-    private Map<Long, List<DingTokenConfig>> tokenMap;
+    private Map<Long, DingTokenConfig> tokenMap;
 
     private HttpClientUtils client;
 
@@ -122,7 +123,7 @@ public class MessageSender implements Runnable {
                     .newFixedThreadPool(String.format(Constant.EXECUTOR_SEND_FORMAT, groupId),
                             tokenList.size() * Integer
                                     .parseInt(switchConfigUtils.getThreadMultiple()));
-            tokenMap = tokenList.stream().collect(Collectors.groupingBy(DingTokenConfig::getId));
+            tokenMap = tokenList.stream().collect(Collectors.toMap(DingTokenConfig::getId, v -> v));
             messageSendList = messageSenderManager.queryMessageToBeSent(groupId).stream()
                     .map(ConvertUtils::convert2MessageSendInfo).collect(Collectors.toList());
             queryRedis();
@@ -258,7 +259,7 @@ public class MessageSender implements Runnable {
         List<Future<SendResultInfo>> futures = Lists.newArrayList();
         List<SendResultInfo> results = Lists.newArrayList();
         for (int i = 0; i < count; i++) {
-            DingTokenConfig token = tokenMap.get(poll()).get(0);
+            DingTokenConfig token = tokenMap.get(poll());
             futures.add(threadPool.submit(new SendProcessor(messages.get(i), token, client)));
         }
         try {
@@ -269,7 +270,8 @@ public class MessageSender implements Runnable {
         for (Future<SendResultInfo> future : futures) {
             try {
                 SendResultInfo resultInfo = future
-                        .get(Integer.parseInt(switchConfigUtils.getFutureTimeOut()), TimeUnit.MILLISECONDS);
+                        .get(Integer.parseInt(switchConfigUtils.getFutureTimeOut()),
+                                TimeUnit.MILLISECONDS);
                 if (resultInfo != null && resultInfo.getIsSuccess() != null) {
                     results.add(resultInfo);
                 } else {
@@ -283,7 +285,7 @@ public class MessageSender implements Runnable {
         return times;
     }
 
-    private int handleResult(List<SendResultInfo> results, int times) {
+    private int     handleResult(List<SendResultInfo> results, int times) {
         List<SendResultInfo> successResults = results.stream().filter(SendResultInfo::getIsSuccess)
                 .collect(Collectors.toList());
         successResults.forEach(t -> success.addAll(t.getIds()));
@@ -300,6 +302,27 @@ public class MessageSender implements Runnable {
             List<Long> tokenIds = v.stream().map(SendResultInfo::getTokenId).distinct()
                     .collect(Collectors.toList());
             StringBuilder sb = new StringBuilder();
+            if (k.equals(Constant.HTTP_MOVED_TEMPORARILY_CODE)) {
+                dingTokenConfigManager.setTokenBlock(tokenIds);
+                //缓存表删除
+                tokenIds.forEach(id -> tokenMap.remove(id));
+                //可发送次数更新
+                times -= v.size();
+                int n = times;
+                for (int i = 0; i < n; i++) {
+                    if (tokenIds.contains(tokenQueue.get(i))) {
+                        times--;
+                    }
+                }
+                //tokenQueue删除
+                tokenQueue.removeAll(tokenIds);
+                if (tokenMap.size() == 0) {
+                    //remove后没有机器人了
+                    sb.append("群组编号: ").append(groupId).append("\n");
+                    sb.append("群名称：").append(findGroupName()).append("\n");
+                    sb.append("此群所有机器人被限流，请关注");
+                }
+            }
             if (k.equals(Constant.DING_PARAM_ERROR) || k.equals(Constant.DING_VALID_ERROR)) {
                 sb.append("群组编号: ").append(groupId).append("\n");
                 sb.append("群名称：").append(findGroupName()).append("\n");
@@ -449,13 +472,15 @@ public class MessageSender implements Runnable {
 
     private int calSendAbleTimes() {
         int tokenNum = tokenMap.size();
-        //本批次
-        if (second < Constant.FIFTY) {
-            return tokenNum * 3 + residualSentAbleTimes;
-        }
         //对于单个机器人，最多可发送20，冗余1条，故期望19条。对于前5论，理想中包和发送3*5个
         //故最后一轮 4 = 19 - 3 * 5
         //现改为3 冗余两条 进行测试
+
+        //设计没问题，但是每10s发送3条会被限流
+        //阿里那边也没啥头绪，老旧逻辑他们也不清楚原因
+        if (second / 10 % 2 == 0) {
+            return tokenNum * 2 + residualSentAbleTimes;
+        }
         return 3 * tokenNum + residualSentAbleTimes;
     }
 

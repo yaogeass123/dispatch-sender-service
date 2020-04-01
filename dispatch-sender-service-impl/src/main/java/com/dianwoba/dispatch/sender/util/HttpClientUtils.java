@@ -15,9 +15,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * dispatch-utils工具包中HttpClientUtils 魔改
+ *
  * @author Polaris
  */
 public class HttpClientUtils {
+
     private final static Logger LOGGER = LoggerFactory
             .getLogger(com.dianwoba.dispatch.utils.HttpClientUtils.class);
 
@@ -73,6 +75,10 @@ public class HttpClientUtils {
             LOGGER.info("http response :{}", JSONObject.toJSONString(response));
             if (response.getStatusLine().getStatusCode() == Constant.HTTP_OK) {
                 return EntityUtils.toString(response.getEntity());
+            }
+            if (Constant.HTTP_MOVED_TEMPORARILY
+                    .equals(String.valueOf(response.getStatusLine().getStatusCode()))) {
+                return Constant.HTTP_MOVED_TEMPORARILY;
             }
             return null;
         } catch (Exception e) {
