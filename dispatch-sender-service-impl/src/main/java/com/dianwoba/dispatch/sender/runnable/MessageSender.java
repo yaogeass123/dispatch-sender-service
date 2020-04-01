@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.thymeleaf.util.StringUtils;
-import sun.awt.SunHints.Value;
 
 /**
  * @author Polaris
@@ -150,7 +149,7 @@ public class MessageSender implements Runnable {
             long end = System.currentTimeMillis();
             LOGGER.info("耗时:{}", end - start);
         } catch (Exception e) {
-            LOGGER.error("发送流程异常", e);
+            LOGGER.warn("发送流程异常", e);
             //假如异常了，没有更新redis，redis会过期，下次就找不到key
             //这样没问题 本分钟不再发送
         }
@@ -174,7 +173,7 @@ public class MessageSender implements Runnable {
             residualSentAbleTimes = Integer.parseInt(spit[0]);
             tokenQueue = BucketUtils.buildTokenQueue(spit[1]);
         } catch (Exception e) {
-            LOGGER.error("查询redis出错", e);
+            LOGGER.warn("查询redis出错", e);
             if (second == 0) {
                 tokenQueue = BucketUtils.buildTokenQueue(tokenMap.keySet());
                 residualSentAbleTimes = 0;
@@ -465,9 +464,10 @@ public class MessageSender implements Runnable {
             return 1;
         } else if (a.getEndTm().compareTo(b.getEndTm()) < 0) {
             return 1;
-        } else {
+        } else if (a.getEndTm().compareTo(b.getEndTm()) > 0) {
             return -1;
         }
+        return 0;
     }
 
     private int calSendAbleTimes() {
