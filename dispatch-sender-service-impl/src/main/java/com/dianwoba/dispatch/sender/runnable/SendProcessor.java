@@ -76,6 +76,10 @@ public class SendProcessor implements Callable<SendResultInfo> {
                     LOGGER.warn("Token:{} is in black list.", token.getId());
                     sendResult.setIsSuccess(Boolean.FALSE);
                     sendResult.setErrorCode(Constant.HTTP_MOVED_TEMPORARILY_CODE);
+                    sendResult.setIds(messageSend.getIds());
+                    sendResult.setAppDep(messageSend.getAppDep());
+                    sendResult.setAppName(messageSend.getAppName());
+                    sendResult.setTokenId(token.getId());
                 } else {
                     LOGGER.info("Token:{}, result:{}", token.getId(),
                             JSONObject.toJSONString(result));
