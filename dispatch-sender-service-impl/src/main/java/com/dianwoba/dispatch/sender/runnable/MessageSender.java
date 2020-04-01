@@ -12,7 +12,6 @@ import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.DingTokenConfigManager;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
-import com.dianwoba.dispatch.sender.manager.TokenBucketBackupManager;
 import com.dianwoba.dispatch.sender.util.BucketUtils;
 import com.dianwoba.dispatch.sender.util.ConvertUtils;
 import com.dianwoba.dispatch.sender.util.HttpClientUtils;
@@ -48,8 +47,6 @@ public class MessageSender implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSender.class);
 
-    private static final int TEN = 10;
-
     private static MonitoringThreadPool threadPool;
 
     private List<MessageSendInfo> messageSendList;
@@ -79,8 +76,6 @@ public class MessageSender implements Runnable {
 
     private DingTokenConfigCache dingTokenConfigCache;
 
-    private TokenBucketBackupManager sendBucketBackupManager;
-
     private SwitchConfigUtils switchConfigUtils;
 
     private int second;
@@ -93,7 +88,6 @@ public class MessageSender implements Runnable {
         mailSendWrapper = SpringUtils.getBean(MailSendWrapper.class);
         groupConfigManager = SpringUtils.getBean(GroupConfigManager.class);
         dingTokenConfigCache = SpringUtils.getBean(DingTokenConfigCache.class);
-        sendBucketBackupManager = SpringUtils.getBean(TokenBucketBackupManager.class);
         switchConfigUtils = SpringUtils.getBean(SwitchConfigUtils.class);
         tokenQueue = null;
         success = Lists.newArrayList();
@@ -161,7 +155,7 @@ public class MessageSender implements Runnable {
                     .get(String.format(Constant.REDIS_SEND_STR, groupId));
             LOGGER.info("redis:{}", redisStr);
             if (StringUtils.isEmpty(redisStr)) {
-                if (second % TEN == 0) {
+                if (second % Constant.TEN == 0) {
                     tokenQueue = BucketUtils.buildTokenQueue(tokenMap.keySet());
                     residualSentAbleTimes = 0;
                     return;
@@ -173,7 +167,6 @@ public class MessageSender implements Runnable {
             residualSentAbleTimes = Integer.parseInt(spit[0]);
             tokenQueue = BucketUtils.buildTokenQueue(spit[1]);
         } catch (Exception e) {
-            LOGGER.warn("查询redis出错", e);
             if (second == 0) {
                 tokenQueue = BucketUtils.buildTokenQueue(tokenMap.keySet());
                 residualSentAbleTimes = 0;
@@ -284,7 +277,7 @@ public class MessageSender implements Runnable {
         return times;
     }
 
-    private int     handleResult(List<SendResultInfo> results, int times) {
+    private int handleResult(List<SendResultInfo> results, int times) {
         List<SendResultInfo> successResults = results.stream().filter(SendResultInfo::getIsSuccess)
                 .collect(Collectors.toList());
         successResults.forEach(t -> success.addAll(t.getIds()));
@@ -478,7 +471,7 @@ public class MessageSender implements Runnable {
 
         //设计没问题，但是每10s发送3条会被限流
         //阿里那边也没啥头绪，老旧逻辑他们也不清楚原因
-        if (second / 10 % 2 == 0) {
+        if (second / Constant.TEN % Constant.TWO == 0) {
             return tokenNum * 2 + residualSentAbleTimes;
         }
         return 3 * tokenNum + residualSentAbleTimes;

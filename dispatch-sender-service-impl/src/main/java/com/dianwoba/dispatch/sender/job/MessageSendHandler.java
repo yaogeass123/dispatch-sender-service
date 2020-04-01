@@ -1,15 +1,12 @@
 package com.dianwoba.dispatch.sender.job;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dianwoba.dispatch.sender.en.StatusEn;
-import com.dianwoba.dispatch.sender.entity.MessageSendCountPO;
-import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
+import com.dianwoba.dispatch.sender.cache.GroupConfigCache;
 import com.dianwoba.dispatch.sender.runnable.MessageSender;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
 import com.dianwoba.pt.goodjob.node.service.impl.AbstractJobExecuteService;
 import com.dianwoba.wireless.threadpool.MonitoringThreadPool;
 import com.dianwoba.wireless.threadpool.MonitoringThreadPoolMaintainer;
-import java.util.List;
+import java.util.Set;
 import javax.annotation.Resource;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -28,15 +25,14 @@ public class MessageSendHandler extends AbstractJobExecuteService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSendHandler.class);
 
     @Resource
-    private MessageSenderManager messageSenderManager;
+    private GroupConfigCache groupConfigCache;
 
     @Override
     public void doExecute(ExecuteContext executeContext) {
-        List<MessageSendCountPO> countList = messageSenderManager
-                .countByGroupId(StatusEn.INIT.getStatusCode());
-        if (CollectionUtils.isNotEmpty(countList)) {
-            LOGGER.info("infoList:{}", JSONObject.toJSONString(countList));
-            countList.forEach(v -> messageSendThreadPool.submit(new MessageSender(v.getGroupId())));
+        //需要遍历每个群，因为要更新群可发送次数
+        Set<Long> groupIdList = groupConfigCache.queryAllFromClientCache().keySet();
+        if (CollectionUtils.isNotEmpty(groupIdList)) {
+            groupIdList.forEach(v -> messageSendThreadPool.submit(new MessageSender(v)));
         } else {
             LOGGER.info("无消息发送");
         }

@@ -64,4 +64,9 @@ public interface Constant {
     String EXECUTOR_SEND_FORMAT = "send-groupId-%d";
 
     Integer MAX_SENT_TIMES_ONE_TOKEN = 19;
+
+    Integer TEN = 10;
+
+    Integer TWO = 2;
+
 }
