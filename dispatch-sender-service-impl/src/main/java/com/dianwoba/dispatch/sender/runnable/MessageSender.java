@@ -492,8 +492,12 @@ public class MessageSender implements Runnable {
         } else {
             time = 3 * tokenNum + residualSentAbleTimes;
         }
-        //防止限流再加一层，maxSendTimesPerTurn代表每个机器人一轮发送上限
-        return Math.min(time, tokenNum * switchConfigUtils.getMaxSendTimesPerTurn());
+        if (second > 50) {
+            //试出来的，本方案下最后一轮不能超过4个
+            return Math.min(time, 4 * tokenNum);
+        }
+        return time;
+
     }
 
 

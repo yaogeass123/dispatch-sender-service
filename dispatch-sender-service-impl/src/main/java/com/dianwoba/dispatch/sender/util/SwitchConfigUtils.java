@@ -18,9 +18,6 @@ public class SwitchConfigUtils {
     @Value("${futureTimeOut:2000}")
     private String futureTimeOut;
 
-    @Value("${maxSendTimesPerTurn:10}")
-    private String maxSendTimesPerTurn;
-
     public String getThreadMultiple() {
         return threadMultiple;
     }
@@ -32,9 +29,4 @@ public class SwitchConfigUtils {
     public String getFutureTimeOut() {
         return futureTimeOut;
     }
-
-    public Integer getMaxSendTimesPerTurn() {
-        return Integer.parseInt(maxSendTimesPerTurn);
-    }
-
 }
