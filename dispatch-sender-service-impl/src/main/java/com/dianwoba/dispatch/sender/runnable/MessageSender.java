@@ -166,6 +166,9 @@ public class MessageSender implements Runnable {
                 }
             }
             String[] spit = redisStr.split(":");
+            if (spit.length < Constant.TWO) {
+                throw new RuntimeException("令牌已用完！");
+            }
             residualSentAbleTimes = Integer.parseInt(spit[0]);
             tokenQueue = BucketUtils.buildTokenQueue(spit[1]);
         } catch (Exception e) {
@@ -300,8 +303,11 @@ public class MessageSender implements Runnable {
                     .collect(Collectors.toList());
             StringBuilder sb = new StringBuilder();
             if (k.equals(Constant.HTTP_MOVED_TEMPORARILY_CODE)) {
+                //数据库置位黑名单
                 dingTokenConfigManager.setTokenBlock(tokenIds);
-                //缓存表删除
+                //缓存更新
+                dingTokenConfigCache.reload();
+                //map删除
                 tokenIds.forEach(id -> tokenMap.remove(id));
                 //可发送次数更新
                 times -= v.size();
@@ -335,7 +341,9 @@ public class MessageSender implements Runnable {
                     }
                     //数据库置位
                     dingTokenConfigManager.setTokenError(tokenIds);
-                    //缓存表删除
+                    //缓存更新
+                    dingTokenConfigCache.reload();
+                    //Map删除
                     tokenIds.forEach(id -> tokenMap.remove(id));
                     //可发送次数更新
                     times -= v.size();
@@ -409,7 +417,6 @@ public class MessageSender implements Runnable {
             if (v.size() > 1) {
                 gatherList.add(gatherMessage(v));
             } else {
-                LOGGER.info("12312312312312 :{}", v.get(0).getCount());
                 gatherList.add(v.get(0));
             }
         });
