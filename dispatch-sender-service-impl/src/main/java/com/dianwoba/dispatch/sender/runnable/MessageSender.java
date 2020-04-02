@@ -105,10 +105,6 @@ public class MessageSender implements Runnable {
             if (CollectionUtils.isEmpty(tokenList)) {
                 String group = findGroupName();
                 LOGGER.warn("群{}无正确机器人配置", group);
-                String content =
-                        "群编号: " + groupId + "\n" + "群名称：" + group + "\n" + "无正确机器人配置，请及时处理";
-                String mailAddress = mailSendWrapper.getMailAddress(groupId);
-                mailSendWrapper.sendMail(content, mailAddress, Constant.MAIL_SUBJECT_NOT_EXIST);
                 return;
             }
             //机器人数量*配置的比
@@ -253,6 +249,9 @@ public class MessageSender implements Runnable {
         if (messages.size() == 0) {
             return times;
         }
+        if (tokenQueue.size() == 0) {
+            return 0;
+        }
         int count = Math.min(times, messages.size());
         List<Future<SendResultInfo>> futures = Lists.newArrayList();
         List<SendResultInfo> results = Lists.newArrayList();
@@ -320,53 +319,56 @@ public class MessageSender implements Runnable {
                     sb.append("群名称：").append(findGroupName()).append("\n");
                     sb.append("此群所有机器人被限流，请关注");
                 }
-            }
-            if (k.equals(Constant.DING_PARAM_ERROR) || k.equals(Constant.DING_VALID_ERROR)) {
-                sb.append("群组编号: ").append(groupId).append("\n");
-                sb.append("群名称：").append(findGroupName()).append("\n");
-                sb.append(tokenIds.stream().map(String::valueOf).collect(Collectors.joining(",")))
-                        .append("号机器人配置错误，请及时检查修改");
-                sb.append("\n").append("错误代码: ").append(k).append("\n");
-                Set<String> set = v.stream().map(t -> t.getTokenId() + "号机器人:" + t.getErrorMsg())
-                        .collect(Collectors.toSet());
-                for (String str : set) {
-                    sb.append(str).append("\n");
-                }
-                //数据库置位
-                dingTokenConfigManager.setTokenError(tokenIds);
-                //缓存表删除
-                tokenIds.forEach(id -> tokenMap.remove(id));
-                //可发送次数更新
-                times -= v.size();
-                int n = times;
-                for (int i = 0; i < n; i++) {
-                    if (tokenIds.contains(tokenQueue.get(i))) {
-                        times--;
-                    }
-                }
-                //tokenQueue删除
-                tokenQueue.removeAll(tokenIds);
-                if (tokenMap.size() == 0) {
-                    //remove后没有机器人了
-                    sb.append("此群已无可用机器人,请及时配置");
-                    // TODO: 2020/2/25  特殊处理
-                }
             } else {
-                //系统错误 内容不合法 邮件告警，并且STATUS置位ERROR，不再重试
-                //A B C A B C A B C  B失败两次，后面加上B B
-                sb.append("钉钉消息发送失败, 群编号: ").append(groupId).append("\n");
-                sb.append("群名称：").append(findGroupName()).append("\n");
-                sb.append("错误代码: ").append(k).append("\n").append("\n");
-                for (SendResultInfo result : v) {
-                    sb.append("应用名: ").append(result.getAppName()).append("\n");
-                    sb.append("错误详情").append(result.getErrorMsg()).append("\n");
-                    sb.append("消息内容").append(result.getMsg()).append("\n").append("\n");
-                    ErrorInfo errorInfo = ConvertUtils.convert2ErrorInfo(result);
-                    error.add(errorInfo);
-                    //对于这种错误，实际上钉钉机器人配置没有问题，且没有发送，不占用发送次数
-                    //目前设计对于这些错误的次数暂时不去找本时段的消息进行发送，后期可以考虑优化
-                    //将机器人token的id放回发送队列中
-                    tokenQueue.add(result.getTokenId());
+                if (k.equals(Constant.DING_PARAM_ERROR) || k.equals(Constant.DING_VALID_ERROR)) {
+                    sb.append("群组编号: ").append(groupId).append("\n");
+                    sb.append("群名称：").append(findGroupName()).append("\n");
+                    sb.append(
+                            tokenIds.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                            .append("号机器人配置错误，请及时检查修改");
+                    sb.append("\n").append("错误代码: ").append(k).append("\n");
+                    Set<String> set = v.stream()
+                            .map(t -> t.getTokenId() + "号机器人:" + t.getErrorMsg())
+                            .collect(Collectors.toSet());
+                    for (String str : set) {
+                        sb.append(str).append("\n");
+                    }
+                    //数据库置位
+                    dingTokenConfigManager.setTokenError(tokenIds);
+                    //缓存表删除
+                    tokenIds.forEach(id -> tokenMap.remove(id));
+                    //可发送次数更新
+                    times -= v.size();
+                    int n = times;
+                    for (int i = 0; i < n; i++) {
+                        if (tokenIds.contains(tokenQueue.get(i))) {
+                            times--;
+                        }
+                    }
+                    //tokenQueue删除
+                    tokenQueue.removeAll(tokenIds);
+                    if (tokenMap.size() == 0) {
+                        //remove后没有机器人了
+                        sb.append("此群已无可用机器人,请及时配置");
+                        // TODO: 2020/2/25  特殊处理
+                    }
+                } else {
+                    //系统错误 内容不合法 邮件告警，并且STATUS置位ERROR，不再重试
+                    //A B C A B C A B C  B失败两次，后面加上B B
+                    sb.append("钉钉消息发送失败, 群编号: ").append(groupId).append("\n");
+                    sb.append("群名称：").append(findGroupName()).append("\n");
+                    sb.append("错误代码: ").append(k).append("\n").append("\n");
+                    for (SendResultInfo result : v) {
+                        sb.append("应用名: ").append(result.getAppName()).append("\n");
+                        sb.append("错误详情").append(result.getErrorMsg()).append("\n");
+                        sb.append("消息内容").append(result.getMsg()).append("\n").append("\n");
+                        ErrorInfo errorInfo = ConvertUtils.convert2ErrorInfo(result);
+                        error.add(errorInfo);
+                        //对于这种错误，实际上钉钉机器人配置没有问题，且没有发送，不占用发送次数
+                        //目前设计对于这些错误的次数暂时不去找本时段的消息进行发送，后期可以考虑优化
+                        //将机器人token的id放回发送队列中
+                        tokenQueue.add(result.getTokenId());
+                    }
                 }
             }
             String mailAddress = mailSendWrapper.getMailAddress(v.get(0).getAppDep(), groupId);
@@ -477,10 +479,14 @@ public class MessageSender implements Runnable {
 
         //设计没问题，但是每10s发送3条会被限流
         //阿里那边也没啥头绪，老旧逻辑他们也不清楚原因
+        int time;
         if (second / Constant.TEN % Constant.TWO == 0) {
-            return tokenNum * 2 + residualSentAbleTimes;
+            time = tokenNum * 2 + residualSentAbleTimes;
+        } else {
+            time = 3 * tokenNum + residualSentAbleTimes;
         }
-        return 3 * tokenNum + residualSentAbleTimes;
+        //防止限流再加一层，maxSendTimesPerTurn代表每个机器人一轮发送上限
+        return Math.min(time, tokenNum * switchConfigUtils.getMaxSendTimesPerTurn());
     }
 
 
