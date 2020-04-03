@@ -492,12 +492,18 @@ public class MessageSender implements Runnable {
         } else {
             time = 3 * tokenNum + residualSentAbleTimes;
         }
-        if (second > 50) {
-            //试出来的，本方案下最后一轮不能超过4个
-            return Math.min(time, 4 * tokenNum);
+        switch (second / Constant.TEN) {
+            case 2:
+                return Math.min(time, 6 * tokenNum);
+            case 3:
+                return Math.min(time, 8 * tokenNum);
+            case 4 :
+                return Math.min(time, 10 * tokenNum);
+            case 5:
+                return Math.min(time, 4 * tokenNum);
+            default:
+                return time;
         }
-        return time;
-
     }
 
 
