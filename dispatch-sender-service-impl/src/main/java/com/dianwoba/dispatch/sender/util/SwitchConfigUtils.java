@@ -18,6 +18,15 @@ public class SwitchConfigUtils {
     @Value("${futureTimeOut:2000}")
     private String futureTimeOut;
 
+    @Value("${time2:5}")
+    private String time2;
+
+    @Value("${time2:6}")
+    private String time3;
+
+    @Value("${time2:7}")
+    private String time4;
+
     public String getThreadMultiple() {
         return threadMultiple;
     }
@@ -29,4 +38,11 @@ public class SwitchConfigUtils {
     public String getFutureTimeOut() {
         return futureTimeOut;
     }
+
+    public int getTime2() {return Integer.parseInt(time2);}
+
+    public int getTime3() {return Integer.parseInt(time3);}
+
+    public int getTime4() {return Integer.parseInt(time4);}
+
 }
