@@ -492,16 +492,7 @@ public class MessageSender implements Runnable {
         } else {
             time = 3 * tokenNum + residualSentAbleTimes;
         }
-        switch (second / Constant.TEN) {
-            case 2:
-                return Math.min(time, switchConfigUtils.getTime2() * tokenNum);
-            case 3:
-                return Math.min(time, switchConfigUtils.getTime3() * tokenNum);
-            case 4 :
-                return Math.min(time, switchConfigUtils.getTime4() * tokenNum);
-            default:
-                return Math.min(time, 4 * tokenNum);
-        }
+        return Math.min(time, 4 * tokenNum);
     }
 
 
