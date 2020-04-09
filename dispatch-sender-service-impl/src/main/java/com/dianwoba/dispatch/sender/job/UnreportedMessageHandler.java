@@ -63,7 +63,7 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
             String mailAddress = mailSendWrapper.getMailAddress(k);
             mailSendWrapper.sendMail(buildContent(v), mailAddress, Constant.MAIL_SUBJECT_IGNORE);
         });
-        messageLogManager.batchIgnore(3);
+        messageLogManager.batchIgnore(3); 
     }
 
     private String buildContent(List<MessageSend> list) {
