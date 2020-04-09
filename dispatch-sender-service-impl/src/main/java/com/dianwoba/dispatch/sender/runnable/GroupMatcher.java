@@ -90,7 +90,7 @@ public class GroupMatcher implements Runnable {
             LOGGER.info("匹配到规则信息:{}", JSONObject.toJSONString(rule));
             String atWho = matchAtWho(rule, appDepInfo);
             setGroup(messageSend, rule, atWho);
-            //5、去掉1min内已发送的消息（以群、app、digest和msg的维度，最终保证的是一摸一样的消息不重复发送）
+            //5、去掉1min内已发送的消息（以群、app、digest、level和msg的维度，最终保证的是一摸一样的消息不重复发送）
             List<String> hasSent = messageSenderManager.hasSent(messageSend);
             if (CollectionUtils.isNotEmpty(hasSent)) {
                 LOGGER.info("已发送消息内容:{}", hasSent);

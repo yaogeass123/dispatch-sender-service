@@ -44,6 +44,8 @@ public class MessageSenderManager {
         criteria.andDigestEqualTo(messageSend.get(0).getDigest());
         criteria.andMsgIn(messageSend.stream().map(MessageSend::getMsg).distinct()
                 .collect(Collectors.toList()));
+        criteria.andStatusEqualTo(StatusEn.SUCCESS.getStatusCode());
+        criteria.andLevelEqualTo(messageSend.get(0).getLevel());
         //一分钟内发过的数据
         criteria.andSendTmGreaterThan(DateUtil.add(new Date(), Calendar.SECOND, -60));
         List<MessageSend> hasSent = messageSendMapper.selectByExampleSelective(example);
