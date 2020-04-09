@@ -4,6 +4,8 @@ import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageLogExample;
 import com.dianwoba.dispatch.sender.entity.MessageLogExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.MessageLogMapper;
+import com.dianwoba.wireless.treasure.util.DateUtil;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
@@ -39,6 +41,17 @@ public class MessageLogManager {
         criteria.andHandledEqualTo(false);
         MessageLog record = new MessageLog();
         record.setHandled(true);
+        record.setHandleTm(new Date());
+        messageLogMapper.updateByExampleSelective(record, example);
+    }
+
+    public void batchIgnore(int minute) {
+        MessageLogExample example = new MessageLogExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andHandledEqualTo(Boolean.FALSE);
+        criteria.andInsTmLessThanOrEqualTo(DateUtil.add(new Date(), Calendar.MINUTE, -minute));
+        MessageLog record = new MessageLog();
+        record.setHandled(Boolean.TRUE);
         record.setHandleTm(new Date());
         messageLogMapper.updateByExampleSelective(record, example);
     }

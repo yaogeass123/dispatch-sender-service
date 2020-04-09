@@ -4,6 +4,7 @@ import com.dianwoba.dispatch.sender.constant.Constant;
 import com.dianwoba.dispatch.sender.domain.MailListContent;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.dispatch.sender.manager.GroupConfigManager;
+import com.dianwoba.dispatch.sender.manager.MessageLogManager;
 import com.dianwoba.dispatch.sender.manager.MessageSenderManager;
 import com.dianwoba.dispatch.sender.wrapper.MailSendWrapper;
 import com.dianwoba.pt.goodjob.node.bean.ExecuteContext;
@@ -43,6 +44,9 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
     @Resource
     private MailSendWrapper mailSendWrapper;
 
+    @Resource
+    private MessageLogManager messageLogManager;
+
     @Override
     public void doExecute(ExecuteContext executeContext) {
 
@@ -59,6 +63,7 @@ public class UnreportedMessageHandler extends AbstractJobExecuteService {
             String mailAddress = mailSendWrapper.getMailAddress(k);
             mailSendWrapper.sendMail(buildContent(v), mailAddress, Constant.MAIL_SUBJECT_IGNORE);
         });
+        messageLogManager.batchIgnore(3);
     }
 
     private String buildContent(List<MessageSend> list) {
