@@ -1,7 +1,10 @@
 package com.dianwoba.dispatch.sender.manager;
 
 import com.dianwoba.dispatch.sender.cache.GroupConfigCache;
+import com.dianwoba.dispatch.sender.domain.dto.param.group.GroupDeleteDTO;
+import com.dianwoba.dispatch.sender.domain.dto.param.group.GroupPagingQueryDTO;
 import com.dianwoba.dispatch.sender.entity.DingGroupName;
+import com.dianwoba.dispatch.sender.entity.DingGroupName.Column;
 import com.dianwoba.dispatch.sender.entity.DingGroupNameExample;
 import com.dianwoba.dispatch.sender.entity.DingGroupNameExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.DingGroupNameMapper;
@@ -9,6 +12,7 @@ import com.dianwoba.wireless.paging.PagingSearchable;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Polaris
@@ -22,6 +26,9 @@ public class GroupConfigManager {
 
     @Resource
     private GroupConfigCache groupConfigCache;
+
+    @Resource
+    private GroupMatchRulesManager groupMatchRulesManager;
 
     public Long totalCount() {
         DingGroupNameExample example = new DingGroupNameExample();
@@ -48,5 +55,34 @@ public class GroupConfigManager {
         return groupName.getGroupName();
     }
 
+    public void save(DingGroupName groupName) {
+        groupNameMapper.insertSelective(groupName);
+    }
+
+    public boolean update(DingGroupName groupName) {
+        return groupNameMapper.updateByPrimaryKeySelective(groupName) > 0;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean delete(GroupDeleteDTO groupDeleteDTO) {
+        DingGroupNameExample example = new DingGroupNameExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andIsActiveEqualTo(Boolean.TRUE);
+        criteria.andIdEqualTo(groupDeleteDTO.getGroupId());
+        criteria.andGroupNameEqualTo(groupDeleteDTO.getGroupName());
+        DingGroupName record = new DingGroupName();
+        record.setIsActive(Boolean.FALSE);
+        boolean delete = groupNameMapper.updateByExampleSelective(record, example) > 1;
+        return delete && groupMatchRulesManager.delete(groupDeleteDTO.getGroupId());
+    }
+
+    public List<DingGroupName> queryPaging(GroupPagingQueryDTO queryDTO) {
+        DingGroupNameExample example = new DingGroupNameExample();
+        Criteria criteria = example.page(queryDTO.getCurrentPage() - 1, queryDTO.getPageSize())
+                .createCriteria();
+        criteria.andIsActiveEqualTo(Boolean.TRUE);
+        example.orderBy(Column.id.asc());
+        return groupNameMapper.selectByExample(example);
+    }
 
 }

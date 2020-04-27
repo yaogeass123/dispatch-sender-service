@@ -27,6 +27,10 @@
             <groupId>com.dianwoba.wireless</groupId>
             <artifactId>wireless-fundamental</artifactId>
         </dependency>
+      <dependency>
+        <groupId>com.dianwoba.wireless</groupId>
+        <artifactId>wireless-paging</artifactId>
+      </dependency>
 
     </dependencies>
 

@@ -10,4 +10,6 @@ public interface Constant {
 
     String DING_MESSAGE = "DingMessage";
 
+    String BACK = "back";
+
 }

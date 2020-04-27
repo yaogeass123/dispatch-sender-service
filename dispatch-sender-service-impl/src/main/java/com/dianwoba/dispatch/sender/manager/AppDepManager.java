@@ -1,12 +1,14 @@
 package com.dianwoba.dispatch.sender.manager;
 
 import com.dianwoba.dispatch.sender.constant.Constant;
+import com.dianwoba.dispatch.sender.domain.dto.param.dep.AppDepManualDepUpdateDTO;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.entity.AppDep.Column;
 import com.dianwoba.dispatch.sender.entity.AppDepExample;
 import com.dianwoba.dispatch.sender.entity.AppDepExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.AppDepMapper;
 import com.dianwoba.wireless.paging.PagingSearchable;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -70,4 +72,18 @@ public class AppDepManager {
         return appDepMapper.updateByPrimaryKeySelective(appDep);
     }
 
+    public int updateManualDep(AppDepManualDepUpdateDTO updateDTO) {
+        AppDepExample example = new AppDepExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andAppNameEqualTo(updateDTO.getAppName());
+        criteria.andDepIdEqualTo(updateDTO.getDeFaultDepId());
+        if (updateDTO.getManualDepId() == null) {
+            criteria.andManualDepIdEqualTo(updateDTO.getManualDepId());
+        }
+        AppDep record = new AppDep();
+        record.setManualDepId(updateDTO.getNewDepId());
+        record.setModifer(updateDTO.getModifier());
+        record.setModifyTime(new Date());
+        return appDepMapper.updateByExampleSelective(record, example);
+    }
 }

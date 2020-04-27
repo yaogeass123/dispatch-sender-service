@@ -6,10 +6,15 @@ import com.dianwoba.dispatch.sender.domain.ErrorInfo;
 import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.SendResultInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
+import com.dianwoba.dispatch.sender.domain.dto.result.AppDepInfoDTO;
+import com.dianwoba.dispatch.sender.domain.dto.result.GroupInfoDTO;
+import com.dianwoba.dispatch.sender.domain.dto.result.MatchRuleInfoDTO;
 import com.dianwoba.dispatch.sender.en.LevelEn;
 import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
+import com.dianwoba.dispatch.sender.entity.DingGroupName;
+import com.dianwoba.dispatch.sender.entity.GroupMatchRules;
 import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
 import com.dianwoba.genius.domain.dto.DepartDTO;
@@ -82,6 +87,7 @@ public class ConvertUtils {
 
     public static AppDepInfo convert2AppDepInfo(AppDep appDep) {
         AppDepInfo info = new AppDepInfo();
+        info.setId(appDep.getId());
         info.setAppName(appDep.getAppName());
         info.setDevelopersDepId(appDep.getDevelopersDepId());
         info.setDevelopersPhone(appDep.getDevelopersPhone());
@@ -135,5 +141,38 @@ public class ConvertUtils {
         depInfo.setCreateTime(new Date());
         depInfo.setNewest(depInfo.getId());
         return depInfo;
+    }
+
+    public static AppDepInfoDTO convert2AppDepInfoDTO(AppDepInfo appDepInfo) {
+        AppDepInfoDTO infoDTO = new AppDepInfoDTO();
+        infoDTO.setAppName(appDepInfo.getAppName());
+        infoDTO.setDefaultDepId(Integer.parseInt(appDepInfo.getDepId()));
+        infoDTO.setId(appDepInfo.getId());
+        infoDTO.setManualDepId(StringUtils.isEmpty(appDepInfo.getManualDepId()) ? null
+                : Integer.parseInt(appDepInfo.getManualDepId()));
+        return infoDTO;
+    }
+
+    public static GroupInfoDTO convert2GroupInfoDTO(DingGroupName groupName) {
+        GroupInfoDTO infoDTO = new GroupInfoDTO();
+        infoDTO.setId(groupName.getId());
+        infoDTO.setGroupName(groupName.getGroupName());
+        infoDTO.setAtWho(groupName.getAtWho());
+        infoDTO.setAtAll(groupName.getAtAll());
+        infoDTO.setMail(groupName.getMail());
+        return infoDTO;
+    }
+
+    public static MatchRuleInfoDTO convert2MatchRuleInfoDTO(GroupMatchRules rules) {
+        MatchRuleInfoDTO matchRuleInfoDTO = new MatchRuleInfoDTO();
+        matchRuleInfoDTO.setGroupId(rules.getGroupId());
+        matchRuleInfoDTO.setAppName(rules.getAppName());
+        matchRuleInfoDTO.setAppDep(rules.getAppDep());
+        matchRuleInfoDTO.setException(rules.getException());
+        matchRuleInfoDTO.setAtAll(rules.getAtAll());
+        matchRuleInfoDTO.setKeyWords(rules.getKeyWords());
+        matchRuleInfoDTO.setLevel(rules.getLevel());
+        matchRuleInfoDTO.setAtWho(rules.getAtWho());
+        return matchRuleInfoDTO;
     }
 }
