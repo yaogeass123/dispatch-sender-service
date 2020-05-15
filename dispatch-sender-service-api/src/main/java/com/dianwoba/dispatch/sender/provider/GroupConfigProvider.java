@@ -27,7 +27,7 @@ public interface GroupConfigProvider {
     Boolean update(GroupUpdateDTO UpdateDTO);
 
     /**
-     * 删除某一群配置（会删除该群下相应的钉钉机器人配置）
+     * 删除某一群配置（会删除该群下配置的规则相应的钉钉机器人配置）
      * @param deleteDTO GroupDeleteDTO
      * @return Boolean
      */

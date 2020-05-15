@@ -82,23 +82,7 @@ public class MatchRuleConfigProviderImpl implements MatchRuleConfigProvider {
         if (updateDTO.getModifier() == null) {
             throw new ConfigException("参数错误，未传入操作人员编号");
         }
-        GroupMatchRules rules = new GroupMatchRules();
-        updateDTO.setId(updateDTO.getId());
-        if (updateDTO.getGroupId() != null) {
-            rules.setGroupId(updateDTO.getGroupId());
-        }
-        if (updateDTO.getLevel() != null) {
-            rules.setLevel(updateDTO.getLevel());
-        }
-        if (updateDTO.getAtAll() != null) {
-            rules.setAtAll(updateDTO.getAtAll());
-        }
-        if (updateDTO.getAtWho() != null) {
-            rules.setAtWho(updateDTO.getAtWho());
-        }
-        rules.setModifier(updateDTO.getModifier());
-        rules.setModifyTime(new Date());
-        return groupMatchRulesManager.update(rules);
+        return groupMatchRulesManager.update(updateDTO);
     }
 
     @Override

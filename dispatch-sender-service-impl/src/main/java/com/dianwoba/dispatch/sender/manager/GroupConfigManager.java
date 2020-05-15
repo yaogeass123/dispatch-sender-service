@@ -9,6 +9,7 @@ import com.dianwoba.dispatch.sender.entity.DingGroupNameExample;
 import com.dianwoba.dispatch.sender.entity.DingGroupNameExample.Criteria;
 import com.dianwoba.dispatch.sender.mapper.DingGroupNameMapper;
 import com.dianwoba.wireless.paging.PagingSearchable;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,9 @@ public class GroupConfigManager {
 
     @Resource
     private GroupMatchRulesManager groupMatchRulesManager;
+
+    @Resource
+    private DingTokenConfigManager dingTokenConfigManager;
 
     public Long totalCount() {
         DingGroupNameExample example = new DingGroupNameExample();
@@ -72,8 +76,12 @@ public class GroupConfigManager {
         criteria.andGroupNameEqualTo(groupDeleteDTO.getGroupName());
         DingGroupName record = new DingGroupName();
         record.setIsActive(Boolean.FALSE);
-        boolean delete = groupNameMapper.updateByExampleSelective(record, example) > 1;
-        return delete && groupMatchRulesManager.delete(groupDeleteDTO.getGroupId());
+        record.setModifier(groupDeleteDTO.getModifier());
+        record.setModifyTime(new Date());
+        boolean deleteGroup = groupNameMapper.updateByExampleSelective(record, example) > 1;
+        boolean deleteRule = groupMatchRulesManager.deleteByGroup(groupDeleteDTO);
+        boolean deleteToken = dingTokenConfigManager.deleteByGroup(groupDeleteDTO);
+        return deleteGroup && deleteRule && deleteToken;
     }
 
     public List<DingGroupName> queryPaging(GroupPagingQueryDTO queryDTO) {

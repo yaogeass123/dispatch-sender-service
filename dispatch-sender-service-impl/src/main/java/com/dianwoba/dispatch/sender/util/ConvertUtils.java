@@ -7,6 +7,7 @@ import com.dianwoba.dispatch.sender.domain.MessageSendInfo;
 import com.dianwoba.dispatch.sender.domain.SendResultInfo;
 import com.dianwoba.dispatch.sender.domain.dto.param.MessageSendDTO;
 import com.dianwoba.dispatch.sender.domain.dto.result.AppDepInfoDTO;
+import com.dianwoba.dispatch.sender.domain.dto.result.DingTokenInfoDTO;
 import com.dianwoba.dispatch.sender.domain.dto.result.GroupInfoDTO;
 import com.dianwoba.dispatch.sender.domain.dto.result.MatchRuleInfoDTO;
 import com.dianwoba.dispatch.sender.en.LevelEn;
@@ -14,6 +15,7 @@ import com.dianwoba.dispatch.sender.en.StatusEn;
 import com.dianwoba.dispatch.sender.entity.AppDep;
 import com.dianwoba.dispatch.sender.entity.DepInfo;
 import com.dianwoba.dispatch.sender.entity.DingGroupName;
+import com.dianwoba.dispatch.sender.entity.DingTokenConfig;
 import com.dianwoba.dispatch.sender.entity.GroupMatchRules;
 import com.dianwoba.dispatch.sender.entity.MessageLog;
 import com.dianwoba.dispatch.sender.entity.MessageSend;
@@ -174,5 +176,17 @@ public class ConvertUtils {
         matchRuleInfoDTO.setLevel(rules.getLevel());
         matchRuleInfoDTO.setAtWho(rules.getAtWho());
         return matchRuleInfoDTO;
+    }
+
+    public static DingTokenInfoDTO convert2DingTokenInfoDTO(DingTokenConfig dingTokenConfig) {
+        DingTokenInfoDTO dingTokenInfoDTO = new DingTokenInfoDTO();
+        dingTokenInfoDTO.setAppDep(dingTokenConfig.getAppDep());
+        dingTokenInfoDTO.setGroupId(dingTokenConfig.getGroupId());
+        dingTokenInfoDTO.setId(dingTokenConfig.getId());
+        dingTokenInfoDTO.setKeyWords(dingTokenConfig.getKeyWords());
+        dingTokenInfoDTO.setSecret(dingTokenConfig.getSecret());
+        dingTokenInfoDTO.setToken(dingTokenConfig.getToken());
+        dingTokenInfoDTO.setStatus(dingTokenConfig.getStatus());
+        return dingTokenInfoDTO;
     }
 }
