@@ -61,7 +61,8 @@ public class AppDepTest extends UnitTestBase {
 
     @Test
     public void test() {
-        synTest();
+        System.out.println(JSONObject.toJSONString(staffProvider.findByCode("W07483")));
+//        synTest();
 //        departTest();
 //        depIdTest();
 //        System.out.println(JSONObject.toJSONString(testStaff()));
